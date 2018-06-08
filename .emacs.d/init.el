@@ -47,7 +47,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex yasnippet-snippets latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
+    (py-autopep8 elpy alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex yasnippet-snippets latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(vc-annotate-background nil)
@@ -87,9 +87,21 @@
 ;; Loading an org mode file as default.
 (find-file "~/Desktop/Misc/life.org")
 
-;;org-mode bullets
+;; org-mode bullets
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; Python elpy configurations.
+(elpy-enable)
+
+;; Flycheck. Particularly elpy
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+;; Python autopep8
+(require 'py-autopep8)
+(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
 ;; adding folding to latex
 (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
@@ -180,6 +192,7 @@
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
 ;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
+(require 'cdlatex)
 (autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
 (autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
 (add-hook 'Latex-mode-hook 'turn-on-cdlatex)
@@ -195,3 +208,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
