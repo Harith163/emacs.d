@@ -85,7 +85,7 @@
 (iswitchb-mode t)
 
 ;; Loading an org mode file as default.
-(find-file "~/Desktop/Misc/life.org")
+(find-file "~/Documents/Misc/life.org")
 
 ;; org-mode bullets
 (require 'org-bullets)
@@ -137,7 +137,7 @@
   (interactive)
   (split-window-horizontally)
   (other-window 1)
-  (find-file "~/Desktop" ))
+  (find-file "~/Documents" ))
 
 ;; Setting keybind for newWindow function.
 (global-set-key (kbd "C-x 3") 'newWindow)
@@ -188,11 +188,9 @@
   (add-hook 'after-change-major-mode-hook
             (lambda () (linum-mode 0))
             :append :local))
-
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
 ;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
-(require 'cdlatex)
 (autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
 (autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
 (add-hook 'Latex-mode-hook 'turn-on-cdlatex)
