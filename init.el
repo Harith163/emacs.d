@@ -191,6 +191,7 @@
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
 ;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
+(require 'cdlatex)
 (autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
 (autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
 (add-hook 'Latex-mode-hook 'turn-on-cdlatex)
