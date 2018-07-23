@@ -84,12 +84,12 @@
 ;; Switch between buffers.
 (iswitchb-mode t)
 
-;; Loading an org mode file as default.
-(find-file "~/Documents/life/life.org")
-
 ;; org-mode bullets
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; Loading an org mode file as default.
+(find-file "~/Documents/life/life.org")
 
 ;; Python elpy configurations.
 (elpy-enable)
@@ -197,6 +197,8 @@
 (add-hook 'Latex-mode-hook 'turn-on-cdlatex)
 (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 
+;; assawsdasdasadassdasddasdad
+
 ;; Loads up emacs theme.
 (load-theme 'soothe t)
 (set-face-foreground 'font-lock-comment-face "#3c7780")
@@ -206,5 +208,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+)
 
