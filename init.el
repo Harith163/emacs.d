@@ -4,7 +4,7 @@
 (menu-bar-mode -1)
 
 ;; Set new frame parameters. This includes starting fulscreen maximised and setting alpha. Only need to change the first number in (x . 50). No idea what the 50 does tho.
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(fullscreen . fullboth))
 (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
 (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
 
@@ -75,11 +75,14 @@
  '(weechat-color-list
    (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff")))
 
-;; Outline-mode magic keybind, currently set to <C-tab>.
+;; Outline-mode magic keybind, currently set to <C-tab>. Folding sections in files.
 (eval-after-load 'outline
   '(progn
     (require 'outline-magic)
-    (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle))); folding sections in files
+    (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle))) 
+
+;; adding folding to latex
+(add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 
 ;; Switch between buffers.
 (iswitchb-mode t)
@@ -103,9 +106,6 @@
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-;; adding folding to latex
-(add-hook 'LaTeX-mode-hook 'outline-minor-mode)
-
 (latex-preview-pane-enable)
 
 (setq TeX-auto-save t)
@@ -120,6 +120,13 @@
 ;; Rainbow Delimitters
 (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
+(require 'cdlatex)
+(autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
+(autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
+(add-hook 'LaTex-mode-hook 'turn-on-cdlatex)
+(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 
 ;; Turns on pdf-tools mode by default.
 (pdf-tools-install)
@@ -143,41 +150,6 @@
 (global-set-key (kbd "C-x 3") 'newWindow)
 (lookup-key (current-global-map) (kbd "C-x 3"))
 
-;; javascript mode
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
-;; Better imenu
-(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-
-;; js2_refractor and xref-js2.
-(require 'js2-refactor)
-(require 'xref-js2)
-
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c C-r")
-(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-
-;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
-;; unbind it.
-(define-key js-mode-map (kbd "M-.") nil)
-
-(add-hook 'js2-mode-hook (lambda ()
-  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-
-;; web-mode for html files.
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-
-;; web beautify.
-(eval-after-load 'js2-mode
-      '(define-key js2-mode-map (kbd "C-c b") 'web-beautify-js))
-    (eval-after-load 'json-mode
-      '(define-key json-mode-map (kbd "C-c b") 'web-beautify-js))
-    (eval-after-load 'sgml-mode
-      '(define-key html-mode-map (kbd "C-c b") 'web-beautify-html))
-    (eval-after-load 'css-mode
-      '(define-key css-mode-map (kbd "C-c b") 'web-beautify-css))
-(lookup-key (current-global-map) (kbd "C-c b"))
 
 ;; linum
 (global-linum-mode t)
@@ -190,23 +162,7 @@
             :append :local))
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
-;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
-(require 'cdlatex)
-(autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
-(autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
-(add-hook 'Latex-mode-hook 'turn-on-cdlatex)
-(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
-
-;; assawsdasdasadassdasddasdad
-
 ;; Loads up emacs theme.
 (load-theme 'soothe t)
 (set-face-foreground 'font-lock-comment-face "#3c7780")
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-)
 
