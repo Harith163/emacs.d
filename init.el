@@ -1,7 +1,10 @@
-;; Sets up default look of emacs.
+;; Sets up default look of emacs and basic stuff.
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+(global-visual-line-mode t)
+(setq initial-major-mode 'org-mode)
+
 
 ;; Set new frame parameters. This includes starting fulscreen maximised and setting alpha. Only need to change the first number in (x . 50). No idea what the 50 does tho.
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
@@ -43,8 +46,34 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#424748" . 100))))
- '(inhibit-startup-screen t)
+
  '(magit-diff-use-overlays nil)
+ '(org-latex-classes
+   (quote
+    (("article" "\\documentclass[11pt]{article}"
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+     ("report" "\\documentclass[11pt]{report}"
+      ("\\part{%s}" . "\\part*{%s}")
+      ("\\chapter{%s}" . "\\chapter*{%s}")
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+     ("book" "\\documentclass[11pt]{book}"
+      ("\\part{%s}" . "\\part*{%s}")
+      ("\\chapter{%s}" . "\\chapter*{%s}")
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+     ("hw&notes" "\\documentclass{hw&notes}"
+      ("\\part{%s}" . "\\part*{%s}")
+      ("\\chapter{%s}" . "\\chapter*{%s}")
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
     (py-autopep8 elpy alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex yasnippet-snippets latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
@@ -90,6 +119,9 @@
 ;; org-mode bullets
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; org mode latex colors.
+(setq org-highlight-latex-and-related '(latex))
 
 ;; Loading an org mode file as default.
 (find-file "~/Documents/life/life.org")
@@ -166,3 +198,9 @@
 (load-theme 'soothe t)
 (set-face-foreground 'font-lock-comment-face "#3c7780")
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
