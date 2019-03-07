@@ -1,3 +1,6 @@
+;;; init.el --- Initialization file for Emacs
+;;; Commentary: Emacs Startup File --- initialization for Emacs.
+
 ;; Sets up default look of emacs and basic stuff.
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
@@ -22,6 +25,7 @@
     ;; For important compatibility libraries like cl-lib
     (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -46,7 +50,6 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#424748" . 100))))
-
  '(magit-diff-use-overlays nil)
  '(org-latex-classes
    (quote
@@ -76,7 +79,7 @@
       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
-    (py-autopep8 elpy alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex yasnippet-snippets latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
+    (dakrone-theme clues-theme flatui-dark-theme molokai-theme yasnippet-classic-snippets ac-ispell org-ac pdf-tools py-autopep8 elpy alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(vc-annotate-background nil)
@@ -104,17 +107,26 @@
  '(weechat-color-list
    (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff")))
 
+;; Auto Complete
+(ac-config-default)
+(global-auto-complete-mode t)
+(add-to-list 'ac-modes 'org-mode) 
+(add-to-list 'ac-modes 'TeX-mode)
+
+;; Flycheck. Particularly elpy
+(global-flycheck-mode)
+
 ;; Outline-mode magic keybind, currently set to <C-tab>. Folding sections in files.
 (eval-after-load 'outline
   '(progn
     (require 'outline-magic)
-    (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle))) 
+    (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle)))
 
 ;; adding folding to latex
 (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 
 ;; Switch between buffers.
-(iswitchb-mode t)
+(icomplete-mode t)
 
 ;; org-mode bullets
 (require 'org-bullets)
@@ -128,11 +140,6 @@
 
 ;; Python elpy configurations.
 (elpy-enable)
-
-;; Flycheck. Particularly elpy
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
 
 ;; Python autopep8
 (require 'py-autopep8)
@@ -160,9 +167,6 @@
 (add-hook 'LaTex-mode-hook 'turn-on-cdlatex)
 (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 
-;; Turns on pdf-tools mode by default.
-(pdf-tools-install)
-
 ;; Use pdf-tools to open PDF files
 (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
       TeX-source-correlate-start-server t)
@@ -173,6 +177,7 @@
 
 ;; My version of window split.
 (defun newWindow()
+  "My new window."
   (interactive)
   (split-window-horizontally)
   (other-window 1)
@@ -181,7 +186,6 @@
 ;; Setting keybind for newWindow function.
 (global-set-key (kbd "C-x 3") 'newWindow)
 (lookup-key (current-global-map) (kbd "C-x 3"))
-
 
 ;; linum
 (global-linum-mode t)
@@ -195,7 +199,8 @@
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
 ;; Loads up emacs theme.
-(load-theme 'soothe t)
+;;(load-theme 'soothe t)
+(load-theme 'molokai t)
 (set-face-foreground 'font-lock-comment-face "#3c7780")
 
 (custom-set-faces
