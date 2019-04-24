@@ -14,12 +14,6 @@
 (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
 (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
 
-;; This is only needed once, near the top of the file
-(eval-when-compile
-  ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  (add-to-list 'load-path "<path where use-package is installed>")
-  (require 'use-package))
-
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
@@ -85,7 +79,7 @@
       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
-    (darkokai-theme monokai-theme ac-ispell org-ac pdf-tools org-bullets org rainbow-delimiters outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete)))
+    (auto-complete-auctex git-auto-commit-mode darkokai-theme monokai-theme ac-ispell org-ac pdf-tools org-bullets org rainbow-delimiters outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete)))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(vc-annotate-background nil)
@@ -193,3 +187,9 @@
 
 ;;emacs theme
 (load-theme 'darkokai t)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
