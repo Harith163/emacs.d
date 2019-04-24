@@ -2,7 +2,7 @@
 ;;; Commentary: Emacs Startup File --- initialization for Emacs.
 
 ;; Sets up default look of emacs and basic stuff.
-(toggle-scroll-bar -1)
+(scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (global-visual-line-mode t)
@@ -13,6 +13,12 @@
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
 (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
+
+;; This is only needed once, near the top of the file
+(eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "<path where use-package is installed>")
+  (require 'use-package))
 
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -37,7 +43,7 @@
  '(cursor-type (quote bar))
  '(custom-safe-themes
    (quote
-    ("6350f0cf3091e574a5de01d7309c0b456d814756a79867eac02c11b262d04a2e" default)))
+    ("bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "ab564a7ce7f2b2ad9e2cfe9fe1019b5481809dd7a0e36240c9139e230cc2bc32" "6350f0cf3091e574a5de01d7309c0b456d814756a79867eac02c11b262d04a2e" default)))
  '(fci-rule-color "#424748")
  '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
  '(highlight-tail-colors
@@ -79,7 +85,7 @@
       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
-    (dakrone-theme clues-theme flatui-dark-theme molokai-theme yasnippet-classic-snippets ac-ispell org-ac pdf-tools py-autopep8 elpy alect-themes soothe-theme python-mode web-beautify web-mode js2-refactor js2-mode xref-js2 org-bullets org color-theme-sanityinc-tomorrow rainbow-delimiters jedi anaconda-mode flycheck-pycheckers outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete-auctex auto-complete)))
+    (darkokai-theme monokai-theme ac-ispell org-ac pdf-tools org-bullets org rainbow-delimiters outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete)))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(vc-annotate-background nil)
@@ -113,9 +119,6 @@
 (add-to-list 'ac-modes 'org-mode) 
 (add-to-list 'ac-modes 'TeX-mode)
 
-;; Flycheck. Particularly elpy
-(global-flycheck-mode)
-
 ;; Outline-mode magic keybind, currently set to <C-tab>. Folding sections in files.
 (eval-after-load 'outline
   '(progn
@@ -138,13 +141,7 @@
 ;; Loading an org mode file as default.
 (find-file "~/Documents/life/life.org")
 
-;; Python elpy configurations.
-(elpy-enable)
-
-;; Python autopep8
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-
+;; Latex Stuff
 (latex-preview-pane-enable)
 
 (setq TeX-auto-save t)
@@ -171,10 +168,6 @@
 (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
       TeX-source-correlate-start-server t)
 
-;; Update PDF buffers after successful LaTeX runs
-(add-hook 'TeX-after-compilation-finished-functions
-           #'TeX-revert-document-buffer)
-
 ;; My version of window split.
 (defun newWindow()
   "My new window."
@@ -198,14 +191,5 @@
             :append :local))
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
 
-;; Loads up emacs theme.
-;;(load-theme 'soothe t)
-(load-theme 'molokai t)
-(set-face-foreground 'font-lock-comment-face "#3c7780")
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;;emacs theme
+(load-theme 'darkokai t)
