@@ -1,0 +1,216 @@
+#+STARTUP: overview indent
+#+TITLE: EMACS initialization file
+#+AUTHOR: Skye S Harith
+#+EMAIL: kaushik.harith@gmail.com
+#+OPTIONS: toc:nil todo:nil
+
+* Id commands
+#+begin_src emacs-lisp
+  (setq user-full-name "Skye Srinivasan Harith")
+
+  (setq user-mail-address "kaushik.harith@gmail.com")
+#+end_src
+* Custom set variables and faces
+This is where you'd go to tweak the colors, fonts, font-sizes etc. Automatically generated.
+** Variables
+#+begin_src emacs-lisp
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(package-selected-packages
+     (quote
+      (cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
+#+end_src
+** Faces
+#+begin_src emacs-lisp
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 2.0)))))
+#+end_src
+* Tweaks to emacs' appearance 
+** Theme
+#+begin_src emacs-lisp
+  (use-package darkokai-theme
+    :ensure t
+    :config (load-theme 'darkokai t))
+#+end_src
+** Tool and menu bars, startup message, line mode
+#+begin_src emacs-lisp
+  (setq inhibit-startup-message t)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (global-visual-line-mode t)
+#+end_src
+** Frame transparency 
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
+  (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
+#+end_src
+* Packages
+** Linum
+line number modes
+#+begin_src emacs-lisp
+  (use-package linum
+    :ensure t
+    :config (global-linum-mode t))
+#+end_src
+** Try
+lets you try packages temporarily
+#+begin_src emacs-lisp
+  (use-package try
+    :ensure t)
+#+end_src
+** Which-Key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config (which-key-mode))
+#+end_src
+** Ace-Window
+changes behaviour of (other-window), same keybind ctrl-o
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :init
+    (progn
+      (global-set-key [remap other-window] 'ace-window)
+      (custom-set-faces
+       '(aw-leading-char-face
+         ((t (:inherit ace-jump-face-foreground :height 2.0)))))
+      ))
+#+end_src
+** Counsel and Swiper
+better search and completion in minibuffer
+#+begin_src emacs-lisp
+  (use-package counsel
+    :ensure t
+    )
+
+  (use-package swiper
+    :ensure try
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (global-set-key "\C-s" 'swiper)
+      (global-set-key (kbd "C-c C-r") 'ivy-resume)
+      (global-set-key (kbd "<f6>") 'ivy-resume)
+      (global-set-key (kbd "M-x") 'counsel-M-x)
+      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+      (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+      (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+      (global-set-key (kbd "<f1> l") 'counsel-load-library)
+      (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+      (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+      (global-set-key (kbd "C-c g") 'counsel-git)
+      (global-set-key (kbd "C-c j") 'counsel-git-grep)
+      (global-set-key (kbd "C-c k") 'counsel-ag)
+      (global-set-key (kbd "C-x l") 'counsel-locate)
+      (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+      ))
+#+end_src
+** Rainbow-Delimiters
+changes the colors of nested parens, brackets etc
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (progn
+      (rainbow-delimiters-mode 1)
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)))
+#+end_src
+** Expand-region
+this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
+#+begin_src emacs-lisp
+  (use-package expand-region
+  :ensure t
+  :config
+  (global-set-key (kbd "C-=") 'er/expand-region))
+#+end_src
+** Auto-Complete
+auto-completion
+#+begin_src emacs-lisp
+  (use-package auto-complete
+    :ensure t
+    :init
+    (progn
+      (ac-config-default)
+      (global-auto-complete-mode t)
+      ))
+#+end_src
+** Magit
+git integration
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t)
+#+end_src
+** Flycheck
+checks syntax on the fly. currently only enabled for python and elisp.
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :config
+    (add-hook 'python-mode-hook 'flycheck-mode))
+#+end_src
+** Undo Tree
+changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shft-/ with a tree given by ctrl-x u. q to quit and choose.
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode))
+#+end_src
+** Org-Bullets
+makes org mode pretty
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+** Jedi
+python stuff. maybe use elpy??
+#+begin_src emacs-lisp
+  (use-package jedi
+    :ensure t
+    :init
+    (add-hook 'python-mode-hook 'jedi:setup)
+    (add-hook 'python-mode-hook 'jedi:ac-setup))
+#+end_src
+** Latex
+latex stuff. DONT TOUCH IT. IT BARELY WORKS AS IS!!
+#+begin_src emacs-lisp
+  (use-package latex
+    :defer t
+    :ensure auctex
+    :mode ("//.tex//" . latex-mode)
+    :config
+    (progn
+      (setq TeX-fold-mode t)
+      (setq TeX-parse-self t)
+      (setq TeX-save-query nil)
+      (setq TeX-PDF-mode t)
+      (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+        ))
+#+end_src
+* Miscellaneous tweaks to emacs' default functioning
+This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
+#+begin_src emacs-lisp
+  (defalias 'list-buffers 'ibuffer-other-window)
+
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+#+end_src
+* Lastly, load my life.org file. 
+This should only load if everything else doesn't fail.
+#+begin_src emacs-lisp
+  (find-file "~/Documents/life/life.org")
+#+end_src
+
