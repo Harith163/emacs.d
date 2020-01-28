@@ -50,7 +50,11 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#424748" . 100))))
+ '(inhibit-startup-screen t)
  '(magit-diff-use-overlays nil)
+ '(org-agenda-files
+   (quote
+    ("~/Documents/SchoolStuff/Summer2019/Summary_EM_GaugeTheories.org")))
  '(org-latex-classes
    (quote
     (("article" "\\documentclass[11pt]{article}"
@@ -79,7 +83,7 @@
       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
-    (auto-complete-auctex git-auto-commit-mode darkokai-theme monokai-theme ac-ispell org-ac pdf-tools org-bullets org rainbow-delimiters outline-magic cdlatex latex-preview-pane latex-pretty-symbols math-symbol-lists latex-extra auto-complete)))
+   ))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(vc-annotate-background nil)
@@ -97,7 +101,7 @@
      (200 . "#729A1E")
      (220 . "#609C3C")
      (240 . "#4E9D5B")
-     (260 . "#3C9F79")
+pppPPppp     (260 . "#3C9F79")
      (280 . "#53f2dc")
      (300 . "#299BA6")
      (320 . "#2896B5")
@@ -106,6 +110,9 @@
  '(vc-annotate-very-old-color nil)
  '(weechat-color-list
    (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff")))
+
+;; Loading an org mode file as default.
+(find-file "~/Documents/life/life.org")
 
 ;; Auto Complete
 (ac-config-default)
@@ -132,12 +139,7 @@
 ;; org mode latex colors.
 (setq org-highlight-latex-and-related '(latex))
 
-;; Loading an org mode file as default.
-(find-file "~/Documents/life/life.org")
-
 ;; Latex Stuff
-(latex-preview-pane-enable)
-
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq TeX-PDF-mode t)
@@ -180,7 +182,7 @@
 ;; disable linum for PDFView
 (defun inhibit-global-linum-mode()
   "Doesn't Let line numbers in certain modes."
-  (add-hook 'after-change-major-mode-hook
+  p(add-hook 'after-change-major-mode-hook
             (lambda () (linum-mode 0))
             :append :local))
 (add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
