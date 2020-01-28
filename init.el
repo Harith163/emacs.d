@@ -1,197 +1,186 @@
-;;; init.el --- Initialization file for Emacs
-;;; Commentary: Emacs Startup File --- initialization for Emacs.
-
-;; Sets up default look of emacs and basic stuff.
-(scroll-bar-mode -1)
+;; DESTROY THE STARTUP SCREEN/BASIC BAR AND STUFF CAUSE IT SUCKS!!!!
+(setq inhibit-startup-message t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (global-visual-line-mode t)
-(setq initial-major-mode 'org-mode)
 
-
-;; Set new frame parameters. This includes starting fulscreen maximised and setting alpha. Only need to change the first number in (x . 50). No idea what the 50 does tho.
+;; Frame transparency
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
 (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
 
+;;ibuffer
+(defalias 'list-buffers 'ibuffer-other-window)
+
+;;Change yes, no to y, n and revert buffer hotkey
+(fset 'yes-or-no-p 'y-or-n-p)
+(global-set-key (kbd "<f5>") 'revert-buffer)
+
+;; Add melpa and initialize
 (require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))
+
 (package-initialize)
+
+;;Force installation of use package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;;package configurations via use-package
+
+;; linum
+(use-package linum
+  :ensure t
+  :config (global-linum-mode t))
+
+;;lets you try packages
+(use-package try
+  :ensure t)
+
+;;which key stuff
+(use-package which-key
+  :ensure t
+  :config (which-key-mode))
+
+;;Ace Window for navigation purposes
+(use-package ace-window
+  :ensure t
+  :init
+  (progn
+    (global-set-key [remap other-window] 'ace-window)
+    (custom-set-faces
+     '(aw-leading-char-face
+       ((t (:inherit ace-jump-face-foreground :height 2.0)))))
+    ))
+
+;; it looks like counsel is a requirement for swiper
+(use-package counsel
+  :ensure t
+  )
+
+(use-package swiper
+  :ensure try
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-load-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c k") 'counsel-ag)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+    ))
+
+;; ;;Outline Magic
+;; (use-package outline
+;;   :ensure t)
+
+;;Rainbow delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (progn
+    (rainbow-delimiters-mode 1)
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)))
+
+
+;;AutoComplete stuff
+(use-package auto-complete
+  :ensure t
+  :init
+  (progn
+    (ac-config-default)
+    (global-auto-complete-mode t)
+    ))
+
+;;Org-mode stuff
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+;;Magit
+(use-package magit
+  :ensure t)
+
+;; Flycheck
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'flycheck-mode))
+
+;;Python mode stuff
+(use-package jedi
+  :ensure t
+  :init
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook 'jedi:ac-setup))
+
+;;LaTeX mode stuff
+(use-package latex
+  :defer t
+  :ensure auctex
+  :mode ("//.tex//" . latex-mode)
+  :config
+  (progn
+    (setq TeX-fold-mode t)
+    (setq TeX-parse-self t)
+    (setq TeX-save-query nil)
+    (setq TeX-PDF-mode t)
+    (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+      ))
+    
+
+;;Theme stuff
+(use-package darkokai-theme
+  :ensure t
+  :config (load-theme 'darkokai t))
+
+;;Miscellaneous
+
+;; undo tree
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
+
+;; expand the marked region in semantic increments (negative prefix to reduce region)
+(use-package expand-region
+:ensure t
+:config
+(global-set-key (kbd "C-=") 'er/expand-region))
+
+;; Loading an org mode file as default.
+(find-file "~/Documents/life/life.org")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#454545" "#d65946" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#68a5e9" "#bdbdb3"])
- '(compilation-message-face (quote default))
- '(cursor-type (quote bar))
- '(custom-safe-themes
-   (quote
-    ("bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" "ab564a7ce7f2b2ad9e2cfe9fe1019b5481809dd7a0e36240c9139e230cc2bc32" "6350f0cf3091e574a5de01d7309c0b456d814756a79867eac02c11b262d04a2e" default)))
- '(fci-rule-color "#424748")
- '(highlight-changes-colors (quote ("#ff8eff" "#ab7eff")))
- '(highlight-tail-colors
-   (quote
-    (("#424748" . 0)
-     ("#63de5d" . 20)
-     ("#4BBEAE" . 30)
-     ("#1DB4D0" . 50)
-     ("#9A8F21" . 60)
-     ("#A75B00" . 70)
-     ("#F309DF" . 85)
-     ("#424748" . 100))))
- '(inhibit-startup-screen t)
- '(magit-diff-use-overlays nil)
- '(org-agenda-files
-   (quote
-    ("~/Documents/SchoolStuff/Summer2019/Summary_EM_GaugeTheories.org")))
- '(org-latex-classes
-   (quote
-    (("article" "\\documentclass[11pt]{article}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-     ("report" "\\documentclass[11pt]{report}"
-      ("\\part{%s}" . "\\part*{%s}")
-      ("\\chapter{%s}" . "\\chapter*{%s}")
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-     ("book" "\\documentclass[11pt]{book}"
-      ("\\part{%s}" . "\\part*{%s}")
-      ("\\chapter{%s}" . "\\chapter*{%s}")
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-     ("hw&notes" "\\documentclass{hw&notes}"
-      ("\\part{%s}" . "\\part*{%s}")
-      ("\\chapter{%s}" . "\\chapter*{%s}")
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))))
  '(package-selected-packages
    (quote
-   ))
- '(pos-tip-background-color "#E6DB74")
- '(pos-tip-foreground-color "#242728")
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#ff0066")
-     (40 . "#CF4F1F")
-     (60 . "#C26C0F")
-     (80 . "#E6DB74")
-     (100 . "#AB8C00")
-     (120 . "#A18F00")
-     (140 . "#989200")
-     (160 . "#8E9500")
-     (180 . "#63de5d")
-     (200 . "#729A1E")
-     (220 . "#609C3C")
-     (240 . "#4E9D5B")
-pppPPppp     (260 . "#3C9F79")
-     (280 . "#53f2dc")
-     (300 . "#299BA6")
-     (320 . "#2896B5")
-     (340 . "#2790C3")
-     (360 . "#06d8ff"))))
- '(vc-annotate-very-old-color nil)
- '(weechat-color-list
-   (unspecified "#242728" "#424748" "#F70057" "#ff0066" "#86C30D" "#63de5d" "#BEB244" "#E6DB74" "#40CAE4" "#06d8ff" "#FF61FF" "#ff8eff" "#00b2ac" "#53f2dc" "#f8fbfc" "#ffffff")))
-
-;; Loading an org mode file as default.
-(find-file "~/Documents/life/life.org")
-
-;; Auto Complete
-(ac-config-default)
-(global-auto-complete-mode t)
-(add-to-list 'ac-modes 'org-mode) 
-(add-to-list 'ac-modes 'TeX-mode)
-
-;; Outline-mode magic keybind, currently set to <C-tab>. Folding sections in files.
-(eval-after-load 'outline
-  '(progn
-    (require 'outline-magic)
-    (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle)))
-
-;; adding folding to latex
-(add-hook 'LaTeX-mode-hook 'outline-minor-mode)
-
-;; Switch between buffers.
-(icomplete-mode t)
-
-;; org-mode bullets
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-;; org mode latex colors.
-(setq org-highlight-latex-and-related '(latex))
-
-;; Latex Stuff
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq TeX-PDF-mode t)
-(setq latex-run-command "pdflatex")
-
-(add-hook 'TeX-mode-hook
-          '(lambda () (local-set-key (kbd "RET") 'newline-and-indent))); Tex auto-indent
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-
-;; Rainbow Delimitters
-(add-hook 'Latex-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
-;; In theory should turn on cdlatex mode by default. Doesn't work all that well though.
-(require 'cdlatex)
-(autoload 'cdlatex-mode "cdlatex" "CDLatex Mode" t)
-(autoload 'turn-on-cdlatex "cdlatex" "CDLatex Mode" nil)
-(add-hook 'LaTex-mode-hook 'turn-on-cdlatex)
-(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
-
-;; Use pdf-tools to open PDF files
-(setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-      TeX-source-correlate-start-server t)
-
-;; My version of window split.
-(defun newWindow()
-  "My new window."
-  (interactive)
-  (split-window-horizontally)
-  (other-window 1)
-  (find-file "~/Documents" ))
-
-;; Setting keybind for newWindow function.
-(global-set-key (kbd "C-x 3") 'newWindow)
-(lookup-key (current-global-map) (kbd "C-x 3"))
-
-;; linum
-(global-linum-mode t)
-
-;; disable linum for PDFView
-(defun inhibit-global-linum-mode()
-  "Doesn't Let line numbers in certain modes."
-  p(add-hook 'after-change-major-mode-hook
-            (lambda () (linum-mode 0))
-            :append :local))
-(add-hook 'pdf-view-mode-hook 'inhibit-global-linum-mode)
-
-;;emacs theme
-(load-theme 'darkokai t)
+    (cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 2.0)))))
+
+
+;;(org-babel-load-file (expand-file-name "~/.emacs.d/initfile.org"))
