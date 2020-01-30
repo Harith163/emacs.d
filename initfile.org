@@ -30,6 +30,7 @@ This is where you'd go to tweak the colors, fonts, font-sizes etc. Automatically
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
+   '(default ((t (:inherit nil :stipple nil :background "#242728" :foreground "#f8fbfc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 135 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
    '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 2.0)))))
 #+end_src
 * Tweaks to emacs' appearance 
@@ -117,14 +118,15 @@ better search and completion in minibuffer
       ))
 #+end_src
 ** Rainbow-Delimiters
-changes the colors of nested parens, brackets etc
+changes the colors of nested parens, brackets etc.
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :ensure t
     :config
     (progn
       (rainbow-delimiters-mode 1)
-      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)))
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+      (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode)))
 #+end_src
 ** Expand-region
 this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
@@ -133,6 +135,15 @@ this changes the default mark position behaviour. Now, pressing ctrl-= after set
   :ensure t
   :config
   (global-set-key (kbd "C-=") 'er/expand-region))
+#+end_src
+** Outline, outline magic stuff. 
+#+begin_src emacs-lisp
+  (eval-after-load 'outline
+    '(progn
+      (require 'outline-magic)
+      (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle)))
+
+  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 #+end_src
 ** Auto-Complete
 auto-completion
@@ -143,6 +154,8 @@ auto-completion
     (progn
       (ac-config-default)
       (global-auto-complete-mode t)
+      (add-to-list 'ac-modes 'org-mode) 
+      (add-to-list 'ac-modes 'TeX-mode)
       ))
 #+end_src
 ** Magit
@@ -167,7 +180,16 @@ changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shft-/ with a tree 
     :init
     (global-undo-tree-mode))
 #+end_src
-** Org-Bullets
+** Org Mode Stuff
+*** Org 
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure org-bullets
+    :init
+    (add-hook 'org-mode-hook 'org-cdlatex-mode)
+    (setq org-highlight-latex-and-related '(native latex script)))
+#+end_src
+*** Org-Bullets
 makes org mode pretty
 #+begin_src emacs-lisp
   (use-package org-bullets
