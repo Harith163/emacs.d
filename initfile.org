@@ -43,13 +43,14 @@ This is where you'd go to tweak the colors, fonts, font-sizes etc. Automatically
 ** Tool and menu bars, startup message, line mode
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t)
+  (scroll-bar-mode nil)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (global-visual-line-mode t)
 #+end_src
 ** Frame transparency 
 #+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+  ;;(add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
   (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
 #+end_src
@@ -233,6 +234,6 @@ This includes changes yes or no questions to y or n questions, a keybind for a r
 * Lastly, load my life.org file. 
 This should only load if everything else doesn't fail.
 #+begin_src emacs-lisp
-  (find-file "~/Documents/life/life.org")
+  (find-file "~/Documents/life/README.org")
 #+end_src
 
