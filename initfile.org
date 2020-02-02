@@ -30,7 +30,7 @@ This is where you'd go to tweak the colors, fonts, font-sizes etc. Automatically
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(default ((t (:inherit nil :stipple nil :background "#242728" :foreground "#f8fbfc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 135 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
+   '(default ((t (:inherit nil :stipple nil :background "#242728" :foreground "#f8fbfc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 150 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
    '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 2.0)))))
 #+end_src
 * Tweaks to emacs' appearance 
@@ -43,12 +43,11 @@ This is where you'd go to tweak the colors, fonts, font-sizes etc. Automatically
 ** Tool and menu bars, startup message, line mode
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t)
-  (scroll-bar-mode nil)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (global-visual-line-mode t)
 #+end_src
-** Frame transparency 
+** Frame transparency, fullscree
 #+begin_src emacs-lisp
   ;;(add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
@@ -226,7 +225,7 @@ latex stuff. DONT TOUCH IT. IT BARELY WORKS AS IS!!
 * Miscellaneous tweaks to emacs' default functioning
 This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
 #+begin_src emacs-lisp
-  (defalias 'list-buffers 'ibuffer-other-window)
+  (defalias 'list-buffers 'ibuffer)
 
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-set-key (kbd "<f5>") 'revert-buffer)
