@@ -30,13 +30,14 @@
   (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
   (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
 #+end_src
-** Powerline 
-#+begin_src elisp
+* Packages
+** Powerline
+This is a modeline replacement.
+#+begin_src emacs-lisp
   (use-package powerline
     :ensure t
     :config (powerline-center-theme))
 #+end_src
-* Packages
 ** Linum
 line number modes
 #+begin_src emacs-lisp
@@ -218,5 +219,6 @@ This includes changes yes or no questions to y or n questions, a keybind for a r
 This should only load if everything else doesn't fail.
 #+begin_src emacs-lisp
   (find-file "~/Documents/life/README.org")
+  (load-library "org-tempo")
 #+end_src
 
