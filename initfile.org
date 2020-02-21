@@ -1,4 +1,4 @@
-#+STARTUP: overview indent
+#+STARTUP: overview
 #+TITLE: EMACS initialization file
 #+AUTHOR: Skye S Harith
 #+EMAIL: kaushik.harith@gmail.com
@@ -10,12 +10,11 @@
 
   (setq user-mail-address "kaushik.harith@gmail.com")
 #+end_src
-* Tweaks to emacs' appearance 
+* Tweaks to emacs' appearance
 ** Theme
 #+begin_src emacs-lisp
-  (use-package seti-theme
-    :ensure t
-    :config (load-theme 'seti t))
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (load-theme 'trans-side t)
 #+end_src
 ** Tool and menu bars, startup message, line mode
 #+begin_src emacs-lisp
@@ -29,6 +28,10 @@
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
   (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
+#+end_src
+** Pretty-fy symbols
+#+begin_src emacs-lisp
+  (global-prettify-symbols-mode +1)
 #+end_src
 * Packages
 ** Powerline
@@ -180,6 +183,15 @@ makes org mode pretty
     :ensure t
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+** SMOG
+#+begin_src emacs-lisp
+  (use-package smog
+    :config (setq smog-command "style -L en"))
+#+end_src
+** Focus mode
+Focus mode
+#+begin_src emacs-lisp
 #+end_src
 ** Jedi
 python stuff. maybe use elpy??
