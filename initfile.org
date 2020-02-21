@@ -35,21 +35,21 @@
 #+end_src
 * Packages
 ** Powerline
-This is a modeline replacement.
+   This is a modeline replacement.
 #+begin_src emacs-lisp
   (use-package powerline
     :ensure t
     :config (powerline-center-theme))
 #+end_src
 ** Linum
-line number modes
+   line number modes
 #+begin_src emacs-lisp
   (use-package linum
     :ensure t
     :config (global-linum-mode t))
 #+end_src
 ** Try
-lets you try packages temporarily
+   lets you try packages temporarily
 #+begin_src emacs-lisp
   (use-package try
     :ensure t)
@@ -61,7 +61,7 @@ lets you try packages temporarily
     :config (which-key-mode))
 #+end_src
 ** Ace-Window
-changes behaviour of (other-window), same keybind ctrl-o
+   changes behaviour of (other-window), same keybind ctrl-o
 #+begin_src emacs-lisp
   (use-package ace-window
     :ensure t
@@ -74,7 +74,7 @@ changes behaviour of (other-window), same keybind ctrl-o
       ))
 #+end_src
 ** Counsel and Swiper
-better search and completion in minibuffer
+   better search and completion in minibuffer
 #+begin_src emacs-lisp
   (use-package counsel
     :ensure t
@@ -105,7 +105,7 @@ better search and completion in minibuffer
       ))
 #+end_src
 ** Rainbow-Delimiters
-changes the colors of nested parens, brackets etc.
+   changes the colors of nested parens, brackets etc.
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :ensure t
@@ -116,7 +116,7 @@ changes the colors of nested parens, brackets etc.
       (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode)))
 #+end_src
 ** Expand-region
-this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
+   this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
 #+begin_src emacs-lisp
   (use-package expand-region
   :ensure t
@@ -133,7 +133,7 @@ this changes the default mark position behaviour. Now, pressing ctrl-= after set
   (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 #+end_src
 ** Auto-Complete
-auto-completion
+   auto-completion
 #+begin_src emacs-lisp
   (use-package auto-complete
     :ensure t
@@ -146,13 +146,13 @@ auto-completion
       ))
 #+end_src
 ** Magit
-git integration
+   git integration
 #+begin_src emacs-lisp
   (use-package magit
     :ensure t)
 #+end_src
 ** Flycheck
-checks syntax on the fly. currently only enabled for python and elisp.
+   checks syntax on the fly. currently only enabled for python and elisp.
 #+begin_src emacs-lisp
   (use-package flycheck
     :ensure t
@@ -160,7 +160,7 @@ checks syntax on the fly. currently only enabled for python and elisp.
     (add-hook 'python-mode-hook 'flycheck-mode))
 #+end_src
 ** Undo Tree
-changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shft-/ with a tree given by ctrl-x u. q to quit and choose.
+   changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shft-/ with a tree given by ctrl-x u. q to quit and choose.
 #+begin_src emacs-lisp
   (use-package undo-tree
     :ensure t
@@ -177,7 +177,7 @@ changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shft-/ with a tree 
     (setq org-highlight-latex-and-related '(native latex script)))
 #+end_src
 *** Org-Bullets
-makes org mode pretty
+    makes org mode pretty
 #+begin_src emacs-lisp
   (use-package org-bullets
     :ensure t
@@ -189,12 +189,17 @@ makes org mode pretty
   (use-package smog
     :config (setq smog-command "style -L en"))
 #+end_src
-** Focus mode
-Focus mode
+** Dashboard mode
+   dashboard mode
 #+begin_src emacs-lisp
+  ;; (use-package dashboard
+  ;;   :ensure t
+  ;;   :config
+  ;;   (dashboard-setup-startup-hook)
+  ;;   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
 #+end_src
 ** Jedi
-python stuff. maybe use elpy??
+   python stuff. maybe use elpy??
 #+begin_src emacs-lisp
   (use-package jedi
     :ensure t
@@ -203,7 +208,7 @@ python stuff. maybe use elpy??
     (add-hook 'python-mode-hook 'jedi:ac-setup))
 #+end_src
 ** Latex
-latex stuff. DONT TOUCH IT. IT BARELY WORKS AS IS!!
+   latex stuff. DONT TOUCH IT. IT BARELY WORKS AS IS!!
 #+begin_src emacs-lisp
   (use-package latex
     :defer t
@@ -220,7 +225,7 @@ latex stuff. DONT TOUCH IT. IT BARELY WORKS AS IS!!
 #+end_src
 * Miscellaneous tweaks to emacs' default functioning
 ** y, n and revert buffer
-This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
+   This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
 #+begin_src emacs-lisp
   (defalias 'list-buffers 'ibuffer)
 
@@ -232,5 +237,6 @@ This should only load if everything else doesn't fail.
 #+begin_src emacs-lisp
   (find-file "~/Documents/life/README.org")
   (load-library "org-tempo")
+  (put 'dired-find-alternate-file 'disabled nil)
 #+end_src
 
