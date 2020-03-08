@@ -16,11 +16,12 @@
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
   (load-theme 'trans-side t)
 #+end_src
-** Tool and menu bars, startup message, line mode
+** Tool and menu bars, startup message, line mode, fringe mode
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
+  (set-scroll-bar-mode nil)
   (global-visual-line-mode t)
 #+end_src
 ** Frame transparency, fullscreen
@@ -184,6 +185,12 @@
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+end_src
+*** Org-ref
+    #+begin_src emacs-lisp
+      ;; (use-package org-ref
+      ;;   :ensure t
+      ;;   :config (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")))
+    #+end_src
 ** SMOG
 #+begin_src emacs-lisp
   (use-package smog
@@ -227,16 +234,74 @@
 ** y, n and revert buffer
    This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
 #+begin_src emacs-lisp
-  (defalias 'list-buffers 'ibuffer)
-
   (fset 'yes-or-no-p 'y-or-n-p)
-  (global-set-key (kbd "<f5>") 'revert-buffer)
 #+end_src
+** revert buffer
+   #+begin_src emacs-lisp
+     (global-set-key (kbd "<f5>") 'revert-buffer)
+   #+end_src
+** alias ibuffer to list-buffers
+   #+begin_src emacs-lisp
+     (defalias 'list-buffers 'ibuffer)
+   #+end_src
+** Custom keybinds
+*** autotheme-generate-face
+    #+begin_src emacs-lisp
+      (add-hook 'emacs-lisp-mode-hook
+	    (lambda ()
+	      (bind-key "C-c g" 'autothemer-generate-templates)))
+    #+end_src
+** Better autosaving
+   #+begin_src emacs-lisp
+     (setq backup-by-copying t      ; don't clobber symlinks
+	   backup-directory-alist '(("." . "~/.emacs.d/saves/"))    ; don't litter my fs tree
+	   delete-old-versions t
+	   kept-new-versions 6
+	   kept-old-versions 2
+	   version-control t)       ; use versioned backups
+     (setq auto-save-file-name-transforms
+	   `((".*" "~/.emacs.d/saves/" t)))
+   #+end_src
+** Quitting the minibuffer better
+   #+BEGIN_SRC emacs-lisp
+     (defun keyboard-quit-context+ ()
+       "Quit current context.
+
+     This function is a combination of `keyboard-quit' and
+     `keyboard-escape-quit' with some parts omitted and some custom
+     behavior added."
+       (interactive)
+       (cond ((region-active-p)
+	      ;; Avoid adding the region to the window selection.
+	      (setq saved-region-selection nil)
+	      (let (select-active-regions)
+		(deactivate-mark)))
+	     ((eq last-command 'mode-exited) nil)
+	     (current-prefix-arg
+	      nil)
+	     (defining-kbd-macro
+	       (message
+		(substitute-command-keys
+		 "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
+	       (cancel-kbd-macro-events))
+	     ((active-minibuffer-window)
+	      (when (get-buffer-window "*Completions*")
+		;; hide completions first so point stays in active window when
+		;; outside the minibuffer
+		(minibuffer-hide-completions))
+	      (abort-recursive-edit))
+	     (t
+	      (when completion-in-region-mode
+		(completion-in-region-mode -1))
+	      (let ((debug-on-quit nil))
+		(signal 'quit nil)))))
+
+     (global-set-key [remap keyboard-quit] #'keyboard-quit-context+)
+   #+END_SRC
 * Lastly, load my life.org file. 
 This should only load if everything else doesn't fail.
 #+begin_src emacs-lisp
   (find-file "~/Documents/life/README.org")
   (load-library "org-tempo")
-  (put 'dired-find-alternate-file 'disabled nil)
 #+end_src
 
