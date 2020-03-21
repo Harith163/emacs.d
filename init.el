@@ -19,7 +19,7 @@
  '(fringe-mode 0 nil (fringe))
  '(package-selected-packages
    (quote
-    (yaml-mode autothemer dashboard smog seti-theme powerline-mode powerline cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
+    (xresources-theme yaml-mode autothemer dashboard smog seti-theme powerline-mode powerline cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -31,4 +31,3 @@
 
 
 (org-babel-load-file (expand-file-name "~/.emacs.d/initfile.org"))
-(put 'dired-find-alternate-file 'disabled nil)
