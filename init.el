@@ -22,7 +22,7 @@
  '(fringe-mode 0 nil (fringe))
  '(package-selected-packages
    (quote
-    (god-mode all-the-icons-ibuffer all-the-icons-ivy-rich ivy-rich all-the-icons-ivy company linum-relative doom-modeline pretty-mode autothemer dashboard smog seti-theme powerline-mode powerline cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
+    (rainbow-mode god-mode all-the-icons-ibuffer all-the-icons-ivy-rich ivy-rich all-the-icons-ivy company linum-relative doom-modeline pretty-mode autothemer dashboard smog seti-theme powerline-mode powerline cdlatex auctex TeX AUCTeX LaTeX-mode LaTeX latex expand-region jedi flycheck outline-mode use-package undo-tree rainbow-delimiters org-bullets org magit htmlize diminish auto-complete which-key try outline-magic darkokai-theme counsel ace-window))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
