@@ -226,11 +226,22 @@
 ** Dashboard mode
    dashboard mode
    #+begin_src emacs-lisp
-     ;; (use-package dashboard
-     ;;   :ensure t
-     ;;   :config
-     ;;   (dashboard-setup-startup-hook)
-     ;;   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))))
+     (use-package dashboard
+       :ensure t
+       :config (progn
+		 (dashboard-setup-startup-hook)
+		 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+		 (setq dashboard-center-content t)
+		 (setq dashboard-items '((recents  . 5)
+					 (bookmarks . 5)
+					 (agenda . 5)
+					 (projects . 5)))
+		 (setq show-week-agenda-p t)
+		 (setq dashboard-set-heading-icons t)
+		 (setq dashboard-set-file-icons t)
+		 (setq dashboard-banner-logo-title "Welcome, Kaushik Skye Harith")
+		 (setq dashboard-startup-banner 'logo)
+		 (setq dashboard-set-navigator t)))
    #+end_src
 ** All the icons
 *** all the icons
@@ -411,7 +422,6 @@
 * Lastly, load my life.org file. 
   This should only load if everything else doesn't fail.
   #+begin_src emacs-lisp
-    (find-file "~/Documents/life/README.org")
     (require 'org-tempo)
     (put 'scroll-left 'disabled nil)
     (put 'dired-find-alternate-file 'disabled nil)
