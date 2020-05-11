@@ -28,6 +28,10 @@
      (set-scroll-bar-mode nil)
      (global-visual-line-mode t)
    #+end_src
+** Display modeline time because I need that.
+   #+begin_src emacs-lisp
+     (display-time-mode 1)
+   #+end_src
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -242,6 +246,8 @@
 		 (setq dashboard-banner-logo-title "Welcome, Kaushik Skye Harith")
 		 (setq dashboard-startup-banner 'logo)
 		 (setq dashboard-set-navigator t)))
+
+     (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
    #+end_src
 ** All the icons
 *** all the icons
@@ -274,14 +280,41 @@
 		 (add-to-list 'god-exempt-major-modes 'ibuffer-mode)
 		 (add-to-list 'god-exempt-major-modes 'magit-mode)))
 
-     (defun my-god-mode-update-cursor ()
+     (define-key god-local-mode-map (kbd "i") #'god-local-mode)
+
+     (define-key god-local-mode-map (kbd ".") #'repeat)
+
+     (global-set-key (kbd "C-x C-1") #'delete-other-windows)
+     (global-set-key (kbd "C-x C-2") #'split-window-below)
+     (global-set-key (kbd "C-x C-3") #'split-window-right)
+     (global-set-key (kbd "C-x C-0") #'delete-window)
+
+     (defun my/god-mode-update-cursor ()
        (setq cursor-type (if (or god-local-mode buffer-read-only)
 			     'box
 			   'bar)))
 
-     (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
-     (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+     (defun my-god-mode-update-modeline ()
+       (let ((limited-colors-p (> 257 (length (defined-colors)))))
+	 (cond (god-local-mode (progn
+				 (set-face-background 'mode-line (if limited-colors-p "white" "#141414"))
+				 (set-face-background 'mode-line-inactive (if limited-colors-p "white" "#272727"))))
+	       (t (progn
+		    (set-face-background 'mode-line (if limited-colors-p "black" "#141448"))
+		    (set-face-background 'mode-line-inactive (if limited-colors-p "black" "#282748")))))))
+
+     (add-hook 'god-mode-enabled-hook #'my-god-mode-update-modeline)
+     (add-hook 'god-mode-disabled-hook #'my-god-mode-update-modeline)
+
+     (add-hook 'god-mode-enabled-hook #'my/god-mode-update-cursor)
+     (add-hook 'god-mode-disabled-hook #'my/god-mode-update-cursor)
    #+end_src 
+** Restart emacs from within emacs
+   #+begin_src emacs-lisp
+     (use-package restart-emacs
+       :ensure t
+       :config (progn (setq restart-emacs-restore-frames t)))
+   #+end_src
 ** Jedi
    python stuff. maybe use elpy??
    #+begin_src emacs-lisp
@@ -328,7 +361,13 @@
 	    (lambda ()
 	      (bind-key "C-c g" 'autothemer-generate-templates)))
     #+end_src
- 
+** Custom Functions
+   #+begin_src emacs-lisp
+     (defun my/reload-init()
+       "Clear customizations then reload the emacs initalisation"
+       (interactive)
+       (load "~/.emacs.d/init.el"))
+   #+end_src
 ** Better autosaving
    #+begin_src emacs-lisp
      (setq backup-by-copying t      ; don't clobber symlinks
@@ -384,7 +423,7 @@
    #+end_src
 ** Custom window split toggle
    #+begin_src emacs-lisp
-     (defun toggle-window-split ()
+     (defun my/toggle-window-split ()
        (interactive)
        (if (= (count-windows) 2)
 	   (let* ((this-win-buffer (window-buffer))
@@ -409,7 +448,7 @@
 	   (select-window first-win)
 	   (if this-win-2nd (other-window 1))))))
 
-     (global-set-key (kbd "C-x |") 'toggle-window-split)
+     (global-set-key (kbd "C-x |") 'my/toggle-window-split)
    #+end_src
 ** Smooth scrolling
    #+begin_src emacs-lisp
