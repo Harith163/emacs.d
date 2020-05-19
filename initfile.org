@@ -62,7 +62,17 @@
      (use-package linum-relative
        :ensure t
        :init (global-linum-mode t)
-       :config (linum-relative-mode))
+       :config
+       (linum-relative-mode)
+       (add-hook 'doc-view-mode-hook 'my/inhibit-global-linum-mode)
+       (add-hook 'pdf-view-mode-hook 'my/inhibit-global-linum-mode))
+
+
+     (defun my/inhibit-global-linum-mode ()
+       "Counter-act `global-linum-mode'."
+       (add-hook 'after-change-major-mode-hook
+		 (lambda () (linum-mode 0))
+		 :append :local))
    #+end_src
 ** Try
    lets you try packages temporarily
@@ -237,6 +247,15 @@
 
    #   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
    # #+end_src
+** PDF-tools
+   #+begin_src emacs-lisp
+     (use-package pdf-tools
+       :ensure t
+       :config
+       (pdf-tools-install)
+       (setq-default 'pdf-view-display-size 'fit-page)
+     )
+   #+end_src
 ** All the icons
 *** all the icons
     #+begin_src emacs-lisp
