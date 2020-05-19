@@ -14,12 +14,9 @@
 ** Theme
    #+begin_src emacs-lisp
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-     (load-theme 'trans-side t)
-
-     ;; (use-package xresources-theme
-     ;;   :ensure t
-     ;;   :config (load-theme 'xresources t))
+     (load-theme 'trans-side-testing t)
    #+end_src
+
 ** Tool and menu bars, startup message, line mode, fringe mode
    #+begin_src emacs-lisp
      (setq inhibit-startup-message t)
@@ -27,6 +24,7 @@
      (menu-bar-mode -1)
      (set-scroll-bar-mode nil)
      (global-visual-line-mode t)
+     (set-fringe-mode 0)
    #+end_src
 ** Display modeline time because I need that.
    #+begin_src emacs-lisp
@@ -35,32 +33,32 @@
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
-     (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
-     (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
+     (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
+     (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
    #+end_src
 ** Pretty-fy symbols
    #+begin_src emacs-lisp
-     ;; (use-package pretty-mode
-     ;;   :ensure t
-     ;;   :config (global-pretty-mode t))
-   #+end_src
+     (use-package pretty-symbols
+       :ensure t
+       :config
+       (global-pretty-mode t)
+       (add-hook 'emacs-lisp-mode-hook 'pretty-symbols-mode)
+       (add-hook 'org-mode-hook 'pretty-symbols-mode))
+   #+end_src 
 * Packages
 ** Powerline
    This is a modeline replacement.
    #+begin_src emacs-lisp
      (use-package powerline
        :ensure t
-       :config (powerline-center-theme))
-     ;; (use-package doom-modeline
-     ;;   :ensure t
-     ;;   :init (doom-modeline-mode 1))
+       :config (progn
+		 (setq powerline-default-separator 'contour)
+		 (powerline-center-theme))
+       )
    #+end_src
 ** Linum
    line number modes
    #+begin_src emacs-lisp
-     ;; (use-package linum
-     ;;   :ensure t
-     ;;   :config (global-linum-mode t))
      (use-package linum-relative
        :ensure t
        :init (global-linum-mode t)
@@ -75,8 +73,14 @@
 ** Which-Key
    #+begin_src emacs-lisp
      (use-package which-key
+       :diminish ""
        :ensure t
        :config (which-key-mode))
+   #+end_src
+** Diminish
+   #+begin_src emacs-lisp
+     (use-package diminish
+       :ensure t)
    #+end_src
 ** Ace-Window
    changes behaviour of (other-window), same keybind ctrl-o
@@ -84,15 +88,11 @@
      (use-package ace-window
        :ensure t
        :init
-       (progn
-	 (global-set-key [remap other-window] 'ace-window)
-	 (custom-set-faces
-	  '(aw-leading-char-face
-	    ((t (:inherit ace-jump-face-foreground :height 2.0)))))
-	 ))
+       (global-set-key [remap other-window] 'ace-window)
+       )
    #+end_src
-** Counsel and Swiper
-   better search and completion in minibuffer
+** Counsel and Swiper (IVY)
+   better search and completion in minibuffer (TO BE REDONE)
    #+begin_src emacs-lisp
      (use-package counsel
        :ensure t
@@ -123,12 +123,11 @@
 	 (setq swiper-use-visual-line-p (lambda (a) nil))
 	 ))
    #+end_src
-** ivy rich
+** Ivy rich
    #+begin_src emacs-lisp
      (ivy-rich-mode 1)
      (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
    #+end_src
-
 ** Rainbow-Delimiters
    changes the colors of nested parens, brackets etc.
    #+begin_src emacs-lisp
@@ -160,21 +159,12 @@
 ** Auto-Complete
    auto-completion is currently provided by company mode. Still deciding on if its right to use.
    #+begin_src emacs-lisp
-     ;; (use-package auto-complete
-     ;;   :ensure t
-     ;;   :init
-     ;;   (progn
-     ;;     (ac-config-default)
-     ;;     (global-auto-complete-mode t)
-     ;;     (add-to-list 'ac-modes 'org-mode) 
-     ;;     (add-to-list 'ac-modes 'TeX-mode)
-     ;;     ))
-
      (use-package company
+       :diminish ""
        :ensure t
        :config
        (setq company-idle-delay 0)
-       (setq company-minimum-prefix-length 2)
+       (setq company-minimum-prefix-length 4)
        (global-company-mode t))
    #+end_src
 ** Magit
@@ -196,6 +186,7 @@
    #+begin_src emacs-lisp
      (use-package undo-tree
        :ensure t
+       :diminish ""
        :init
        (global-undo-tree-mode))
    #+end_src
@@ -206,7 +197,9 @@
 	:ensure org-bullets
 	:init
 	(add-hook 'org-mode-hook 'org-cdlatex-mode)
-	(setq org-highlight-latex-and-related '(native latex script)))
+	(setq org-highlight-latex-and-related '(native latex script))
+	:config
+	(setq org-agenda-files '("~/Documents/life/README.org")))
     #+end_src
 *** Org-Bullets
     makes org mode pretty
@@ -222,33 +215,28 @@
       ;;   :ensure t
       ;;   :config (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")))
     #+end_src
-** SMOG
-   #+begin_src emacs-lisp
-     (use-package smog
-       :config (setq smog-command "style -L en"))
-   #+end_src
 ** Dashboard mode
-   dashboard mode
-   #+begin_src emacs-lisp
-     (use-package dashboard
-       :ensure t
-       :config (progn
-		 (dashboard-setup-startup-hook)
-		 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-		 (setq dashboard-center-content t)
-		 (setq dashboard-items '((recents  . 5)
-					 (bookmarks . 5)
-					 (agenda . 5)
-					 (projects . 5)))
-		 (setq show-week-agenda-p t)
-		 (setq dashboard-set-heading-icons t)
-		 (setq dashboard-set-file-icons t)
-		 (setq dashboard-banner-logo-title "Welcome, Kaushik Skye Harith")
-		 (setq dashboard-startup-banner 'logo)
-		 (setq dashboard-set-navigator t)))
+   # dashboard mode
+   # #+begin_src emacs-lisp
+   #   (use-package dashboard
+   #     :ensure t
+   #     :config (progn
+   # 		 (dashboard-setup-startup-hook)
+   # 		 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+   # 		 (setq dashboard-center-content t)
+   # 		 (setq dashboard-items '((recents  . 5)
+   # 					 (bookmarks . 5)
+   # 					 (agenda . 5)
+   # 					 (projects . 5)))
+   # 		 (setq show-week-agenda-p t)
+   # 		 (setq dashboard-set-heading-icons t)
+   # 		 (setq dashboard-set-file-icons t)
+   # 		 (setq dashboard-banner-logo-title "Welcome, Kaushik Skye Harith")
+   # 		 (setq dashboard-startup-banner 'logo)
+   # 		 (setq dashboard-set-navigator t)))
 
-     (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-   #+end_src
+   #   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+   # #+end_src
 ** All the icons
 *** all the icons
     #+begin_src emacs-lisp
@@ -267,65 +255,24 @@
 	:ensure t
 	:init (all-the-icons-ibuffer-mode 1))
     #+end_src
-** God mode
-   #+begin_src emacs-lisp
-     (use-package god-mode
-       :ensure t
-       :init (god-mode-all)
-       :config (progn
-		 (global-set-key (kbd "<escape>") #'god-local-mode)
-		 (setq god-exempt-major-modes nil)
-		 (setq god-exempt-predicates nil)
-		 (add-to-list 'god-exempt-major-modes 'dired-mode)
-		 (add-to-list 'god-exempt-major-modes 'ibuffer-mode)
-		 (add-to-list 'god-exempt-major-modes 'magit-mode)))
-
-     (define-key god-local-mode-map (kbd "i") #'god-local-mode)
-
-     (define-key god-local-mode-map (kbd ".") #'repeat)
-
-     (global-set-key (kbd "C-x C-1") #'delete-other-windows)
-     (global-set-key (kbd "C-x C-2") #'split-window-below)
-     (global-set-key (kbd "C-x C-3") #'split-window-right)
-     (global-set-key (kbd "C-x C-0") #'delete-window)
-
-     (defun my/god-mode-update-cursor ()
-       (setq cursor-type (if (or god-local-mode buffer-read-only)
-			     'box
-			   'bar)))
-
-     (defun my-god-mode-update-modeline ()
-       (let ((limited-colors-p (> 257 (length (defined-colors)))))
-	 (cond (god-local-mode (progn
-				 (set-face-background 'mode-line (if limited-colors-p "white" "#141414"))
-				 (set-face-background 'mode-line-inactive (if limited-colors-p "white" "#272727"))))
-	       (t (progn
-		    (set-face-background 'mode-line (if limited-colors-p "black" "#141448"))
-		    (set-face-background 'mode-line-inactive (if limited-colors-p "black" "#282748")))))))
-
-     (add-hook 'god-mode-enabled-hook #'my-god-mode-update-modeline)
-     (add-hook 'god-mode-disabled-hook #'my-god-mode-update-modeline)
-
-     (add-hook 'god-mode-enabled-hook #'my/god-mode-update-cursor)
-     (add-hook 'god-mode-disabled-hook #'my/god-mode-update-cursor)
-   #+end_src 
 ** Restart emacs from within emacs
    #+begin_src emacs-lisp
      (use-package restart-emacs
        :ensure t
        :config (progn (setq restart-emacs-restore-frames t)))
    #+end_src
-** Jedi
-   python stuff. maybe use elpy??
+** Kurecolor
    #+begin_src emacs-lisp
-     (use-package jedi
+     (use-package kurecolor
        :ensure t
-       :init
-       (add-hook 'python-mode-hook 'jedi:setup)
-       (add-hook 'python-mode-hook 'jedi:ac-setup))
+       :bind
+       (("M-S-<up>" . kurecolor-increase-hue-by-step)
+       ("M-S-<down>" . kurecolor-decrease-hue-by-step)
+       ("C-M-<up>" . kurecolor-increase-brightness-by-step)
+       ("C-M-<down>" . kurecolor-decrease-brightness-by-step))
+       )
    #+end_src
-** Latex
-   latex stuff. DON'T TOUCH IT. IT BARELY WORKS AS IS!!
+** Latex Mode
    #+begin_src emacs-lisp
      (use-package latex
        :defer t
@@ -338,7 +285,7 @@
 	 (setq TeX-save-query nil)
 	 (setq TeX-PDF-mode t)
 	 (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
-	   ))
+	 ))
    #+end_src
 * Miscellaneous tweaks to emacs' default functioning
 ** y, n and revert buffer
@@ -355,11 +302,20 @@
      (defalias 'list-buffers 'ibuffer)
    #+end_src
 ** Custom keybinds
+   Use "C-z" for all my custom keybinds
 *** autotheme-generate-face
     #+begin_src emacs-lisp
       (add-hook 'emacs-lisp-mode-hook
 	    (lambda ()
-	      (bind-key "C-c g" 'autothemer-generate-templates)))
+	      (bind-key "C-z g" 'autothemer-generate-templates)))
+    #+end_src
+*** Fixup Whitespace, and eval top level function.
+    #+begin_src emacs-lisp
+      (bind-keys :map global-map
+		 :prefix-map my-ctrl-z-prefix-map
+		 :prefix "C-z"
+		 ("<SPC>" . fixup-whitespace)
+		 ("C-e" . eval-defun))
     #+end_src
 ** Custom Functions
    #+begin_src emacs-lisp
@@ -381,7 +337,7 @@
    #+end_src
 ** Quitting the minibuffer better
    #+BEGIN_SRC emacs-lisp
-     (defun keyboard-quit-context+ ()
+     (defun my/keyboard-quit-context+ ()
        "Quit current context.
 
      This function is a combination of `keyboard-quit' and
@@ -413,7 +369,7 @@
 	      (let ((debug-on-quit nil))
 		(signal 'quit nil)))))
 
-     (global-set-key [remap keyboard-quit] #'keyboard-quit-context+)
+     (global-set-key [remap keyboard-quit] #'my/keyboard-quit-context+)
    #+END_SRC
 ** Auctex things
    #+begin_src emacs-lisp
@@ -457,6 +413,8 @@
        scroll-step 1
        scroll-conservatively 10000
        scroll-preserve-screen-position 1)
+
+     (setq auto-window-vscroll nil)
    #+end_src
 * Lastly, load my life.org file. 
   This should only load if everything else doesn't fail.
@@ -464,4 +422,5 @@
     (require 'org-tempo)
     (put 'scroll-left 'disabled nil)
     (put 'dired-find-alternate-file 'disabled nil)
+    (put 'narrow-to-region 'disabled nil)
   #+end_src
