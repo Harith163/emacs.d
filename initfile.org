@@ -45,6 +45,152 @@
        (add-hook 'emacs-lisp-mode-hook 'pretty-symbols-mode)
        (add-hook 'org-mode-hook 'pretty-symbols-mode))
    #+end_src 
+
+* Miscellaneous tweaks to emacs' default functioning
+** Custom Load path for other things
+   #+begin_src emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/stuff/")
+   #+end_src
+** y, n instead of yes, no.
+   This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
+   #+begin_src emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+end_src
+** Custom Functions
+*** Window Split
+    This is a function to toggle how the window is split
+   #+begin_src emacs-lisp
+     (defun my/toggle-window-split ()
+       (interactive)
+       (if (= (count-windows) 2)
+	   (let* ((this-win-buffer (window-buffer))
+	      (next-win-buffer (window-buffer (next-window)))
+	      (this-win-edges (window-edges (selected-window)))
+	      (next-win-edges (window-edges (next-window)))
+	      (this-win-2nd (not (and (<= (car this-win-edges)
+			  (car next-win-edges))
+			  (<= (cadr this-win-edges)
+			  (cadr next-win-edges)))))
+	      (splitter
+	       (if (= (car this-win-edges)
+		  (car (window-edges (next-window))))
+	       'split-window-horizontally
+	     'split-window-vertically)))
+	 (delete-other-windows)
+	 (let ((first-win (selected-window)))
+	   (funcall splitter)
+	   (if this-win-2nd (other-window 1))
+	   (set-window-buffer (selected-window) this-win-buffer)
+	   (set-window-buffer (next-window) next-win-buffer)
+	   (select-window first-win)
+	   (if this-win-2nd (other-window 1))))))
+   #+end_src
+
+*** Quitting the minibuffer better
+    #+BEGIN_SRC emacs-lisp
+      (defun my/keyboard-quit-context+ ()
+	"Quit current context.
+
+      This function is a combination of `keyboard-quit' and
+      `keyboard-escape-quit' with some parts omitted and some custom
+      behavior added."
+	(interactive)
+	(cond ((region-active-p)
+	       ;; Avoid adding the region to the window selection.
+	       (setq saved-region-selection nil)
+	       (let (select-active-regions)
+		 (deactivate-mark)))
+	      ((eq last-command 'mode-exited) nil)
+	      (current-prefix-arg
+	       nil)
+	      (defining-kbd-macro
+		(message
+		 (substitute-command-keys
+		  "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
+		(cancel-kbd-macro-events))
+	      ((active-minibuffer-window)
+	       (when (get-buffer-window "*Completions*")
+		 ;; hide completions first so point stays in active window when
+		 ;; outside the minibuffer
+		 (minibuffer-hide-completions))
+	       (abort-recursive-edit))
+	      (t
+	       (when completion-in-region-mode
+		 (completion-in-region-mode -1))
+	       (let ((debug-on-quit nil))
+		 (signal 'quit nil)))))
+
+      (global-set-key [remap keyboard-quit] #'my/keyboard-quit-context+)
+    #+END_SRC
+
+*** Inhibit linum mode
+    #+begin_src emacs-lisp
+      (defun my/inhibit-global-linum-mode ()
+	"Counter-act `global-linum-mode'."
+	(add-hook 'after-change-major-mode-hook
+		  (lambda () (linum-mode 0))
+		  :append :local))
+    #+end_src
+
+    #+RESULTS:
+    : my/inhibit-global-linum-mode
+
+** Custom keybinds
+   Use "C-z" for all my custom keybinds
+*** Emacs-lisp mode specific binds
+    The following functions are bound
+    - Autothemer.el generate unspecified faces.
+    #+begin_src emacs-lisp
+      (bind-key "C-z g" 'autothemer-generate-templates emacs-lisp-mode-map)
+    #+end_src
+
+    #+RESULTS:
+    : autothemer-generate-templates
+    
+*** Global-Map binds 
+    The following functions are bound
+    - remove redundant white space between text
+    - evalueate top-level function instead of function at point (elisp/global)
+    - a custom function to toggle window split from horizontal to vertical.
+    #+begin_src emacs-lisp
+      (bind-keys :map global-map
+		 :prefix-map my-ctrl-z-prefix-map
+		 :prefix "C-z"
+		 ("C-<SPC>" . fixup-whitespace)
+		 ("C-e" . eval-defun)
+		 ("|" . my/toggle-window-split))
+    #+end_src
+
+    #+RESULTS:
+    : eval-defun
+
+*** Revert buffer
+    #+begin_src emacs-lisp
+      (bind-key "<f5>" 'revert-buffer global-map)
+    #+end_src
+** Better autosaving
+   #+begin_src emacs-lisp
+     (setq backup-by-copying t      ; don't clobber symlinks
+	   backup-directory-alist '(("." . "~/.emacs.d/saves/"))    ; don't litter my fs tree
+	   delete-old-versions t
+	   kept-new-versions 6
+	   kept-old-versions 2
+	   version-control t)       ; use versioned backups
+     (setq auto-save-file-name-transforms
+	   `((".*" "~/.emacs.d/saves/" t)))
+   #+end_src
+
+** Smooth scrolling
+   Most of this didn't work. Auto-window-vscroll did for some reason.
+   #+begin_src emacs-lisp
+     (setq redisplay-dont-pause t
+       scroll-margin 1
+       scroll-step 1
+       scroll-conservatively 10000
+       scroll-preserve-screen-position 1)
+
+     (setq auto-window-vscroll nil)
+   #+end_src
 * Packages
 ** Powerline
    This is a modeline replacement.
@@ -66,13 +212,6 @@
        (linum-relative-mode)
        (add-hook 'doc-view-mode-hook 'my/inhibit-global-linum-mode)
        (add-hook 'pdf-view-mode-hook 'my/inhibit-global-linum-mode))
-
-
-     (defun my/inhibit-global-linum-mode ()
-       "Counter-act `global-linum-mode'."
-       (add-hook 'after-change-major-mode-hook
-		 (lambda () (linum-mode 0))
-		 :append :local))
    #+end_src
 ** Try
    lets you try packages temporarily
@@ -325,6 +464,7 @@
 ** Ibuffer
    #+begin_src emacs-lisp
      (use-package ibuffer
+       :bind (("C-x C-b" . ibuffer))
        :config
        (setq ibuffer-expert t)
        (setq ibuffer-saved-filter-groups
@@ -333,6 +473,7 @@
 		("Magit" (or (mode . magit-process-mode)
 			    (mode . magit-diff-mode)
 			    (mode . magit-mode)
+			    (mode . magit)
 			    (mode . magit-blame-mode)
 			    (mode . magit-blob-mode)
 			    (mode . magit-cherry-mode)
@@ -346,14 +487,13 @@
 			   (name . "\*Apropos\*")
 			   (name . "\*info\*"))))))
 
-       :hook ((ibuffer-mode-hook . (lambda () (ibuffer-switch-to-saved-filter-groups "home"))))
-       :bind (("C-x C-b" . ibuffer)))
+       (add-hook 'ibuffer-mode-hook
+		 '(lambda ()
+		    (ibuffer-auto-mode 1)
+		    (ibuffer-switch-to-saved-filter-groups "home"))))
    #+end_src
-
-   #+RESULTS:
-   : ibuffer
-
 ** Latex Mode
+*** Main latex stuff
    #+begin_src emacs-lisp
      (use-package latex
        :defer t
@@ -368,136 +508,15 @@
 	 (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
 	 ))
    #+end_src
-* Miscellaneous tweaks to emacs' default functioning
-** Custom Load path for other things
-   #+begin_src emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/stuff/")
-   #+end_src
-** y, n instead of yes, no
-   This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
-   #+begin_src emacs-lisp
-     (fset 'yes-or-no-p 'y-or-n-p)
-   #+end_src
-** revert buffer
-   #+begin_src emacs-lisp
-     (global-set-key (kbd "<f5>") 'revert-buffer)
-   #+end_src
-** Custom keybinds
-   Use "C-z" for all my custom keybinds
-*** autotheme-generate-face
+*** Auctex things
+    Basically adding to $PATH. Why this didn't work when doing it through my zshrc, we'll never know.
     #+begin_src emacs-lisp
-      (add-hook 'emacs-lisp-mode-hook
-	    (lambda ()
-	      (bind-key "C-z g" 'autothemer-generate-templates)))
+      (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
+			       (getenv "PATH")))
+      (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
     #+end_src
-*** Fixup Whitespace, and eval top level function.
-    #+begin_src emacs-lisp
-      (bind-keys :map global-map
-		 :prefix-map my-ctrl-z-prefix-map
-		 :prefix "C-z"
-		 ("C-<SPC>" . fixup-whitespace)
-		 ("C-e" . eval-defun))
-    #+end_src
-** Custom Functions
-   #+begin_src emacs-lisp
-     (defun my/reload-init()
-       "Clear customizations then reload the emacs initalisation"
-       (interactive)
-       (load "~/.emacs.d/init.el"))
-   #+end_src
-** Better autosaving
-   #+begin_src emacs-lisp
-     (setq backup-by-copying t      ; don't clobber symlinks
-	   backup-directory-alist '(("." . "~/.emacs.d/saves/"))    ; don't litter my fs tree
-	   delete-old-versions t
-	   kept-new-versions 6
-	   kept-old-versions 2
-	   version-control t)       ; use versioned backups
-     (setq auto-save-file-name-transforms
-	   `((".*" "~/.emacs.d/saves/" t)))
-   #+end_src
-** Quitting the minibuffer better
-   #+BEGIN_SRC emacs-lisp
-     (defun my/keyboard-quit-context+ ()
-       "Quit current context.
 
-     This function is a combination of `keyboard-quit' and
-     `keyboard-escape-quit' with some parts omitted and some custom
-     behavior added."
-       (interactive)
-       (cond ((region-active-p)
-	      ;; Avoid adding the region to the window selection.
-	      (setq saved-region-selection nil)
-	      (let (select-active-regions)
-		(deactivate-mark)))
-	     ((eq last-command 'mode-exited) nil)
-	     (current-prefix-arg
-	      nil)
-	     (defining-kbd-macro
-	       (message
-		(substitute-command-keys
-		 "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
-	       (cancel-kbd-macro-events))
-	     ((active-minibuffer-window)
-	      (when (get-buffer-window "*Completions*")
-		;; hide completions first so point stays in active window when
-		;; outside the minibuffer
-		(minibuffer-hide-completions))
-	      (abort-recursive-edit))
-	     (t
-	      (when completion-in-region-mode
-		(completion-in-region-mode -1))
-	      (let ((debug-on-quit nil))
-		(signal 'quit nil)))))
-
-     (global-set-key [remap keyboard-quit] #'my/keyboard-quit-context+)
-   #+END_SRC
-** Auctex things
-   #+begin_src emacs-lisp
-     (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
-			      (getenv "PATH")))
-     (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
-   #+end_src
-** Custom window split toggle
-   #+begin_src emacs-lisp
-     (defun my/toggle-window-split ()
-       (interactive)
-       (if (= (count-windows) 2)
-	   (let* ((this-win-buffer (window-buffer))
-	      (next-win-buffer (window-buffer (next-window)))
-	      (this-win-edges (window-edges (selected-window)))
-	      (next-win-edges (window-edges (next-window)))
-	      (this-win-2nd (not (and (<= (car this-win-edges)
-			  (car next-win-edges))
-			  (<= (cadr this-win-edges)
-			  (cadr next-win-edges)))))
-	      (splitter
-	       (if (= (car this-win-edges)
-		  (car (window-edges (next-window))))
-	       'split-window-horizontally
-	     'split-window-vertically)))
-	 (delete-other-windows)
-	 (let ((first-win (selected-window)))
-	   (funcall splitter)
-	   (if this-win-2nd (other-window 1))
-	   (set-window-buffer (selected-window) this-win-buffer)
-	   (set-window-buffer (next-window) next-win-buffer)
-	   (select-window first-win)
-	   (if this-win-2nd (other-window 1))))))
-
-     (global-set-key (kbd "C-x |") 'my/toggle-window-split)
-   #+end_src
-** Smooth scrolling
-   #+begin_src emacs-lisp
-     (setq redisplay-dont-pause t
-       scroll-margin 1
-       scroll-step 1
-       scroll-conservatively 10000
-       scroll-preserve-screen-position 1)
-
-     (setq auto-window-vscroll nil)
-   #+end_src
-* Lastly, load my life.org file
+* Lastly,
   This should only load if everything else doesn't fail.
   #+begin_src emacs-lisp
     (require 'org-tempo)
