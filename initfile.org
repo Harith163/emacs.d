@@ -166,17 +166,48 @@
 
      (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
    #+end_src
-** Auto-Complete
-   auto-completion is currently provided by company mode. Still deciding on if its right to use.
-   #+begin_src emacs-lisp
-     (use-package company
-       :diminish ""
-       :ensure t
-       :config
-       (setq company-idle-delay 0)
-       (setq company-minimum-prefix-length 4)
-       (global-company-mode t))
-   #+end_src
+** Company (Auto-completion)
+*** Company
+    auto-completion is currently provided by company mode. Still deciding on if its right to use.
+    #+begin_src emacs-lisp
+      (use-package company
+	:diminish ""
+	:ensure t
+	:init
+	(setq company-require-match nil) ; Don't require match, so you can still move your cursor as expected.
+	(setq company-tooltip-align-annotations t) ; Align annotation to the right side.
+	(setq company-eclim-auto-save nil) ; Stop eclim auto save.
+	(setq company-dabbrev-downcase nil) ; No downcase when completion.
+
+	:config
+	(setq company-idle-delay 0)
+	(setq company-minimum-prefix-length 4)
+	(global-company-mode t)
+
+	(defun jcs--company-complete-selection--advice-around (fn)
+	  "Advice execute around `company-complete-selection' command."
+	  (let ((company-dabbrev-downcase t))
+	    (call-interactively fn)))
+	(advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+    #+end_src
+
+    #+RESULTS:
+    : t
+
+*** Company fuzzy
+    #+begin_src emacs-lisp
+      (use-package company-fuzzy
+	:ensure company
+	:config
+	(global-company-fuzzy-mode 1)
+	(setq company-fuzzy-prefix-ontop t)
+	(setq company-fuzzy-sorting-backend 'alphabetic)
+	(setq company-fuzzy-show-annotation t))
+    #+end_src
+
+    #+RESULTS:
+    : t
+
 ** Magit
    git integration
    #+begin_src emacs-lisp
@@ -291,6 +322,37 @@
        ("C-M-<down>" . kurecolor-decrease-brightness-by-step))
        )
    #+end_src
+** Ibuffer
+   #+begin_src emacs-lisp
+     (use-package ibuffer
+       :config
+       (setq ibuffer-expert t)
+       (setq ibuffer-saved-filter-groups
+	     '(("home"
+		("Trans-side theme" (filename . ".emacs.d/themes"))
+		("Magit" (or (mode . magit-process-mode)
+			    (mode . magit-diff-mode)
+			    (mode . magit-mode)
+			    (mode . magit-blame-mode)
+			    (mode . magit-blob-mode)
+			    (mode . magit-cherry-mode)
+			    (mode . magit-file-mode)
+			    (mode . magit-wip-initial-backup-mode)
+			    (mode . magit-log-mode)
+			    (mode . magit-log-select-mode)
+			    (mode . magit-submodule-list-mode)))
+		("Org" (mode . org-mode))
+		("Help" (or (name . "\*Help\*")
+			   (name . "\*Apropos\*")
+			   (name . "\*info\*"))))))
+
+       :hook ((ibuffer-mode-hook . (lambda () (ibuffer-switch-to-saved-filter-groups "home"))))
+       :bind (("C-x C-b" . ibuffer)))
+   #+end_src
+
+   #+RESULTS:
+   : ibuffer
+
 ** Latex Mode
    #+begin_src emacs-lisp
      (use-package latex
@@ -307,7 +369,11 @@
 	 ))
    #+end_src
 * Miscellaneous tweaks to emacs' default functioning
-** y, n and revert buffer
+** Custom Load path for other things
+   #+begin_src emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/stuff/")
+   #+end_src
+** y, n instead of yes, no
    This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
    #+begin_src emacs-lisp
      (fset 'yes-or-no-p 'y-or-n-p)
@@ -315,10 +381,6 @@
 ** revert buffer
    #+begin_src emacs-lisp
      (global-set-key (kbd "<f5>") 'revert-buffer)
-   #+end_src
-** alias ibuffer to list-buffers
-   #+begin_src emacs-lisp
-     (defalias 'list-buffers 'ibuffer)
    #+end_src
 ** Custom keybinds
    Use "C-z" for all my custom keybinds
@@ -333,7 +395,7 @@
       (bind-keys :map global-map
 		 :prefix-map my-ctrl-z-prefix-map
 		 :prefix "C-z"
-		 ("<SPC>" . fixup-whitespace)
+		 ("C-<SPC>" . fixup-whitespace)
 		 ("C-e" . eval-defun))
     #+end_src
 ** Custom Functions
@@ -435,7 +497,7 @@
 
      (setq auto-window-vscroll nil)
    #+end_src
-* Lastly, load my life.org file. 
+* Lastly, load my life.org file
   This should only load if everything else doesn't fail.
   #+begin_src emacs-lisp
     (require 'org-tempo)
