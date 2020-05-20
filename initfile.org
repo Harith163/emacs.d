@@ -14,7 +14,7 @@
 ** Theme
    #+begin_src emacs-lisp
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-     (load-theme 'trans-side-testing t)
+     (load-theme 'trans-side t)
    #+end_src
 
 ** Tool and menu bars, startup message, line mode, fringe mode
@@ -51,8 +51,14 @@
    #+begin_src emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/stuff/")
    #+end_src
+** Set a file for custom-set variables
+   #+begin_src emacs-lisp
+     (setq custom-file (concat user-emacs-directory "custom.el"))
+
+     (load-file custom-file)
+   #+end_src
 ** y, n instead of yes, no.
-   This includes changes yes or no questions to y or n questions, a keybind for a revert buffer, and a change to the default ibuffer functioning.
+   Who on earth would want to type out a three or two letter word??
    #+begin_src emacs-lisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+end_src
@@ -243,35 +249,34 @@
 ** Counsel and Swiper (IVY)
    better search and completion in minibuffer (TO BE REDONE)
    #+begin_src emacs-lisp
-     (use-package counsel
+     (use-package ivy
+       :demand
        :ensure t
-       )
-
-     (use-package swiper
-       :ensure try
+       :bind
+       (("C-s" . swiper)
+	("C-c C-r" . ivy-resume)
+	("<f6>" . ivy-resume)
+	("M-x" . counsel-M-x)
+	("C-x C-f" . counsel-find-file)
+	("<f1> f" . counsel-describe-function)
+	("<f1> v" . counsel-describe-variable)
+	("<f1> l" . counsel-load-library)
+	("<f2> i" . counsel-info-lookup-symbol)
+	("<f2> u" . counsel-unicode-char)
+	("C-c g" . counsel-git)
+	("C-c j" . counsel-git-grep)
+	("C-c k" . counsel-ag)
+	("C-x l" . counsel-locate))
        :config
-       (progn (ivy-mode 1)
-	 (setq ivy-use-virtual-buffers t)
-	 (global-set-key "\C-s" 'swiper)
-	 (global-set-key (kbd "C-c C-r") 'ivy-resume)
-	 (global-set-key (kbd "<f6>") 'ivy-resume)
-	 (global-set-key (kbd "M-x") 'counsel-M-x)
-	 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-	 (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-	 (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-	 (global-set-key (kbd "<f1> l") 'counsel-load-library)
-	 (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-	 (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-	 (global-set-key (kbd "C-c g") 'counsel-git)
-	 (global-set-key (kbd "C-c j") 'counsel-git-grep)
-	 (global-set-key (kbd "C-c k") 'counsel-ag)
-	 (global-set-key (kbd "C-x l") 'counsel-locate)
-	 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-	 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-	 (setq swiper-use-visual-line nil)
-	 (setq swiper-use-visual-line-p (lambda (a) nil))
-	 ))
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq swiper-use-visual-line nil)
+       (setq swiper-use-visual-line-p (lambda (a) nil)))
    #+end_src
+
+   #+RESULTS:
+   : counsel-locate
+
 ** Ivy rich
    #+begin_src emacs-lisp
      (ivy-rich-mode 1)
@@ -283,27 +288,30 @@
      (use-package rainbow-delimiters
        :ensure t
        :config
-       (progn
-	 (rainbow-delimiters-mode 1)
-	 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-	 (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode)))
+       (rainbow-delimiters-mode 1)
+       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+       (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode))
    #+end_src
 ** Expand-region
    this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
    #+begin_src emacs-lisp
      (use-package expand-region
-     :ensure t
-     :config
-     (global-set-key (kbd "C-=") 'er/expand-region))
+       :ensure t
+       :after (org)
+       :bind
+       (:map global-map
+	     ("C-=" . er/expand-region)))
    #+end_src
+
+   #+RESULTS:
+   : er/expand-region
+
 ** Outline, outline magic stuff. 
    #+begin_src emacs-lisp
      (eval-after-load 'outline
        '(progn
 	 (require 'outline-magic)
 	 (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle)))
-
-     (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
    #+end_src
 ** Company (Auto-completion)
 *** Company
@@ -431,7 +439,6 @@
     #+begin_src emacs-lisp
       (use-package all-the-icons)
       (use-package all-the-icons-dired)
-      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
     #+end_src
 *** all the icons ivy
     #+begin_src emacs-lisp
@@ -469,7 +476,6 @@
        (setq ibuffer-expert t)
        (setq ibuffer-saved-filter-groups
 	     '(("home"
-		("Trans-side theme" (filename . ".emacs.d/themes"))
 		("Magit" (or (mode . magit-process-mode)
 			    (mode . magit-diff-mode)
 			    (mode . magit-mode)
@@ -482,16 +488,59 @@
 			    (mode . magit-log-mode)
 			    (mode . magit-log-select-mode)
 			    (mode . magit-submodule-list-mode)))
+		("Trans-side theme" (filename . ".emacs.d/themes"))
+		("Latex" (or (mode . latex-mode)
+			    (mode . bibtex-mode)
+			    (mode . latex-mode)))
 		("Org" (mode . org-mode))
 		("Help" (or (name . "\*Help\*")
 			   (name . "\*Apropos\*")
-			   (name . "\*info\*"))))))
+			   (name . "\*info\*")
+			   (mode . special-mode)
+			   (mode . messages-buffer-mode)
+			   (mode . fundamental-mode))))))
 
        (add-hook 'ibuffer-mode-hook
 		 '(lambda ()
 		    (ibuffer-auto-mode 1)
 		    (ibuffer-switch-to-saved-filter-groups "home"))))
    #+end_src
+** Dired stuff
+*** dired
+    #+begin_src emacs-lisp
+      (use-package dired
+	:config
+	(setq dired-recursive-copies 'always)
+	(setq dired-recursive-deletes 'always)
+	(setq delete-by-moving-to-trash t)
+	(setq dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso")
+	(setq dired-dwim-target t)
+	:hook
+	((dired-mode . dired-hide-details-mode)
+	 (dired-mode . all-the-icons-dired-mode)))
+
+    #+end_src
+** Avy
+   Jump around like a ninja. Super fast!!
+   #+begin_src emacs-lisp
+     (use-package avy
+       :ensure t
+       :bind
+       (:map global-map
+       ("C-;" . avy-goto-char)
+       ("C-'" . avy-goto-char-2)
+       ("M-g l" . avy-goto-line)
+       ("M-g r" . avy-resume)
+       :map org-mode-map
+       ("C-'" . avy-goto-char-2))
+       :config
+       (setq avy-keys (nconc (?a ?s ?d ?f ?g ?h ?j ?k ?l)
+			     (?q ?w ?e ?r ?t ?y ?u ?i ?o))))
+   #+end_src
+
+   #+RESULTS:
+   : avy-goto-char-2
+
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -499,6 +548,8 @@
        :defer t
        :ensure auctex
        :mode ("//.tex//" . latex-mode)
+       :hook
+       (LaTeX-mode . outline-minor-mode)
        :config
        (progn
 	 (setq TeX-fold-mode t)
