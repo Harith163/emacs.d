@@ -197,6 +197,11 @@
 
      (setq auto-window-vscroll nil)
    #+end_src
+** Vertical instead of horizontal split
+   #+begin_src emacs-lisp
+     (setq split-height-threshold nil)
+     (setq split-width-threshold 0)
+   #+end_src
 * Packages
 ** Powerline
    This is a modeline replacement.
@@ -351,10 +356,6 @@
 	(setq company-fuzzy-sorting-backend 'alphabetic)
 	(setq company-fuzzy-show-annotation t))
     #+end_src
-
-    #+RESULTS:
-    : t
-
 ** Magit
    git integration
    #+begin_src emacs-lisp
@@ -449,8 +450,9 @@
     #+begin_src emacs-lisp
       (use-package all-the-icons-ibuffer
 	:ensure t
-	:init (all-the-icons-ibuffer-mode 1))
+	:after (ibuffer ibuffer-projectile))
     #+end_src
+
 ** Restart emacs from within emacs
    #+begin_src emacs-lisp
      (use-package restart-emacs
@@ -469,42 +471,30 @@
        )
    #+end_src
 ** Ibuffer
-   #+begin_src emacs-lisp
-     (use-package ibuffer
-       :bind (("C-x C-b" . ibuffer))
-       :config
-       (setq ibuffer-expert t)
-       (setq ibuffer-saved-filter-groups
-	     '(("home"
-		("Magit" (or (mode . magit-process-mode)
-			    (mode . magit-diff-mode)
-			    (mode . magit-mode)
-			    (mode . magit)
-			    (mode . magit-blame-mode)
-			    (mode . magit-blob-mode)
-			    (mode . magit-cherry-mode)
-			    (mode . magit-file-mode)
-			    (mode . magit-wip-initial-backup-mode)
-			    (mode . magit-log-mode)
-			    (mode . magit-log-select-mode)
-			    (mode . magit-submodule-list-mode)))
-		("Trans-side theme" (filename . ".emacs.d/themes"))
-		("Latex" (or (mode . latex-mode)
-			    (mode . bibtex-mode)
-			    (mode . latex-mode)))
-		("Org" (mode . org-mode))
-		("Help" (or (name . "\*Help\*")
-			   (name . "\*Apropos\*")
-			   (name . "\*info\*")
-			   (mode . special-mode)
-			   (mode . messages-buffer-mode)
-			   (mode . fundamental-mode))))))
+*** Ibuffer itself
+    #+begin_src emacs-lisp
+      (use-package ibuffer
+	:bind (("C-x C-b" . ibuffer))
+	:config
+	(setq ibuffer-expert t)
+	(setq ibuffer-saved-filter-groups nil)
 
-       (add-hook 'ibuffer-mode-hook
-		 '(lambda ()
-		    (ibuffer-auto-mode 1)
-		    (ibuffer-switch-to-saved-filter-groups "home"))))
-   #+end_src
+	(add-hook 'ibuffer-mode-hook '(lambda ()
+					(ibuffer-auto-mode 1)
+					(all-the-icons-ibuffer-mode 1)
+					(ibuffer-switch-to-saved-filter-groups "home")
+					(ibuffer-projectile-set-filter-groups)
+					(unless (eq ibuffer-sorting-mode 'alphabetic)
+					  (ibuffer-do-sort-by-alphabetic))))
+
+	)
+    #+end_src
+*** Ibuffer-projectile
+    #+begin_src emacs-lisp
+      (use-package ibuffer-projectile
+	:ensure t
+	)
+    #+end_src
 ** Dired stuff
 *** dired
     #+begin_src emacs-lisp
@@ -537,10 +527,6 @@
        (setq avy-keys (nconc (?a ?s ?d ?f ?g ?h ?j ?k ?l)
 			     (?q ?w ?e ?r ?t ?y ?u ?i ?o))))
    #+end_src
-
-   #+RESULTS:
-   : avy-goto-char-2
-
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -566,9 +552,27 @@
 			       (getenv "PATH")))
       (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
     #+end_src
-
+** Projectile
+   #+begin_src emacs-lisp
+     (use-package projectile
+       :ensure t
+       :diminish ""
+       :config
+       (projectile-mode 1)
+       (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+       (setq projectile-completion-system 'ivy))
+   #+end_src
+** Fancy Battery mode
+   #+begin_src emacs-lisp
+     (use-package fancy-battery
+       :ensure t
+       :config
+       (add-hook 'after-init-hook #'fancy-battery-mode)
+       (setq fancy-battery-show-percentage t))
+   #+end_src
 * Lastly,
-  This should only load if everything else doesn't fail.
+  This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
     (require 'org-tempo)
     (put 'scroll-left 'disabled nil)
