@@ -143,7 +143,7 @@
 
 ** Custom keybinds
    Use "C-z" for all my custom keybinds
-*** Emacs-lisp mode specific binds
+*** elisp mode specific binds
     The following functions are bound
     - Autothemer.el generate unspecified faces.
     #+begin_src emacs-lisp
@@ -218,12 +218,14 @@
    #+begin_src emacs-lisp
      (use-package linum-relative
        :ensure t
+       :after (recentf)
        :init (global-linum-mode t)
        :config
        (linum-relative-mode)
        (add-hook 'doc-view-mode-hook 'my/inhibit-global-linum-mode)
        (add-hook 'pdf-view-mode-hook 'my/inhibit-global-linum-mode))
    #+end_src
+
 ** Try
    lets you try packages temporarily
    #+begin_src emacs-lisp
@@ -247,8 +249,9 @@
    #+begin_src emacs-lisp
      (use-package ace-window
        :ensure t
-       :init
-       (global-set-key [remap other-window] 'ace-window)
+       :bind ([remap other-window] . ace-window)
+       :config
+       (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
        )
    #+end_src
 ** Counsel and Swiper (IVY)
@@ -271,17 +274,14 @@
 	("C-c g" . counsel-git)
 	("C-c j" . counsel-git-grep)
 	("C-c k" . counsel-ag)
-	("C-x l" . counsel-locate))
+	("C-x l" . counsel-locate)
+	("M-y" . counsel-yank-pop))
        :config
        (ivy-mode 1)
        (setq ivy-use-virtual-buffers t)
        (setq swiper-use-visual-line nil)
        (setq swiper-use-visual-line-p (lambda (a) nil)))
    #+end_src
-
-   #+RESULTS:
-   : counsel-locate
-
 ** Ivy rich
    #+begin_src emacs-lisp
      (ivy-rich-mode 1)
@@ -349,13 +349,18 @@
 *** Company fuzzy
     #+begin_src emacs-lisp
       (use-package company-fuzzy
-	:ensure company
+	:ensure t
+	:after (company)
 	:config
 	(global-company-fuzzy-mode 1)
 	(setq company-fuzzy-prefix-ontop t)
 	(setq company-fuzzy-sorting-backend 'alphabetic)
 	(setq company-fuzzy-show-annotation t))
     #+end_src
+
+    #+RESULTS:
+    : t
+
 ** Magit
    git integration
    #+begin_src emacs-lisp
@@ -432,7 +437,8 @@
        :ensure t
        :config
        (pdf-tools-install)
-       (setq-default 'pdf-view-display-size 'fit-page)
+       (setq-default pdf-view-display-size 'fit-width)
+       (setq pdf-annot-activate-created-annotations t)
      )
    #+end_src
 ** All the icons
@@ -464,10 +470,15 @@
      (use-package kurecolor
        :ensure t
        :bind
-       (("M-S-<up>" . kurecolor-increase-hue-by-step)
-       ("M-S-<down>" . kurecolor-decrease-hue-by-step)
-       ("C-M-<up>" . kurecolor-increase-brightness-by-step)
-       ("C-M-<down>" . kurecolor-decrease-brightness-by-step))
+       (:map global-map
+	     :prefix-map my-ctrl-z-map
+	     :prefix "C-z"
+	     ("M-<up>" . kurecolor-increase-hue-by-step)
+	     ("M-<down>" . kurecolor-decrease-hue-by-step)
+	     ("C-<up>" . kurecolor-increase-brightness-by-step)
+	     ("C-<down>" . kurecolor-decrease-brightness-by-step)
+	     ("S-<up>" . kurecolor-increase-saturation-by-step)
+	     ("S-<down>" . kurecolor-decrease-saturation-by-step))
        )
    #+end_src
 ** Ibuffer
@@ -503,7 +514,7 @@
 	(setq dired-recursive-copies 'always)
 	(setq dired-recursive-deletes 'always)
 	(setq delete-by-moving-to-trash t)
-	(setq dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso")
+	(setq dired-listing-switches "-ahl --group-directories-first --time-style=long-iso")
 	(setq dired-dwim-target t)
 	:hook
 	((dired-mode . dired-hide-details-mode)
@@ -523,9 +534,7 @@
        ("M-g r" . avy-resume)
        :map org-mode-map
        ("C-'" . avy-goto-char-2))
-       :config
-       (setq avy-keys (nconc (?a ?s ?d ?f ?g ?h ?j ?k ?l)
-			     (?q ?w ?e ?r ?t ?y ?u ?i ?o))))
+       )
    #+end_src
 ** Latex Mode
 *** Main latex stuff
@@ -570,6 +579,65 @@
        :config
        (add-hook 'after-init-hook #'fancy-battery-mode)
        (setq fancy-battery-show-percentage t))
+   #+end_src
+** Edit-Server
+   #+begin_src emacs-lisp
+     (use-package edit-server
+       :ensure t
+       :config
+       (edit-server-start))
+   #+end_src
+** Vterm
+   #+begin_src emacs-lisp
+     (use-package vterm
+       :ensure t)
+   #+end_src
+** Posframe and Ivy-posframe
+*** Posframe
+    #+begin_src emacs-lisp
+      (use-package posframe
+	:ensure t)
+    #+end_src
+*** Ivy-posframe
+    #+begin_src emacs-lisp
+      (use-package ivy-posframe
+	:ensure t
+	:after (ivy posframe)
+	:config
+	(setq ivy-posframe-parameters
+	      '((left-fringe . 2)
+		(right-fringe . 2)
+		(internal-border-width . 2)
+		;; (font . "DejaVu Sans Mono-10.75:hintstyle=hintfull")
+		))
+	(setq ivy-posframe-height-alist
+	      '((swiper . 15)
+		(swiper-isearch . 15)
+		(t . 10)))
+	(setq ivy-posframe-display-functions-alist
+	      '((complete-symbol . ivy-posframe-display-at-point)
+		(swiper . nil)
+		(swiper-isearch . nil)
+		(t . ivy-posframe-display-at-frame-center)))
+	(ivy-posframe-mode 1))
+
+    #+end_src
+** Recentf
+I use recentf to re-open the last X opened items.
+   #+begin_src emacs-lisp
+     (use-package recentf
+       :config
+       (recentf-mode 1)
+       (setq recentf-max-menu-items 5)
+       (setq recentf-max-saved-items 10)
+
+       (defun skye/recentf-open-all ()
+	   "My own function to open recentf's file"
+	 (interactive)
+	 (dolist (recentfiles recentf-list) (find-file recentfiles)))
+  
+       (add-hook 'after-init-hook 'skye/recentf-open-all)
+       )
    #+end_src
 * Lastly,
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.

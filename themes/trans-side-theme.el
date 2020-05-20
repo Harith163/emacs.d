@@ -96,7 +96,7 @@
 		      (region (:foreground mygray2-dark :background mygray1))
 
 		      ;;more basic things!!
-		      (bold (:weight 'bold))
+		      (bold (:weight 'bold :foreground standout))
 		      (warning (:weight 'bold :foreground warning))
 
 		      ;;line number mode
@@ -106,7 +106,7 @@
 		      (line-number-current-line (:inherit 'line-number))
 
 		      ;;Mode line 
-		      (mode-line (:box (:line-width 1 :color nil) :foreground aqua-light-alt :background bg-black))
+		      (mode-line (:box (:line-width 1 :color nil :style 'released-button) :foreground aqua-light-alt :background bg-black))
 		      (mode-line-inactive (:weight 'light :box (:line-width 1 :color nil :style 'pressed-button) :foreground aqua-light-alt :background bg-black :inherit 'mode-line))
 		      (mode-line-highlight (:box nil :foreground aqua-light :weight 'bold))
 		      (mode-line-emphasis (:weight 'bold :foreground mygray1))
@@ -122,14 +122,16 @@
 		      ;;Org-mode stuff
 		      (org-code (:foreground mygray1))
 		      (org-hide (:foreground mygray1-dark))
-		      (org-date (:foreground aqua-light-alt :underline t))
+		      (org-date (:foreground blue2-light :underline nil))
 		      (org-footnote (:foreground mygray1-dark :underline t))
 		      (org-link (:foreground pink-light :underline t))
-		      (org-special-keyword (:foreground magenta-dark))
+		      (org-special-keyword (:foreground blue2-dark))
 		      (org-quote (:inherit 'org-block :slant 'italic))
 		      (org-verse (:inherit 'org-block :slant 'italic))
-		      (org-todo (:foreground aqua-light :bold t :box nil))
-		      (org-done (:foreground pink-dark :bold t :box nil))
+		      
+		      (org-todo (:foreground magenta-light :bold t :box nil))
+		      (org-done (:foreground blue-light :bold t :box nil))
+		      
 		      (org-warning (:foreground warning :underline t))
 		      (org-agenda-structure (:foreground mygray1-dark :background bg-dark :weight 'bold :box (:color bg-gray) ))
 		      (org-agenda-date (:foreground aqua-light-alt :height 1.1))
