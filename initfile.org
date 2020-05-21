@@ -681,7 +681,7 @@
 	       ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*" ;; Match against buggers with Backtrace, warnings compile log or messages in the name
 		(display-buffer-in-side-window) ;; Calls the side buffer function. Side windows are a special kind of window
 		(window-height . 0.16) ;; Sets height of this window.
-		(side . top) ;; and its position
+		(side . bottom) ;; and its position
 		(slot . 1) ;; place to the right of existing side-windows
 		(window-parameters . ((no-other-window . t)))) ;; Dont let C-x o switch here
 	       ;; bottom side window
@@ -706,7 +706,7 @@
 	       ("\\*Help.*"
 		(display-buffer-in-side-window)
 		(window-width . 0.20)       ; See the :hook
-		(side . left)
+		(side . bottom)
 		(slot . 0)
 		(window-parameters . ((no-other-window . t))))
 	       ;; right side window
@@ -724,12 +724,17 @@
 		(side . right)
 		(slot . 1))
 	       ;; bottom buffer (NOT side window)
+	       ("\\*magit\\*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)
+		(side . right)
+		(slot . 2))
 	       ))
-  
+
        (setq window-combination-resize t)
        (setq even-window-sizes 'height-only)
        (setq window-sides-vertical nil)
-  
+
        :hook ((help-mode . visual-line-mode)
 	      (custom-mode . visual-line-mode)))
    #+end_src
