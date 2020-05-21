@@ -10,6 +10,7 @@
 
     (setq user-mail-address "kaushik.harith@gmail.com")
   #+end_src
+
 * Tweaks to emacs' appearance
 ** Theme
    #+begin_src emacs-lisp
@@ -26,42 +27,62 @@
      (global-visual-line-mode t)
      (set-fringe-mode 0)
    #+end_src
+
 ** Display modeline time because I need that.
    #+begin_src emacs-lisp
      (display-time-mode 1)
    #+end_src
+
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
      (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
      (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
    #+end_src
+
 ** Pretty-fy symbols
    #+begin_src emacs-lisp
      (use-package pretty-symbols
        :ensure t
        :config
-       (global-pretty-mode t)
+       (global-pretty-mode t)  
        (add-hook 'emacs-lisp-mode-hook 'pretty-symbols-mode)
-       (add-hook 'org-mode-hook 'pretty-symbols-mode))
+       (add-hook 'org-mode-hook 'pretty-symbols-mode)
+       )
    #+end_src 
+
+   #+begin_src emacs-lisp
+     (use-package prettify-symbols
+       :hook
+       (org-mode . skye/prettify-symbols-custom)
+       (LaTeX-mode . skye/prettify-symbols-custom)
+       (emacs-lisp-mode . skye/prettify-symbols-custom)
+       :config
+       (defun skye/prettify-symbols-custom ()
+	 "Adding symbols to global prettify mode that comes with emacs. To add an element, (TEXT TO BE REPLACED . UNICODE CHARACHTER"
+	 (interactive)
+	 (setq prettify-symbols-alist (append '(("rho" . 961) ("sigma" . 963) ("->" . 8594) ("=>" . 8658) ("map" . 8614)) prettify-symbols-alist))))
+   #+end_src
 
 * Miscellaneous tweaks to emacs' default functioning
 ** Custom Load path for other things
    #+begin_src emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/stuff/")
    #+end_src
+
 ** Set a file for custom-set variables
    #+begin_src emacs-lisp
      (setq custom-file (concat user-emacs-directory "custom.el"))
 
      (load-file custom-file)
    #+end_src
+
 ** y, n instead of yes, no.
    Who on earth would want to type out a three or two letter word??
    #+begin_src emacs-lisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+end_src
+
 ** Custom Functions
 *** Window Split
     This is a function to toggle how the window is split
@@ -142,7 +163,7 @@
     : my/inhibit-global-linum-mode
 
 ** Custom keybinds
-   Use "C-z" for all my custom keybinds
+   Use "C-z" for all my custom keybinds. "M-z" is used for functions that are broader or inverse in scope.
 *** elisp mode specific binds
     The following functions are bound
     - Autothemer.el generate unspecified faces.
@@ -158,22 +179,27 @@
     - remove redundant white space between text
     - evalueate top-level function instead of function at point (elisp/global)
     - a custom function to toggle window split from horizontal to vertical.
+    - Comment and uncomment region. Uncomment with the broader in scope "M-z"
     #+begin_src emacs-lisp
       (bind-keys :map global-map
 		 :prefix-map my-ctrl-z-prefix-map
 		 :prefix "C-z"
 		 ("C-<SPC>" . fixup-whitespace)
 		 ("C-e" . eval-defun)
-		 ("|" . my/toggle-window-split))
-    #+end_src
+		 ("|" . my/toggle-window-split)
+		 (":" . comment-region))
 
-    #+RESULTS:
-    : eval-defun
+      (bind-keys :map global-map
+		 :prefix-map my-meta-z-prefix-ma
+		 :prefix "M-z"
+		 (":" . uncomment-region))
+    #+end_src
 
 *** Revert buffer
     #+begin_src emacs-lisp
       (bind-key "<f5>" 'revert-buffer global-map)
     #+end_src
+
 ** Better autosaving
    #+begin_src emacs-lisp
      (setq backup-by-copying t      ; don't clobber symlinks
@@ -197,11 +223,13 @@
 
      (setq auto-window-vscroll nil)
    #+end_src
+
 ** Vertical instead of horizontal split
    #+begin_src emacs-lisp
      (setq split-height-threshold nil)
      (setq split-width-threshold 0)
    #+end_src
+   
 * Packages
 ** Powerline
    This is a modeline replacement.
@@ -260,6 +288,7 @@
      (use-package ivy
        :demand
        :ensure t
+       :diminish ""
        :bind
        (("C-s" . swiper)
 	("C-c C-r" . ivy-resume)
@@ -287,6 +316,7 @@
      (ivy-rich-mode 1)
      (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
    #+end_src
+
 ** Rainbow-Delimiters
    changes the colors of nested parens, brackets etc.
    #+begin_src emacs-lisp
@@ -297,6 +327,7 @@
        (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
        (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode))
    #+end_src
+
 ** Expand-region
    this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
    #+begin_src emacs-lisp
@@ -307,9 +338,6 @@
        (:map global-map
 	     ("C-=" . er/expand-region)))
    #+end_src
-
-   #+RESULTS:
-   : er/expand-region
 
 ** Outline, outline magic stuff. 
    #+begin_src emacs-lisp
@@ -343,13 +371,11 @@
 	(advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
     #+end_src
 
-    #+RESULTS:
-    : t
-
 *** Company fuzzy
     #+begin_src emacs-lisp
       (use-package company-fuzzy
 	:ensure t
+	:diminish ""
 	:after (company)
 	:config
 	(global-company-fuzzy-mode 1)
@@ -357,10 +383,6 @@
 	(setq company-fuzzy-sorting-backend 'alphabetic)
 	(setq company-fuzzy-show-annotation t))
     #+end_src
-
-    #+RESULTS:
-    : t
-
 ** Magit
    git integration
    #+begin_src emacs-lisp
@@ -458,7 +480,7 @@
 	:ensure t
 	:after (ibuffer ibuffer-projectile))
     #+end_src
-
+    
 ** Restart emacs from within emacs
    #+begin_src emacs-lisp
      (use-package restart-emacs
@@ -497,7 +519,6 @@
 					(ibuffer-projectile-set-filter-groups)
 					(unless (eq ibuffer-sorting-mode 'alphabetic)
 					  (ibuffer-do-sort-by-alphabetic))))
-
 	)
     #+end_src
 *** Ibuffer-projectile
@@ -554,6 +575,7 @@
 	 (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
 	 ))
    #+end_src
+
 *** Auctex things
     Basically adding to $PATH. Why this didn't work when doing it through my zshrc, we'll never know.
     #+begin_src emacs-lisp
@@ -561,17 +583,20 @@
 			       (getenv "PATH")))
       (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
     #+end_src
+
 ** Projectile
    #+begin_src emacs-lisp
      (use-package projectile
        :ensure t
        :diminish ""
+       :bind
+       (("<escape> p" . projectile-command-map)
+	("C-c p" . projectile-command-map))
        :config
        (projectile-mode 1)
-       (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
        (setq projectile-completion-system 'ivy))
    #+end_src
+
 ** Fancy Battery mode
    #+begin_src emacs-lisp
      (use-package fancy-battery
@@ -580,6 +605,7 @@
        (add-hook 'after-init-hook #'fancy-battery-mode)
        (setq fancy-battery-show-percentage t))
    #+end_src
+
 ** Edit-Server
    #+begin_src emacs-lisp
      (use-package edit-server
@@ -587,21 +613,26 @@
        :config
        (edit-server-start))
    #+end_src
+
 ** Vterm
    #+begin_src emacs-lisp
      (use-package vterm
        :ensure t)
    #+end_src
+
 ** Posframe and Ivy-posframe
 *** Posframe
     #+begin_src emacs-lisp
       (use-package posframe
+	:diminish ""
 	:ensure t)
     #+end_src
+
 *** Ivy-posframe
     #+begin_src emacs-lisp
       (use-package ivy-posframe
 	:ensure t
+	:diminish ""
 	:after (ivy posframe)
 	:config
 	(setq ivy-posframe-parameters
@@ -620,10 +651,10 @@
 		(swiper-isearch . nil)
 		(t . ivy-posframe-display-at-frame-center)))
 	(ivy-posframe-mode 1))
-
     #+end_src
+
 ** Recentf
-I use recentf to re-open the last X opened items.
+   I use recentf to re-open the last X opened items.
    #+begin_src emacs-lisp
      (use-package recentf
        :config
@@ -639,6 +670,70 @@ I use recentf to re-open the last X opened items.
        (add-hook 'after-init-hook 'skye/recentf-open-all)
        )
    #+end_src
+
+** Window configureations
+   Stuff to make the random windows that get thrown up not by the user behave in a consistent manner.
+   #+begin_src emacs-lisp
+     (use-package window
+       :init
+       (setq display-buffer-alist ;; This is the list that displays the buffers in it?? Must read more.
+	     '(;; top side window
+	       ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*" ;; Match against buggers with Backtrace, warnings compile log or messages in the name
+		(display-buffer-in-side-window) ;; Calls the side buffer function. Side windows are a special kind of window
+		(window-height . 0.16) ;; Sets height of this window.
+		(side . top) ;; and its position
+		(slot . 1) ;; place to the right of existing side-windows
+		(window-parameters . ((no-other-window . t)))) ;; Dont let C-x o switch here
+	       ;; bottom side window
+	       ("\\*\\(Output\\|Register Preview\\).*"
+		(display-buffer-in-side-window)
+		(window-width . 0.16)       ; See the :hook
+		(side . bottom)
+		(slot . -1)
+		(window-parameters . ((no-other-window . t))))
+	       (".*\\*Completions.*"
+		(display-buffer-in-side-window)
+		(window-height . 0.16)
+		(side . bottom)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t))))
+	       ("^\\(\\*e?shell\\|vterm\\).*"
+		(display-buffer-in-side-window)
+		(window-height . 0.16)
+		(side . bottom)
+		(slot . 1))
+	       ;; left side window
+	       ("\\*Help.*"
+		(display-buffer-in-side-window)
+		(window-width . 0.20)       ; See the :hook
+		(side . left)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t))))
+	       ;; right side window
+	       ("\\*Faces\\*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)
+		(side . right)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t)
+				      (mode-line-format . (" "
+							   mode-line-buffer-identification)))))
+	       ("\\*Custom.*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)
+		(side . right)
+		(slot . 1))
+	       ;; bottom buffer (NOT side window)
+	       ))
+  
+       (setq window-combination-resize t)
+       (setq even-window-sizes 'height-only)
+       (setq window-sides-vertical nil)
+  
+       :hook ((help-mode . visual-line-mode)
+	      (custom-mode . visual-line-mode)))
+   #+end_src
+
 * Lastly,
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp

@@ -19,7 +19,7 @@
 		      (fg-dark "#5e5e5e")
 		      (fg-gray "#919191")
 
-		      ;;darks
+		      ;;dark's
 		      (pink-dark "#a43261")
 		      (blue-dark "#006ca5")
 		      (aqua-dark "#007086")
@@ -39,7 +39,7 @@
 		      (pink-light-alt "#e85e8a")
 		      (aqua-light-alt "#00d3ff")
 
-		      ;;Alt grays and darks
+		      ;;Alt grays and dark's
 		      (mygray1 "#f8f8f8")
 		      (mygray1-dark "#d0d0d0")
 		      (mygray2 "#3a3a3a")
@@ -55,7 +55,7 @@
 		      (level7 "#6B62E2")
 		      (level8 "#00FF75")
 
-		      ;;Alternate Pallate
+		      ;;Alternate Palate
 		      (pastel-blue "#7eb8da")
 		      (pastel-aqua "#92ddea")
 		      (pastel-pink "#ffa5d8")
@@ -72,7 +72,7 @@
 		     ;; specifications for Emacs faces.
 		     
 		     (;; Default faces. Most commonly seen, used and inherited.
-		      (default (:font "DejaVu Sans Mono" :foreground fg-white :background bg-main :height 150))
+		      (default (:font "Inconsolata LGC Markup" :foreground fg-white :background bg-main :height 150))
 		      (font-lock-builtin-face (:foreground builtin))
 		      (font-lock-comment-face (:foreground comment))
 		      (font-lock-doc-face (:foreground purple-dark))
