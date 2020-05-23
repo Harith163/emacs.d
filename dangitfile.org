@@ -1,0 +1,56 @@
+** Recentf
+I use recentf to re-open the last X opened items.
+   #+begin_src emacs-lisp
+     (use-package recentf
+       :config
+       (recentf-mode 1)
+       (setq recentf-max-menu-items 5)
+       (setq recentf-max-saved-items 10)
+
+       (defun skye/recentf-open-all ()
+	   "My own function to open recentf's file"
+	 (interactive)
+	 (dolist (recentfiles recentf-list) (find-file recentfiles)))
+  
+       (add-hook 'after-init-hook 'skye/recentf-open-all)
+       )
+   #+end_src
+
+** Reddit in emacs with Md4rd
+   xVdkVJ78cc4TtrZoocploxm0Hws
+   #+begin_src emacs-lisp
+     (use-package md4rd
+       :ensure t
+       :bind
+       (:map md4rd-mode-map
+	     ("u" . tree-mode-goto-parent)
+	     ("o" . md4rd-open)
+	     ("v" . md4rd-visit)
+	     ("e" . tree-mode-toggle-expand)
+	     ("E" . md4rd-widget-expand-all)
+	     ("C" . md4rd-widget-collapse-all)
+	     ("n" . widget-forward)
+	     ("j" . widget-forward)
+	     ("h" . backward-button)
+	     ("p" . widget-backward)
+	     ("k" . widget-backward)
+	     ("l" . forward-button)
+	     ("q" . kill-current-buffer)
+	     ("r" . md4rd-reply)
+	     ("u" . md4rd-upvote)
+	     ("d" . md4rd-downvote)
+	     ("t" . md4rd-widget-toggle-line))
+       :config
+       (setq md4rd-subs-active '(emacs lisp+Common_Lisp prolog clojure))
+       (setq md4rd--oauth-access-token
+	     "xVdkVJ78cc4TtrZoocploxm0Hws")
+       (setq md4rd--oauth-refresh-token
+	     "")
+       (run-with-timer 0 3540 'md4rd-refresh-login))
+   #+end_src
+
+** dired Filter
+   #+begin_src emacs-lisp
+     (use-package dired-filter
+       :ensure t)
+   #+end_src

@@ -72,7 +72,7 @@
 		     ;; specifications for Emacs faces.
 		     
 		     (;; Default faces. Most commonly seen, used and inherited.
-		      (default (:font "Inconsolata LGC Markup" :foreground fg-white :background bg-main :height 150))
+		      (default (:font "Inconsolata LGC Markup" :foreground fg-white :background bg-main :height 140))
 		      (font-lock-builtin-face (:foreground builtin))
 		      (font-lock-comment-face (:foreground comment))
 		      (font-lock-doc-face (:foreground purple-dark))
