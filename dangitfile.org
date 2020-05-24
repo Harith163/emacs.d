@@ -1,21 +1,3 @@
-** Recentf
-I use recentf to re-open the last X opened items.
-   #+begin_src emacs-lisp
-     (use-package recentf
-       :config
-       (recentf-mode 1)
-       (setq recentf-max-menu-items 5)
-       (setq recentf-max-saved-items 10)
-
-       (defun skye/recentf-open-all ()
-	   "My own function to open recentf's file"
-	 (interactive)
-	 (dolist (recentfiles recentf-list) (find-file recentfiles)))
-  
-       (add-hook 'after-init-hook 'skye/recentf-open-all)
-       )
-   #+end_src
-
 ** Reddit in emacs with Md4rd
    xVdkVJ78cc4TtrZoocploxm0Hws
    #+begin_src emacs-lisp
@@ -54,3 +36,4 @@ I use recentf to re-open the last X opened items.
      (use-package dired-filter
        :ensure t)
    #+end_src
+

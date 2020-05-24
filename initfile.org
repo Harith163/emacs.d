@@ -73,7 +73,7 @@
 *** Window Split
     This is a function to toggle how the window is split
    #+begin_src emacs-lisp
-     (defun my/toggle-window-split ()
+     (defun contrib/toggle-window-split ()
        (interactive)
        (if (= (count-windows) 2)
 	   (let* ((this-win-buffer (window-buffer))
@@ -101,7 +101,7 @@
 
 *** Quitting the minibuffer better
     #+BEGIN_SRC emacs-lisp
-      (defun my/keyboard-quit-context+ ()
+      (defun contrib/keyboard-quit-context+ ()
 	"Quit current context.
 
       This function is a combination of `keyboard-quit' and
@@ -133,20 +133,26 @@
 	       (let ((debug-on-quit nil))
 		 (signal 'quit nil)))))
 
-      (global-set-key [remap keyboard-quit] #'my/keyboard-quit-context+)
+      (global-set-key [remap keyboard-quit] #'contrib/keyboard-quit-context+)
     #+END_SRC
 
 *** Inhibit linum mode
+    The lastness of it all baffles me.
     #+begin_src emacs-lisp
-      (defun my/inhibit-global-linum-mode ()
+      (defun contrib/inhibit-global-linum-mode ()
 	"Counter-act `global-linum-mode'."
 	(add-hook 'after-change-major-mode-hook
 		  (lambda () (linum-mode 0))
 		  :append :local))
     #+end_src
 
-    #+RESULTS:
-    : my/inhibit-global-linum-mode
+*** Recentf-load all recent
+    #+begin_src emacs-lisp
+      (defun skye/recentf-open-all ()
+	"My own function to open recentf's file. Ignores auto-loads."
+	(interactive)
+	(dolist (recentfiles recentf-list) (find-file recentfiles)))
+    #+end_src
 
 ** Custom keybinds
    Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope.
@@ -162,25 +168,35 @@
     - remove redundant white space between text
     - evalueate top-level function instead of function at point (elisp/global)
     - a custom function to toggle window split from horizontal to vertical.
+    - revert buffer 
     - comment and uncoment region.
+    - My recentf-reopen function.
+    - Kurecolor's hue(M), saturation(S) and brightness(C) functions.
     #+begin_src emacs-lisp
-      (bind-keys :map global-map
-		 :prefix-map my-ctrl-z-prefix-map
-		 :prefix "C-z"
-		 ("C-<SPC>" . fixup-whitespace)
-		 ("C-e" . eval-defun)
-		 ("|" . my/toggle-window-split)
-		 (":" . comment-region))
+      (use-package emacs
+	:bind
+	(:map global-map
+	      :prefix-map my-ctrl-z-prefix-map
+	      :prefix "C-z"
+	      ("C-<SPC>" . fixup-whitespace)
+	      ("C-e" . eval-defun)
+	      ("|" . contrib/toggle-window-split)
+	      (":" . comment-region)
+	      ("M-<up>" . kurecolor-increase-hue-by-step)
+	      ("M-<down>" . kurecolor-decrease-hue-by-step)
+	      ("C-<up>" . kurecolor-increase-brightness-by-step)
+	      ("C-<down>" . kurecolor-decrease-brightness-by-step)
+	      ("S-<up>" . kurecolor-increase-saturation-by-step)
+	      ("S-<down>" . kurecolor-decrease-saturation-by-step))
 
-      (bind-keys :map global-map
+	(:map global-map
 		 :prefix-map my-meta-z-prefix-ma
 		 :prefix "M-z"
+		 ("M-r" . skye/recentf-open-all)
 		 (":" . uncomment-region))
-    #+end_src
 
-*** Revert buffer
-    #+begin_src emacs-lisp
-      (bind-key "<f5>" 'revert-buffer global-map)
+	(:map global-map
+	      ("<f5>" . revert-buffer)))
     #+end_src
 
 ** Better autosaving
@@ -242,9 +258,9 @@
    #+begin_src emacs-lisp
      (use-package powerline
        :ensure t
-       :config (progn
-		 (setq powerline-default-separator 'contour)
-		 (powerline-center-theme))
+       :config 
+       (setq powerline-default-separator 'contour)
+       (powerline-center-theme)
        )
    #+end_src
 
@@ -253,11 +269,13 @@
    #+begin_src emacs-lisp
      (use-package linum-relative
        :ensure t
-       :init (global-linum-mode t)
+       :init
+       (global-linum-mode t)
        :config
        (linum-relative-mode)
-       (add-hook 'doc-view-mode-hook 'my/inhibit-global-linum-mode)
-       (add-hook 'pdf-view-mode-hook 'my/inhibit-global-linum-mode))
+       (add-hook 'doc-view-mode-hook 'contrib/inhibit-global-linum-mode)
+       (add-hook 'pdf-view-mode-hook 'contrib/inhibit-global-linum-mode)
+       )
    #+end_src
 
 ** Rainbow-Delimiters
@@ -265,11 +283,13 @@
    #+begin_src emacs-lisp
      (use-package rainbow-delimiters
        :ensure t
+       :hook
+       (prog-mode . rainbow-delimiters-mode)
+       (Latex-mode . rainbow-delimiters-mode)
        :config
-       (rainbow-delimiters-mode 1)
-       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-       (add-hook 'Latex-mode-hook #'rainbow-delimiters-mode))
+       (rainbow-delimiters-mode 1))
    #+end_src
+
 ** Diminish
    #+begin_src emacs-lisp
      (use-package diminish
@@ -291,7 +311,8 @@
    #+begin_src emacs-lisp
      (use-package ace-window
        :ensure t
-       :bind ([remap other-window] . ace-window)
+       :bind
+       ([remap other-window] . ace-window)
        :config
        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
        )
@@ -316,10 +337,14 @@
 ** All the icons
 *** all the icons
     #+begin_src emacs-lisp
-      (use-package all-the-icons)
-      (use-package all-the-icons-dired)
+      (use-package all-the-icons
+	:ensure t)
     #+end_src
-
+*** all the icons dired
+    #+begin_src emacs-lisp
+      (use-package all-the-icons-dired
+	:ensure t)
+    #+end_src
 *** all the icons ivy
     #+begin_src emacs-lisp
       (all-the-icons-ivy-setup)
@@ -480,22 +505,40 @@
 *** Org 
     #+begin_src emacs-lisp
       (use-package org
-	:ensure org-bullets
+	:ensure org-superstar
+	:hook
+	(org-mode . org-cdlatex-mode)
+	(org-mode . (lambda () (org-superstar-mode 1)))
 	:init
-	(add-hook 'org-mode-hook 'org-cdlatex-mode)
 	(setq org-highlight-latex-and-related '(native latex script))
 	:config
-	(setq org-agenda-files '("~/Documents/life/README.org")))
+	(setq org-agenda-files '("~/Documents/life/README.org"))
+	(setq skye/bullets-list '("◉" "●" "○")))
     #+end_src
 
-*** Org-Bullets
-    makes org mode pretty
+*** COMMENT Org-Bullets
+    Makes org mode pretty
     #+begin_src emacs-lisp
       (use-package org-bullets
 	:ensure t
+	:after
+	(org)
 	:config
-	(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+	(setq org-bullets-bullet-list skye/bullets-list))
     #+end_src
+
+*** Org-superstar
+    #+begin_src emacs-lisp
+      (use-package org-superstar
+	:ensure t
+	:after
+	(org)
+	:config
+	(setq org-superstar-leading-bullet ?\s)
+	(setq org-superstar-cycle-headline-bullets t)
+	(setq org-superstar-headline-bullets-list skye/bullets-list))
+    #+end_src
+
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -546,16 +589,6 @@
    #+begin_src emacs-lisp
      (use-package kurecolor
        :ensure t
-       :bind
-       (:map global-map
-	     :prefix-map my-ctrl-z-map
-	     :prefix "C-z"
-	     ("M-<up>" . kurecolor-increase-hue-by-step)
-	     ("M-<down>" . kurecolor-decrease-hue-by-step)
-	     ("C-<up>" . kurecolor-increase-brightness-by-step)
-	     ("C-<down>" . kurecolor-decrease-brightness-by-step)
-	     ("S-<up>" . kurecolor-increase-saturation-by-step)
-	     ("S-<down>" . kurecolor-decrease-saturation-by-step))
        )
    #+end_src
 
@@ -631,6 +664,17 @@
        )
    #+end_src
 
+** Recentf
+   #+begin_src emacs-lisp
+     (use-package recentf
+       :ensure t
+       :config
+       (setq recentf-exclude '("/\\(\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\|(autoloads.el\')\\)\\'"))
+       (recentf-mode 1)
+       (setq recentf-max-menu-items 15)
+       (setq recentf-max-saved-items 25))
+   #+end_src
+   
 * Lastly,
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
