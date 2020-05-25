@@ -1,4 +1,5 @@
 #+STARTUP: overview
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+TITLE: EMACS initialization file
 #+AUTHOR: Skye S Harith
 #+EMAIL: kaushik.harith@gmail.com
@@ -511,9 +512,40 @@
 	(org-mode . (lambda () (org-superstar-mode 1)))
 	:init
 	(setq org-highlight-latex-and-related '(native latex script))
+	(setq org-export-backends '(ascii html icalendar latex odt org))
+	:bind
+	(:map org-mode-map
+	      ("C-c C-x C-e" . skye/org-mark-and-archive))
 	:config
+	(require 'org-tempo)
+
 	(setq org-agenda-files '("~/Documents/life/README.org"))
-	(setq skye/bullets-list '("◉" "●" "○")))
+
+	(setq skye/bullets-list '("◉" "●" "○"))
+
+	(setq org-todo-keywords '((sequence "☛ TODO(t/!)" "|" "⚑ WAITING(w/!)" "|" "✔ DONE(d!)") (sequence "|" "✘ CANCELED(c)")))
+
+	(setq org-ellipsis "⤵")
+	;;(setq org-ellipsis nil)
+
+	(setq org-src-fontify-natively t)
+
+	(setq org-src-tab-acts-natively t)
+
+	(setq org-archive-location (concat "~/Documents/life/archive.org" "::* From %s"))
+
+	(setq org-enforce-todo-dependencies t)
+	(setq org-enforce-todo-checkbox-dependencies t)
+
+	(defun skye/org-mark-and-archive ()
+	  "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
+	  (interactive)
+	  (ivy-read "Choose a final TODO state:" '("✔ DONE" "✘ CANCELED")
+		    :action '(1
+			      ("o" org-todo "action 1")
+			      ("j" org-todo "action 2")))
+	  (org-archive-subtree))
+	)
     #+end_src
 
 *** COMMENT Org-Bullets
@@ -673,13 +705,12 @@
        (recentf-mode 1)
        (setq recentf-max-menu-items 15)
        (setq recentf-max-saved-items 25))
-   #+end_src
-   
-* Lastly,
+   #+end_src   
+* Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
-    (require 'org-tempo)
     (put 'scroll-left 'disabled nil)
     (put 'dired-find-alternate-file 'disabled nil)
     (put 'narrow-to-region 'disabled nil)
   #+end_src
+  
