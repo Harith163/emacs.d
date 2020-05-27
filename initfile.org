@@ -1,24 +1,21 @@
 #+STARTUP: overview
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+TITLE: EMACS initialization file
-#+AUTHOR: Skye S Harith
+#+AUTHOR: Skye Srinivasan Harith
 #+EMAIL: kaushik.harith@gmail.com
 #+OPTIONS: toc:t todo:nil
 
 * Id commands
   #+begin_src emacs-lisp
     (setq user-full-name "Skye Srinivasan Harith")
-
     (setq user-mail-address "kaushik.harith@gmail.com")
   #+end_src
-
 * Tweaks to emacs' appearance
 ** Theme
    #+begin_src emacs-lisp
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
      (load-theme 'trans-side t)
    #+end_src
-
 ** Tool and menu bars, startup message, line mode, fringe mode
    #+begin_src emacs-lisp
      (setq inhibit-startup-message t)
@@ -28,19 +25,16 @@
      (global-visual-line-mode t)
      (set-fringe-mode 0)
    #+end_src
-
 ** Display modeline time because I need that.
    #+begin_src emacs-lisp
      (display-time-mode 1)
    #+end_src
-
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
      (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
      (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
    #+end_src
-
 ** Pretty-fy symbols
    #+begin_src emacs-lisp
      (use-package pretty-symbols
@@ -50,26 +44,22 @@
        (add-hook 'emacs-lisp-mode-hook 'pretty-symbols-mode)
        (add-hook 'org-mode-hook 'pretty-symbols-mode))
    #+end_src 
-
 * Miscellaneous tweaks to emacs' default functioning
 ** Custom Load path for other things
    #+begin_src emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/stuff/")
    #+end_src
-
 ** Set a file for custom-set variables
    #+begin_src emacs-lisp
      (setq custom-file (concat user-emacs-directory "custom.el"))
 
      (load-file custom-file)
    #+end_src
-
 ** y, n instead of yes, no.
    Who on earth would want to type out a three or two letter word??
    #+begin_src emacs-lisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+end_src
-
 ** Custom Functions
 *** Window Split
     This is a function to toggle how the window is split
@@ -99,7 +89,6 @@
 	   (select-window first-win)
 	   (if this-win-2nd (other-window 1))))))
    #+end_src
-
 *** Quitting the minibuffer better
     #+BEGIN_SRC emacs-lisp
       (defun contrib/keyboard-quit-context+ ()
@@ -136,7 +125,6 @@
 
       (global-set-key [remap keyboard-quit] #'contrib/keyboard-quit-context+)
     #+END_SRC
-
 *** Inhibit linum mode
     The lastness of it all baffles me.
     #+begin_src emacs-lisp
@@ -146,7 +134,6 @@
 		  (lambda () (linum-mode 0))
 		  :append :local))
     #+end_src
-
 *** Recentf-load all recent
     #+begin_src emacs-lisp
       (defun skye/recentf-open-all ()
@@ -154,7 +141,6 @@
 	(interactive)
 	(dolist (recentfiles recentf-list) (find-file recentfiles)))
     #+end_src
-
 ** Custom keybinds
    Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope.
 *** elisp mode specific binds
@@ -199,7 +185,6 @@
 	(:map global-map
 	      ("<f5>" . revert-buffer)))
     #+end_src
-
 ** Better autosaving
    #+begin_src emacs-lisp
      (setq backup-by-copying t      ; don't clobber symlinks
@@ -211,7 +196,6 @@
      (setq auto-save-file-name-transforms
 	   `((".*" "~/.emacs.d/saves/" t)))
    #+end_src
-
 ** Smooth scrolling
    Most of this didn't work. Auto-window-vscroll did for some reason.
    #+begin_src emacs-lisp
@@ -223,7 +207,6 @@
 
      (setq auto-window-vscroll nil)
    #+end_src
-
 ** Vertical instead of horizontal split
    #+begin_src emacs-lisp
      (setq split-height-threshold nil)
@@ -236,7 +219,6 @@
      (use-package try
        :ensure t)
    #+end_src
-
 ** Which-Key
    #+begin_src emacs-lisp
      (use-package which-key
@@ -244,7 +226,6 @@
        :ensure t
        :config (which-key-mode))
    #+end_src
-
 ** Fancy Battery mode
    #+begin_src emacs-lisp
      (use-package fancy-battery
@@ -253,7 +234,6 @@
        (add-hook 'after-init-hook #'fancy-battery-mode)
        (setq fancy-battery-show-percentage t))
    #+end_src
-
 ** Powerline
    This is a modeline replacement.
    #+begin_src emacs-lisp
@@ -264,7 +244,6 @@
        (powerline-center-theme)
        )
    #+end_src
-
 ** Linum
    line number modes
    #+begin_src emacs-lisp
@@ -278,7 +257,6 @@
        (add-hook 'pdf-view-mode-hook 'contrib/inhibit-global-linum-mode)
        )
    #+end_src
-
 ** Rainbow-Delimiters
    changes the colors of nested parens, brackets etc.
    #+begin_src emacs-lisp
@@ -290,13 +268,11 @@
        :config
        (rainbow-delimiters-mode 1))
    #+end_src
-
 ** Diminish
    #+begin_src emacs-lisp
      (use-package diminish
        :ensure t)
    #+end_src
-
 ** Undo Tree
    changes emacs' undo-redo behaviour. Standard ctrl-/ and ctrl-shift-/ with a tree given by ctrl-x u. q to quit and choose.
    #+begin_src emacs-lisp
@@ -306,7 +282,6 @@
        :init
        (global-undo-tree-mode))
    #+end_src
-
 ** Ace-Window
    changes behaviour of (other-window), same keybind ctrl-o
    #+begin_src emacs-lisp
@@ -318,7 +293,6 @@
        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
        )
    #+end_src
-
 ** Avy
    Jump around like a ninja. Super fast!!
    #+begin_src emacs-lisp
@@ -334,31 +308,32 @@
        ("C-'" . avy-goto-char-2))
        )
    #+end_src
-
 ** All the icons
 *** all the icons
     #+begin_src emacs-lisp
       (use-package all-the-icons
-	:ensure t)
+	:ensure t
+	:diminish "")
     #+end_src
 *** all the icons dired
     #+begin_src emacs-lisp
       (use-package all-the-icons-dired
-	:ensure t)
+	:ensure t
+	:diminish "")
     #+end_src
 *** all the icons ivy
     #+begin_src emacs-lisp
       (all-the-icons-ivy-setup)
       (all-the-icons-ivy-rich-mode 1)
     #+end_src
-
 *** all the icons ibuffer
     #+begin_src emacs-lisp
       (use-package all-the-icons-ibuffer
 	:ensure t
-	:after (ibuffer ibuffer-projectile))
+	:diminish ""
+	:after
+	(ibuffer ibuffer-projectile))
     #+end_src
-
 ** Expand-region
    this changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
    #+begin_src emacs-lisp
@@ -368,7 +343,6 @@
        (:map global-map
 	     ("C-=" . er/expand-region)))
    #+end_src
-
 ** Outline, outline magic stuff. 
    #+begin_src emacs-lisp
      (eval-after-load 'outline
@@ -376,7 +350,6 @@
 	 (require 'outline-magic)
 	 (define-key outline-minor-mode-map (kbd "<C-tab>") 'outline-cycle)))
    #+end_src
-
 ** Counsel and Swiper (IVY)
    Better search and completion in minibuffer.
    #+begin_src emacs-lisp
@@ -385,34 +358,33 @@
        :diminish ""
        :ensure t
        :bind
-       (("C-s" . swiper)
-	("C-c C-r" . ivy-resume)
-	("<f6>" . ivy-resume)
-	("M-x" . counsel-M-x)
-	("C-x C-f" . counsel-find-file)
-	("<f1> f" . counsel-describe-function)
-	("<f1> v" . counsel-describe-variable)
-	("<f1> l" . counsel-load-library)
-	("<f2> i" . counsel-info-lookup-symbol)
-	("<f2> u" . counsel-unicode-char)
-	("C-c g" . counsel-git)
-	("C-c j" . counsel-git-grep)
-	("C-c k" . counsel-ag)
-	("C-x l" . counsel-locate)
-	("M-y" . counsel-yank-pop))
+       (:map global-map
+	     ("C-s" . swiper)
+	     ("C-c C-r" . ivy-resume)
+	     ("<f6>" . ivy-resume)
+	     ("M-x" . counsel-M-x)
+	     ("C-x C-f" . counsel-find-file)
+	     ("<f1> f" . counsel-describe-function)
+	     ("<f1> v" . counsel-describe-variable)
+	     ("<f1> l" . counsel-load-library)
+	     ("<f2> i" . counsel-info-lookup-symbol)
+	     ("<f2> u" . counsel-unicode-char)
+	     ("C-c g" . counsel-git)
+	     ("C-c j" . counsel-git-grep)
+	     ("C-c k" . counsel-ag)
+	     ("C-x l" . counsel-locate)
+	     ("M-y" . counsel-yank-pop))
        :config
        (ivy-mode 1)
        (setq ivy-use-virtual-buffers t)
        (setq swiper-use-visual-line nil)
        (setq swiper-use-visual-line-p (lambda (a) nil)))
    #+end_src
-
 ** Ivy rich
    #+begin_src emacs-lisp
      (ivy-rich-mode 1)
      (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
    #+end_src
-
 ** Posframe and Ivy-posframe
 *** Posframe
     #+begin_src emacs-lisp
@@ -421,12 +393,10 @@
 	:diminish ""
 	)
     #+end_src
-
 *** Ivy-posframe
     #+begin_src emacs-lisp
       (use-package ivy-posframe
 	:ensure t
-	:after (ivy posframe)
 	:diminish ""
 	:config
 	(setq ivy-posframe-parameters
@@ -445,9 +415,7 @@
 		(swiper-isearch . nil)
 		(t . ivy-posframe-display-at-frame-center)))
 	(ivy-posframe-mode 1))
-
     #+end_src
-
 ** Company (Auto-completion)
 *** Company
     auto-completion is currently provided by company mode. Still deciding on if its right to use.
@@ -472,7 +440,6 @@
 	    (call-interactively fn)))
 	(advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
     #+end_src
-
 *** Company fuzzy
     #+begin_src emacs-lisp
       (use-package company-fuzzy
@@ -485,7 +452,6 @@
 	(setq company-fuzzy-sorting-backend 'alphabetic)
 	(setq company-fuzzy-show-annotation t))
     #+end_src
-
 ** Flycheck
    checks syntax on the fly. currently only enabled for python and elisp.
    #+begin_src emacs-lisp
@@ -494,14 +460,12 @@
        :config
        (add-hook 'python-mode-hook 'flycheck-mode))
    #+end_src
-
 ** Magit
    git integration
    #+begin_src emacs-lisp
      (use-package magit
        :ensure t)
    #+end_src
-
 ** Org Mode Stuff
 *** Org 
     #+begin_src emacs-lisp
@@ -515,39 +479,35 @@
 	(setq org-export-backends '(ascii html icalendar latex odt org))
 	:bind
 	(:map org-mode-map
-	      ("C-c C-x C-e" . skye/org-mark-and-archive))
+	      ("C-c C-x C-e" . skye/org-mark-and-archive)
+	      ("C-c a" . org-agenda))
 	:config
 	(require 'org-tempo)
 
-	(setq org-agenda-files '("~/Documents/life/README.org"))
-
-	(setq skye/bullets-list '("◉" "●" "○"))
-
-	(setq org-todo-keywords '((sequence "☛ TODO(t/!)" "|" "⚑ WAITING(w/!)" "|" "✔ DONE(d!)") (sequence "|" "✘ CANCELED(c)")))
+	(setq org-agenda-files '("~/Documents/life/README.org" "~/Documents/life/Ideas.org" "~/Documents/life/SchoolWork.org"))
+	(setq org-archive-location (concat "~/Documents/life/archive.org" "::* From %s"))
 
 	(setq org-ellipsis "⤵")
-	;;(setq org-ellipsis nil)
-
 	(setq org-src-fontify-natively t)
-
 	(setq org-src-tab-acts-natively t)
 
-	(setq org-archive-location (concat "~/Documents/life/archive.org" "::* From %s"))
+	(setq org-todo-keywords '((sequence "☛ TODO(t)" "|" "⚑ WAITING(w!)" "|" "✔ DONE(d)") (sequence "|" "❌ CANCELED(c)")))
 
 	(setq org-enforce-todo-dependencies t)
 	(setq org-enforce-todo-checkbox-dependencies t)
 
+	(setq skye/bullets-list '("◉" "●" "○"))
+
 	(defun skye/org-mark-and-archive ()
 	  "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
 	  (interactive)
-	  (ivy-read "Choose a final TODO state:" '("✔ DONE" "✘ CANCELED")
+	  (ivy-read "Choose a final TODO state:" '("✔ DONE" "❌ CANCELED")
 		    :action '(1
 			      ("o" org-todo "action 1")
 			      ("j" org-todo "action 2")))
 	  (org-archive-subtree))
 	)
     #+end_src
-
 *** COMMENT Org-Bullets
     Makes org mode pretty
     #+begin_src emacs-lisp
@@ -558,7 +518,6 @@
 	:config
 	(setq org-bullets-bullet-list skye/bullets-list))
     #+end_src
-
 *** Org-superstar
     #+begin_src emacs-lisp
       (use-package org-superstar
@@ -570,7 +529,6 @@
 	(setq org-superstar-cycle-headline-bullets t)
 	(setq org-superstar-headline-bullets-list skye/bullets-list))
     #+end_src
-
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -589,7 +547,6 @@
 	 (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
 	 ))
    #+end_src
-
 *** Auctex things
     Basically adding to $PATH. Why this didn't work when doing it through my zshrc, we'll never know.
     #+begin_src emacs-lisp
@@ -597,7 +554,6 @@
 			       (getenv "PATH")))
       (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
     #+end_src
-
 ** PDF-tools
    #+begin_src emacs-lisp
      (use-package pdf-tools
@@ -608,7 +564,6 @@
        (setq pdf-annot-activate-created-annotations t)
      )
    #+end_src
-
 ** Restart emacs from within emacs
    #+begin_src emacs-lisp
      (use-package restart-emacs
@@ -616,14 +571,12 @@
        :config
        (setq restart-emacs-restore-frames t))
    #+end_src
-
 ** Kurecolor
    #+begin_src emacs-lisp
      (use-package kurecolor
        :ensure t
        )
    #+end_src
-
 ** Ibuffer
 *** Ibuffer itself
     #+begin_src emacs-lisp
@@ -641,14 +594,12 @@
 					(unless (eq ibuffer-sorting-mode 'alphabetic)
 					  (ibuffer-do-sort-by-alphabetic)))))
     #+end_src
-
 *** Ibuffer-projectile
     #+begin_src emacs-lisp
       (use-package ibuffer-projectile
 	:ensure t
 	)
     #+end_src
-
 ** Dired stuff
 *** dired
     #+begin_src emacs-lisp
@@ -664,14 +615,12 @@
 	 (dired-mode . all-the-icons-dired-mode)
 	 ;(dired-mode . dired-filter-group-saved-groups)
 	 ))
-
     #+end_src
 ** Vterm
    #+begin_src emacs-lisp
      (use-package vterm
        :ensure t)
    #+end_src
-
 ** Projectile
    #+begin_src emacs-lisp
      (use-package projectile
@@ -684,7 +633,6 @@
        (projectile-mode 1)
        (setq projectile-completion-system 'ivy))
    #+end_src
-
 ** Search engine Mode
    #+begin_src emacs-lisp
      (use-package engine-mode
@@ -695,17 +643,68 @@
        (load "~/.emacs.d/engines.el")
        )
    #+end_src
-
 ** Recentf
    #+begin_src emacs-lisp
      (use-package recentf
        :ensure t
        :config
-       (setq recentf-exclude '("/\\(\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\|(autoloads.el\')\\)\\'"))
+       (setq recentf-exclude '("/\\(\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\|(.el\')\\)\\'"))
        (recentf-mode 1)
        (setq recentf-max-menu-items 15)
        (setq recentf-max-saved-items 25))
-   #+end_src   
+   #+end_src  
+** Clever M-x listings
+*** Prescient
+    #+begin_src emacs-lisp
+      (use-package prescient
+	:ensure
+	:config
+	(setq prescient-history-length 200)
+	(setq prescient-save-file "~/.emacs.d/prescient-items")
+	(setq prescient-filter-method '(literal regexp))
+	(prescient-persist-mode 1))
+    #+end_src
+*** Ivy-Prescient
+    #+begin_src emacs-lisp
+      (use-package ivy-prescient
+	:ensure
+	:after (prescient ivy)
+	:config
+	(setq ivy-prescient-sort-commands
+	      '(:not counsel-grep
+		     counsel-rg
+		     counsel-switch-buffer
+		     ivy-switch-buffer
+		     swiper
+		     swiper-multi))
+	(setq ivy-prescient-retain-classic-highlighting t)
+	(setq ivy-prescient-enable-filtering nil)
+	(setq ivy-prescient-enable-sorting t)
+	(ivy-prescient-mode 1))
+    #+end_src
+** Lorem ipsum
+   #+begin_src emacs-lisp
+     (use-package lorem-ipsum
+       :ensure t)
+   #+end_src
+** Email
+*** mu4e.
+    #+begin_src emacs-lisp
+      (load "~/.emacs.d/mu4e-init.el")
+    #+end_src
+*** mu4e-alert
+    #+begin_src emacs-lisp
+      (use-package mu4e-alert
+	:ensure t
+	:config
+	(mu4e-alert-set-default-style 'libnotify)
+	(add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+	(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
+    #+end_src
+*** mu4e-org
+    #+begin_src emacs-lisp
+
+    #+end_src
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp

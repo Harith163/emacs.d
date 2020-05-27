@@ -30,7 +30,6 @@
 	     "")
        (run-with-timer 0 3540 'md4rd-refresh-login))
    #+end_src
-
 ** dired Filter
    #+begin_src emacs-lisp
      (use-package dired-filter

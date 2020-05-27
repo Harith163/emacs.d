@@ -189,9 +189,6 @@
 		      (outline-6 (:foreground level6))
 		      (outline-7 (:foreground level7))
 		      (outline-8 (:foreground level8))
-		      
-		      ;;Ace Window Mode stuff
-		      (aw-leading-char-face (:height 2.0 :inherit 'ace-jump-face-foreground))
 
 		      ;;latex faces
 		      (font-latex-sectioning-0-face (:height 1.1 :inherit 'font-latex-sectioning-1-face))
@@ -295,6 +292,47 @@
 		      (avy-lead-face (:foreground bg-black :background background-standout1))
 		      (avy-lead-face-0 (:foreground bg-black :background background-standout2))
 		      (avy-lead-face-1 (:foreground bg-black :background pink-light))
+		      
+		      (aw-leading-char-face (:height 2.0 :inherit 'avy-lead-face))
+
+		      ;;mu4e stuff
+		      (mu4e-region-code (:background comment))
+		      (mu4e-compose-header-face (:slant 'italic :inherit 'message-separator))
+		      (mu4e-compose-separator-face (:slant 'italic :inherit 'message-separator))
+		      (mu4e-warning-face (:weight 'bold :slant 'normal :inherit 'font-lock-warning-face))
+		      (mu4e-ok-face (:weight 'bold :slant 'normal :inherit 'font-lock-comment-face))
+		      (mu4e-system-face (:slant 'italic :inherit 'font-lock-comment-face))
+		      (mu4e-cited-7-face (:weight 'normal :slant 'italic :inherit 'font-lock-type-face))
+		      (mu4e-cited-6-face (:weight 'normal :slant 'italic :inherit 'font-lock-comment-delimiter-face))
+		      (mu4e-cited-5-face (:weight 'normal :slant 'italic :inherit 'font-lock-comment-face))
+		      (mu4e-cited-4-face (:weight 'normal :slant 'italic :inherit 'font-lock-keyword-face))
+		      (mu4e-cited-3-face (:weight 'normal :slant 'italic :inherit 'font-lock-variable-name-face))
+		      (mu4e-cited-2-face (:weight 'normal :slant 'italic :inherit 'font-lock-preprocessor-face))
+		      (mu4e-cited-1-face (:weight 'normal :slant 'italic :inherit 'font-lock-builtin-face))
+		      (mu4e-attach-number-face (:weight 'bold :inherit 'font-lock-variable-name-face))
+		      (mu4e-url-number-face (:weight 'bold :inherit 'font-lock-constant-face))
+		      (mu4e-footer-face (:inherit 'font-lock-comment-face))
+		      (mu4e-view-body-face (:inherit 'default))
+		      (mu4e-modeline-face (:weight 'bold :inherit 'font-lock-string-face))
+		      (mu4e-context-face (:weight 'bold :inherit 'mu4e-title-face))
+		      (mu4e-title-face (:weight 'bold :inherit 'font-lock-type-face))
+		      (mu4e-highlight-face (:inherit 'highlight))
+		      (mu4e-contact-face (:inherit 'font-lock-variable-name-face))
+		      (mu4e-link-face (:inherit 'link))
+		      (mu4e-special-header-value-face (:inherit 'font-lock-builtin-face))
+		      (mu4e-header-value-face (:inherit 'font-lock-type-face))
+		      (mu4e-header-key-face (:weight 'bold :inherit 'message-header-name))
+		      (mu4e-header-marks-face (:inherit 'font-lock-preprocessor-face))
+		      (mu4e-header-highlight-face (:weight 'bold :underline t :inherit 'hl-line))
+		      (mu4e-header-title-face (:inherit 'font-lock-type-face))
+		      (mu4e-header-face (:inherit 'default))
+		      (mu4e-forwarded-face (:weight 'normal :inherit 'font-lock-builtin-face))
+		      (mu4e-replied-face (:weight 'normal :inherit 'font-lock-builtin-face))
+		      (mu4e-flagged-face (:weight 'bold :inherit 'font-lock-constant-face))
+		      (mu4e-draft-face (:inherit 'font-lock-string-face))
+		      (mu4e-trashed-face (:strike-through t :inherit 'font-lock-comment-face))
+		      (mu4e-moved-face (:slant 'italic :inherit 'font-lock-comment-face))
+		      (mu4e-unread-face (:weight 'bold :inherit 'font-lock-keyword-face))		      
 		      )	     
 		     ;; Forms after the face specifications are evaluated.
 		     ;; (palette vars can be used, read below for details.)
@@ -307,3 +345,7 @@
                    (file-name-directory load-file-name))))
 
 (provide-theme 'trans-side)
+
+;; Local Variables:
+;; eval: (rainbow-mode)
+;; End:
