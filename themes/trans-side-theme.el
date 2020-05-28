@@ -332,8 +332,19 @@
 		      (mu4e-draft-face (:inherit 'font-lock-string-face))
 		      (mu4e-trashed-face (:strike-through t :inherit 'font-lock-comment-face))
 		      (mu4e-moved-face (:slant 'italic :inherit 'font-lock-comment-face))
-		      (mu4e-unread-face (:weight 'bold :inherit 'font-lock-keyword-face))		      
-		      )	     
+		      (mu4e-unread-face (:weight 'bold :inherit 'font-lock-keyword-face))
+
+		      ;;Ivy.
+		       (swiper-line-face (:inherit 'highlight))
+		       (swiper-background-match-face-4 (:inherit 'swiper-match-face-4))
+		       (swiper-background-match-face-3 (:inherit 'swiper-match-face-3))
+		       (swiper-background-match-face-2 (:inherit 'swiper-match-face-2))
+		       (swiper-background-match-face-1 (:inherit 'swiper-match-face-1))
+		       (swiper-match-face-4 (:inherit 'isearch-fail))
+		       (swiper-match-face-3 (:inherit 'match))
+		       (swiper-match-face-2 (:inherit 'isearch))
+		       (swiper-match-face-1 (:inherit 'lazy-highlight))
+		       )	     
 		     ;; Forms after the face specifications are evaluated.
 		     ;; (palette vars can be used, read below for details.)
 		     )

@@ -35,4 +35,7 @@
      (use-package dired-filter
        :ensure t)
    #+end_src
-
+** Travel by sub-words
+   #+begin_src emacs-lisp
+     (gloabl-subword-mode 1)
+   #+end_src

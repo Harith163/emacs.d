@@ -174,7 +174,8 @@
 	      ("C-<up>" . kurecolor-increase-brightness-by-step)
 	      ("C-<down>" . kurecolor-decrease-brightness-by-step)
 	      ("S-<up>" . kurecolor-increase-saturation-by-step)
-	      ("S-<down>" . kurecolor-decrease-saturation-by-step))
+	      ("S-<down>" . kurecolor-decrease-saturation-by-step)
+	      ("C-h f" . describe-face))
 
 	(:map global-map
 		 :prefix-map my-meta-z-prefix-ma
@@ -353,6 +354,9 @@
 ** Counsel and Swiper (IVY)
    Better search and completion in minibuffer.
    #+begin_src emacs-lisp
+     (use-package swiper
+       :ensure t)
+
      (use-package ivy
        :demand
        :diminish ""
@@ -360,6 +364,7 @@
        :bind
        (:map global-map
 	     ("C-s" . swiper)
+	     ("C-r" . swiper-backward)
 	     ("C-c C-r" . ivy-resume)
 	     ("<f6>" . ivy-resume)
 	     ("M-x" . counsel-M-x)
@@ -402,17 +407,17 @@
 	(setq ivy-posframe-parameters
 	      '((left-fringe . 2)
 		(right-fringe . 2)
-		(internal-border-width . 2)
-		;; (font . "DejaVu Sans Mono-10.75:hintstyle=hintfull")
-		))
+		(internal-border-width . 2)))
 	(setq ivy-posframe-height-alist
 	      '((swiper . 15)
 		(swiper-isearch . 15)
 		(t . 10)))
 	(setq ivy-posframe-display-functions-alist
 	      '((complete-symbol . ivy-posframe-display-at-point)
-		(swiper . nil)
-		(swiper-isearch . nil)
+		(swiper . ivy-display-function-fallback)
+		(swiper-isearch . ivy-display-function-fallback)
+		(swiper-backward . ivy-display-function-fallback)
+		(swiper-isearch-backward . ivy-display-function-fallback)
 		(t . ivy-posframe-display-at-frame-center)))
 	(ivy-posframe-mode 1))
     #+end_src
@@ -497,6 +502,8 @@
 	(setq org-enforce-todo-checkbox-dependencies t)
 
 	(setq skye/bullets-list '("◉" "●" "○"))
+
+	(setq org-src-window-setup 'current-window)
 
 	(defun skye/org-mark-and-archive ()
 	  "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
@@ -705,6 +712,19 @@
     #+begin_src emacs-lisp
 
     #+end_src
+** Smart Parens Mode
+   #+begin_src emacs-lisp
+     (use-package smartparens
+       :ensure t
+       :diminish ""
+       :hook
+       (emacs-lisp-mode . smartparens-mode)
+       (latex-mode . smartparens-mode)
+       (python-mode . smartparens-mode)
+       :config
+       (require 'smartparens-config)
+       (smartparens-global-strict-mode))
+   #+end_src
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
