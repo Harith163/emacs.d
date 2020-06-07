@@ -3,7 +3,8 @@
 (require 'mu4e)
 (setq mu4e-sent-folder "/personal/Saved Items"
       mu4e-drafts-folder "/personal/Drafts"
-      mu4e-trash-folder "/personal/Trash")
+      mu4e-trash-folder "/personal/Trash"
+      mu4e-refile-folder "/archive")
 
 (setq mu4e-get-mail-command "mbsync -a"
       mu4e-html2text-command "w3m -T text/html"
@@ -15,11 +16,12 @@
       '(("/personal/INBOX" . ?k)
 	("/stony/INBOX" . ?s)))
 
+(setq mail-user-agent 'mu4e-user-agent)
+
 (setq mu4e-show-images t)
 
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
-
 
 (defvar my-mu4e-account-alist
   '(("personal"

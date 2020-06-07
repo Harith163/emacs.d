@@ -1,4 +1,16 @@
-** Reddit in emacs with Md4rd
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+options: timestamp:t title:t toc:t todo:t |:t
+#+title: dangitfile
+#+date: <2020-05-29 Fri>
+#+author: Skye Srinivasan Harith
+#+email: kaushik.harith@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 26.3 (Org mode 9.3.6)
+
+
+** COMMENT Reddit in emacs with Md4rd
    xVdkVJ78cc4TtrZoocploxm0Hws
    #+begin_src emacs-lisp
      (use-package md4rd
@@ -30,12 +42,38 @@
 	     "")
        (run-with-timer 0 3540 'md4rd-refresh-login))
    #+end_src
-** dired Filter
+** COMMENT dired Filter
    #+begin_src emacs-lisp
      (use-package dired-filter
        :ensure t)
    #+end_src
-** Travel by sub-words
+** COMMENT Travel by sub-words
    #+begin_src emacs-lisp
      (gloabl-subword-mode 1)
+   #+end_src
+** COMMENT Auto switch to new buffers
+   DO NOT RUN THIS. WILL CRASH YOUR SYSTEM 
+   #+begin_src emacs-lisp
+     (defun skye/switch-to-new-buffer ()
+       "Switch to newest created buffer."
+       (interactive)
+       (let (new-buffer-list '(nth 0 (buffer-list))) (switch-to-buffer newest-buffer))
+       )
+
+     (add-hook 'buffer-list-update-hook 'skye/switch-to-new-buffer)
+
+     (buffer-list)
+   #+end_src
+** COMMENT Smart Parens Mode
+   #+begin_src emacs-lisp
+     (use-package smartparens
+       :ensure t
+       :diminish ""
+       :hook
+       (emacs-lisp-mode . smartparens-mode)
+       (LaTex-mode . smartparens-mode)
+       (python-mode . smartparens-mode)
+       :config
+       (sp-local-pair 'LaTeX-mode "`" nil :actions :rem)
+       )
    #+end_src

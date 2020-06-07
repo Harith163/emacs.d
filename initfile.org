@@ -141,8 +141,14 @@
 	(interactive)
 	(dolist (recentfiles recentf-list) (find-file recentfiles)))
     #+end_src
+*** Kill current buffer
+    #+begin_src emacs-lisp
+      (defun skye/kill-current-buffer ()
+	(interactive)
+	(kill-buffer (current-buffer)))
+    #+end_src
 ** Custom keybinds
-   Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope.
+   Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope. Use the super key for things that are commonly associated with the "C-x C-" keybind.
 *** elisp mode specific binds
     The following functions are bound
     - Autothemer.el generate unspecified faces.
@@ -159,6 +165,8 @@
     - comment and uncoment region.
     - My recentf-reopen function.
     - Kurecolor's hue(M), saturation(S) and brightness(C) functions.
+    - Describe the face at point. Prefixed with Ctrl-z to distinguish between this and describe-function
+
     #+begin_src emacs-lisp
       (use-package emacs
 	:bind
@@ -184,8 +192,12 @@
 		 (":" . uncomment-region))
 
 	(:map global-map
-	      ("<f5>" . revert-buffer)))
+	      ("<f5>" . revert-buffer)
+	      ([remap kill-buffer] . skye/kill-current-buffer)
+	      ("s-s" . save-buffer)
+	      ("s-f" . counsel-find-file)))
     #+end_src
+
 ** Better autosaving
    #+begin_src emacs-lisp
      (setq backup-by-copying t      ; don't clobber symlinks
@@ -212,6 +224,15 @@
    #+begin_src emacs-lisp
      (setq split-height-threshold nil)
      (setq split-width-threshold 0)
+   #+end_src
+** Unicode stuff
+   #+begin_src emacs-lisp
+     (prefer-coding-system       'utf-8)
+     (set-default-coding-systems 'utf-8)
+     (set-terminal-coding-system 'utf-8)
+     (set-keyboard-coding-system 'utf-8)
+     (setq default-buffer-file-coding-system 'utf-8)
+     (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
    #+end_src
 * Packages
 ** Try
@@ -354,6 +375,9 @@
 ** Counsel and Swiper (IVY)
    Better search and completion in minibuffer.
    #+begin_src emacs-lisp
+     (use-package counsel
+       :ensure t)
+
      (use-package swiper
        :ensure t)
 
@@ -385,6 +409,7 @@
        (setq swiper-use-visual-line nil)
        (setq swiper-use-visual-line-p (lambda (a) nil)))
    #+end_src
+
 ** Ivy rich
    #+begin_src emacs-lisp
      (ivy-rich-mode 1)
@@ -457,6 +482,13 @@
 	(setq company-fuzzy-sorting-backend 'alphabetic)
 	(setq company-fuzzy-show-annotation t))
     #+end_src
+*** Company AucTeX
+    #+begin_src emacs-lisp
+      (use-package company-auctex
+	:ensure t
+	:init
+	(company-auctex-init))
+    #+end_src
 ** Flycheck
    checks syntax on the fly. currently only enabled for python and elisp.
    #+begin_src emacs-lisp
@@ -472,7 +504,7 @@
        :ensure t)
    #+end_src
 ** Org Mode Stuff
-*** Org 
+*** Org
     #+begin_src emacs-lisp
       (use-package org
 	:ensure org-superstar
@@ -485,36 +517,84 @@
 	:bind
 	(:map org-mode-map
 	      ("C-c C-x C-e" . skye/org-mark-and-archive)
-	      ("C-c a" . org-agenda))
+	      ("C-c C-x <up>" . org-cycle-list-bullet)
+	 :map global-map
+	      ("C-c a" . org-agenda)
+	      ("C-c c" . org-capture))
 	:config
 	(require 'org-tempo)
 
-	(setq org-agenda-files '("~/Documents/life/README.org" "~/Documents/life/Ideas.org" "~/Documents/life/SchoolWork.org"))
-	(setq org-archive-location (concat "~/Documents/life/archive.org" "::* From %s"))
+	(setq org-directory "~/Documents/life/")
 
-	(setq org-ellipsis "⤵")
+	(defun skye/org-get-path (stringname)
+	  "Use concat to generate full path."
+	  (concat (file-name-as-directory org-directory) stringname))
+
+	(setq skye/Readme (skye/org-get-path "README.org"))
+	(setq skye/Ideas (skye/org-get-path "Ideas.org"))
+	(setq skye/School (skye/org-get-path "SchoolWork.org"))
+	(setq skye/Habit (skye/org-get-path "Habit.org"))
+	(setq skye/archive (skye/org-get-path "archive.org"))
+
+	(setq org-agenda-files (list skye/Readme skye/Ideas skye/School skye/Habit))
+	(setq org-archive-location (concat skye/archive "::* From %s"))
+
+	(setq org-ellipsis " ▼")
 	(setq org-src-fontify-natively t)
 	(setq org-src-tab-acts-natively t)
 
-	(setq org-todo-keywords '((sequence "☛ TODO(t)" "|" "⚑ WAITING(w!)" "|" "✔ DONE(d)") (sequence "|" "❌ CANCELED(c)")))
+	(setq org-todo-keywords '((sequence "☛TODO(t)" "|" "⚑WAITING(w!)") (sequence "|" "❌CANCELED(c)" "|" "✔DONE(d)")))
 
 	(setq org-enforce-todo-dependencies t)
 	(setq org-enforce-todo-checkbox-dependencies t)
 
-	(setq skye/bullets-list '("◉" "●" "○"))
+	(setq skye/bullets-list '("◉" "●" "○" "⊙"))
 
 	(setq org-src-window-setup 'current-window)
 
 	(defun skye/org-mark-and-archive ()
 	  "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
 	  (interactive)
-	  (ivy-read "Choose a final TODO state:" '("✔ DONE" "❌ CANCELED")
+	  (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
 		    :action '(1
 			      ("o" org-todo "action 1")
 			      ("j" org-todo "action 2")))
 	  (org-archive-subtree))
+
+	(add-to-list 'org-modules 'org-habit)
+
+	(setq org-habit-graph-column 80)
+	(setq org-habit-show-habits-only-for-today t)
+	(setq org-habit-show-all-today t)
+
+	(setq org-default-notes-file skye/Readme)
+
+	(setq org-capture-templates '(
+				      ("e" "Email to be dealt with. Action item" entry
+				       (file+headline skye/Readme "Emails to deal with")
+				       "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^u \n :PROPERTIES: \n CREATED: %u \n :END:"
+				       )
+
+				      ("m" "Miscellaneous TODO. Refile" entry
+				       (file+headline skye/Readme "Miscellaneous")
+				       "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
+				       )
+
+				      ("t" "Date-less TODO. Generic" entry
+				       (file skye/Readme)
+				       "* ☛TODO %^{PROMPT} \n  %?"
+				       )
+				      ))
+
+	(setq org-refile-targets
+	      '((nil :maxlevel . 3)
+		(org-agenda-files :maxlevel . 2)))
+
+	(setq org-pretty-entities t)
+	(setq org-pretty-entities-include-sub-superscripts t)
 	)
     #+end_src
+
 *** COMMENT Org-Bullets
     Makes org mode pretty
     #+begin_src emacs-lisp
@@ -588,7 +668,9 @@
 *** Ibuffer itself
     #+begin_src emacs-lisp
       (use-package ibuffer
-	:bind (("C-x C-b" . ibuffer))
+	:bind
+	(("C-x C-b" . ibuffer)
+	 ("s-b" . ibuffer))
 	:config
 	(setq ibuffer-expert t)
 	(setq ibuffer-saved-filter-groups nil)
@@ -596,11 +678,11 @@
 	(add-hook 'ibuffer-mode-hook '(lambda ()
 					(ibuffer-auto-mode 1)
 					(all-the-icons-ibuffer-mode 1)
-					(ibuffer-switch-to-saved-filter-groups "home")
 					(ibuffer-projectile-set-filter-groups)
 					(unless (eq ibuffer-sorting-mode 'alphabetic)
 					  (ibuffer-do-sort-by-alphabetic)))))
     #+end_src
+
 *** Ibuffer-projectile
     #+begin_src emacs-lisp
       (use-package ibuffer-projectile
@@ -626,8 +708,22 @@
 ** Vterm
    #+begin_src emacs-lisp
      (use-package vterm
-       :ensure t)
+       :ensure t
+       :hook
+       (vterm-mode . contrib/inhibit-global-linum-mode)
+       (vterm-mode . (lambda () (visual-line-mode -1)))
+       :config
+       (setq vterm-shell "/usr/bin/bash")
+       )
    #+end_src
+** Eshell
+   #+begin_src emacs-lisp
+     (use-package eshell
+       :ensure t
+       :hook
+       (eshell-mode . contrib/inhibit-global-linum-mode))
+   #+end_src
+
 ** Projectile
    #+begin_src emacs-lisp
      (use-package projectile
@@ -699,6 +795,7 @@
     #+begin_src emacs-lisp
       (load "~/.emacs.d/mu4e-init.el")
     #+end_src
+
 *** mu4e-alert
     #+begin_src emacs-lisp
       (use-package mu4e-alert
@@ -708,28 +805,138 @@
 	(add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
 	(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
     #+end_src
-*** mu4e-org
+*** Org-mu4e
     #+begin_src emacs-lisp
-
+      (require 'org-mu4e)
     #+end_src
-** Smart Parens Mode
+*** Org-Message
+    #+begin_src emacs-lisp
+      (use-package org-msg
+	:ensure t
+	:config
+	(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
+	      org-msg-startup "hidestars indent inlineimages"
+	      org-msg-greeting-fmt "\nHi *%s*,\n\n"
+	      org-msg-greeting-name-limit 3
+	      org-msg-text-plain-alternative t
+	      org-msg-signature "
+      Regards,
+      ,*Kaushik S Harith* ")
+	(org-msg-mode)
+      )
+    #+end_src
+
+** Window management
    #+begin_src emacs-lisp
-     (use-package smartparens
-       :ensure t
-       :diminish ""
-       :hook
-       (emacs-lisp-mode . smartparens-mode)
-       (latex-mode . smartparens-mode)
-       (python-mode . smartparens-mode)
-       :config
-       (require 'smartparens-config)
-       (smartparens-global-strict-mode))
+     (use-package window
+       :init
+       (setq display-buffer-alist
+	     '(;; top side window
+	       ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
+		(display-buffer-in-side-window)
+		(window-height . 0.25)
+		(side . top)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t))))
+	       ("\\*Messages.*"
+		(display-buffer-in-side-window)
+		(window-height . 0.25)
+		(side . top)
+		(slot . 1)
+		(window-parameters . ((no-other-window . t))))
+	       ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+		(display-buffer-in-side-window)
+		(window-height . 0.25)
+		(side . top)
+		(slot . 2)
+		(window-parameters . ((no-other-window . t))))
+	       ;; bottom side window
+	       ("\\*\\(Output\\|Register Preview\\).*"
+		(display-buffer-in-side-window)
+		(window-width . 0.20)       ; See the :hook
+		(side . bottom)
+		(slot . -1)
+		(window-parameters . ((no-other-window . t))))
+	       (".*\\*\\(Completions\\|Embark.*Occur\\).*"
+		(display-buffer-in-side-window)
+		(window-height . 0.25)
+		(side . bottom)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t))))
+	       ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
+		(display-buffer-in-side-window)
+		(window-width . 0.40)
+		(side . right)
+		(slot . 1))
+	       ;; left side window
+	       ("\\*Help.*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)       ; See the :hook
+		(side . left)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t))))
+	       ;; right side window
+	       ("\\*Faces\\*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)
+		(side . right)
+		(slot . 0)
+		(window-parameters . ((no-other-window . t)
+				      (mode-line-format . (" "
+							   mode-line-buffer-identification)))))
+	       ("\\*Custom.*"
+		(display-buffer-in-side-window)
+		(window-width . 0.25)
+		(side . right)
+		(slot . 1))
+	       ;; bottom buffer (NOT side window)
+	       ("\\*\\vc-\\(incoming\\|outgoing\\).*"
+		(display-buffer-at-bottom))))
+       (setq window-combination-resize t)
+       (setq even-window-sizes 'height-only)
+       (setq window-sides-vertical nil)
+       ;; Note that the the syntax for `use-package' hooks is controlled by
+       ;; the `use-package-hook-name-suffix' variable.  The "-hook" suffix is
+       ;; not an error of mine.
+       :hook ((help-mode . visual-line-mode)
+	      (custom-mode . visual-line-mode))
+       :bind (("s-n" . next-buffer)
+	      ("s-p" . previous-buffer)
+	      ("s-o" . other-window)
+	      ("s-2" . split-window-below)
+	      ("s-3" . split-window-right)
+	      ("s-0" . delete-window)
+	      ("s-1" . delete-other-windows)
+	      ("s-5" . delete-frame)
+	      ("C-x +" . balance-windows-area)))
    #+end_src
+
+** COMMENT Evil mode stuff
+*** Evil Mode
+    #+begin_src emacs-lisp
+      (use-package evil
+	:ensure t
+	:config
+	(evil-mode 1)
+	(setq evil-auto-indent t)
+       )
+    #+end_src
+*** Evil org
+    #+begin_src emacs-lisp
+      (use-package evil-org
+	:ensure t
+	:after org
+	:hook
+	((org-mode . evil-org-mode)
+	 (evil-org-mode . (lambda () (evil-org-set-key-theme))))
+	:config
+	(require 'evil-org-agenda)
+	(evil-org-agenda-set-keys))
+    #+end_src
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
     (put 'scroll-left 'disabled nil)
     (put 'dired-find-alternate-file 'disabled nil)
     (put 'narrow-to-region 'disabled nil)
-  #+end_src
-  
+  #+end_src  
