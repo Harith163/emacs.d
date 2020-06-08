@@ -591,7 +591,6 @@
 		(org-agenda-files :maxlevel . 2)))
 
 	(setq org-pretty-entities t)
-	(setq org-pretty-entities-include-sub-superscripts t)
 	)
     #+end_src
 
@@ -723,7 +722,6 @@
        :hook
        (eshell-mode . contrib/inhibit-global-linum-mode))
    #+end_src
-
 ** Projectile
    #+begin_src emacs-lisp
      (use-package projectile
@@ -933,6 +931,14 @@
 	(require 'evil-org-agenda)
 	(evil-org-agenda-set-keys))
     #+end_src
+** Yaml Mode
+   #+begin_src emacs-lisp
+     (use-package yaml-mode
+       :ensure t
+       :bind
+       ((:map yaml-mode-map
+	      ("C-m" . newline-and-indent))))
+   #+end_src
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp

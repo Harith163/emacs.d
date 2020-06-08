@@ -361,6 +361,30 @@
 		      ;;Counsel.
 		      (counsel-key-binding (:inherit 'font-lock-keyword-face))
 
+		      ;;Vterm.
+		      (vterm-color-inverse-video (:inherit 'vterm-color-default))
+		      (vterm-color-underline (:inherit 'vterm-color-default))
+		      (vterm-color-white (:inherit 'term-color-white))
+		      (vterm-color-cyan (:inherit 'term-color-cyan))
+		      (vterm-color-magenta (:inherit 'term-color-magenta))
+		      (vterm-color-blue (:inherit 'term-color-blue))
+		      (vterm-color-yellow (:inherit 'term-color-yellow))
+		      (vterm-color-green (:inherit 'term-color-green))
+		      (vterm-color-red (:inherit 'term-color-red))
+		      (vterm-color-black (:inherit 'term-color-black))
+		      (vterm-color-default (:inherit 'default))
+		      (term-color-white (:foreground fg-white :background fg-white))
+		      (term-color-cyan (:foreground level2 :background level2))
+		      (term-color-magenta (:foreground warning :background warning))
+		      (term-color-blue (:foreground background-standout2 :background background-standout2))
+		      (term-color-yellow (:foreground background-standout1 :background background-standout1))
+		      (term-color-green (:foreground background-standout1 :background background-standout1))
+		      (term-color-red (:foreground warning :background warning))
+		      (term-color-black (:foreground bg-main :background bg-main))
+		      (term-underline (:underline t))
+		      (term-bold (:weight 'bold))
+		      (term (:inherit 'default))
+		      
 		      )
 		     ;; Forms after the face specifications are evaluated.
 		     ;; (palette vars can be used, read below for details.)
