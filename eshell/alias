@@ -1,40 +1,6 @@
-alias sctl 'systemctl'
-alias jctl 'journalctl'
-alias jpnb 'jupyter-notebook --browser=firefox'
-alias sudo 'sudo '
-alias cat 'bat '
-
-
-alias ls 'exa --group-directories-first'
-alias ll 'ls -al'
-alias l 'll -h'
-alias lg 'll --git'
-alias lln 'll | grep --color=always "\-> $HOME" | awk '\''{print $7 $8 $9}'\'' '
-alias llnv 'll | grep --color=always "\-> $HOME" -v | awk '\''{print $7}'\'' '
-
-
-alias fdln 'find ~ -maxdepth 1 -type l  | cut -d '\''/'\'' -f4 | cut -d '\''.'\'' -f2,3,4 | sort -d | awk '\''FNR > 1'\'''
-alias fdlnv 'find ~ -maxdepth 1 ! -type l  | cut -d '\''/'\'' -f4 | cut -d '\''.'\'' -f2,3,4 | sort -d | awk '\''FNR > 1'\'''
-
-
-alias rm 'rm -i'
-alias cp 'cp -i'
-alias mv 'mv -i'
-
-
-alias yaconf 'yay -Pg'
-alias yain 'yay -S'
-alias yains 'yay -U'
-alias yainsd 'yay -S --asdeps'
-alias yaloc 'yay -Qi'
-alias yalocs 'yay -Qs'
-alias yalst 'yay -Qe'
-alias yamir 'yay -Syy'
-alias yaorph 'yay -Qtd'
-alias yare 'yay -R'
-alias yarem 'yay -Rns'
-alias yarep 'yay -Si'
-alias yareps 'yay -Ss'
-alias yasu 'yay -Syu --noconfirm'
-alias yaupd 'yay -Sy'
-alias yaupg 'yay -Syu'
+alias yain yay -S
+alias ls exa --color=always
+alias yasu yay -Syu --noconfirm
+alias ll exa --group-directories-first -al --color=always
+alias yarep yay -Ss
+alias yareps yay -Ss

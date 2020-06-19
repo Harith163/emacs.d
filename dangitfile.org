@@ -77,3 +77,12 @@
        (sp-local-pair 'LaTeX-mode "`" nil :actions :rem)
        )
    #+end_src
+** Reopen my commonly used files.
+   #+begin_src emacs-lisp
+     (setq skye/common-file-list (concatenate 'list org-agenda-files '("~/.emacs.d/themes/trans-side-theme.el" "~/.emacs.d/initfile.org")))
+
+     (defun skye/open-common-files ()
+       "Reopen all the files you usually have open all the time"
+       (interactive)
+       (dolist (file skye/common-file-list) (find-file file)))
+   #+end_src

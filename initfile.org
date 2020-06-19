@@ -18,17 +18,34 @@
    #+end_src
 ** Tool and menu bars, startup message, line mode, fringe mode
    #+begin_src emacs-lisp
-     (setq inhibit-startup-message t)
-     (tool-bar-mode -1)
-     (menu-bar-mode -1)
-     (set-scroll-bar-mode nil)
-     (global-visual-line-mode t)
-     (set-fringe-mode 0)
+     (setq inhibit-startup-message t) ;startup.el
+     (tool-bar-mode -1) ;tool-bar.el
+     (menu-bar-mode -1) ;menu-bar.el
+     (set-scroll-bar-mode nil) ;sroll-bar.el
+     (global-visual-line-mode t) ;simple.el
+     (set-fringe-mode 0) ;fringe.el
    #+end_src
-** Display modeline time because I need that.
-   #+begin_src emacs-lisp
-     (display-time-mode 1)
-   #+end_src
+** Modeline stuff
+*** Display modeline time because I need that.
+    #+begin_src emacs-lisp
+      (use-package time
+	:init
+	(setq display-time-load-average-threshold 85)
+	(setq display-time-use-mail-icon t)
+	(setq display-time-day-and-date nil)
+	(setq display-time-format "%A %D || %I:%M %p ")
+	:config
+	(display-time-mode 1)
+	)
+    #+end_src
+*** Disable line and column display
+    #+begin_src emacs-lisp
+      (use-package simple
+	:init
+	(line-number-mode -1)
+	(column-number-mode -1)
+	)
+    #+end_src
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -147,6 +164,27 @@
 	(interactive)
 	(kill-buffer (current-buffer)))
     #+end_src
+*** Buffer scale
+    #+begin_src emacs-lisp
+      (defun skye/small-text-scale ()
+	"Make the buffer text zoom smaller"
+	(interactive)
+	(text-scale-set -1))
+
+      (defun skye/big-text-scale ()
+	"Make the buffer text zoom bigger"
+	(interactive)
+	(text-scale-set 1))
+    #+end_src
+*** Open common files
+    #+begin_src emacs-lisp
+      (setq skye/common-file-list (concatenate 'list org-agenda-files '("~/.emacs.d/themes/trans-side-theme.el" "~/.emacs.d/initfile.org")))
+
+      (defun skye/open-common-files ()
+	"Reopen all the files you usually have open all the time"
+	(interactive)
+	(dolist (file skye/common-file-list) (find-file file)))
+    #+end_src
 ** Custom keybinds
    Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope. Use the super key for things that are commonly associated with the "C-x C-" keybind.
 *** elisp mode specific binds
@@ -171,31 +209,33 @@
       (use-package emacs
 	:bind
 	(:map global-map
-	      :prefix-map my-ctrl-z-prefix-map
-	      :prefix "C-z"
-	      ("C-<SPC>" . fixup-whitespace)
-	      ("C-e" . eval-defun)
-	      ("|" . contrib/toggle-window-split)
-	      (":" . comment-region)
-	      ("M-<up>" . kurecolor-increase-hue-by-step)
-	      ("M-<down>" . kurecolor-decrease-hue-by-step)
-	      ("C-<up>" . kurecolor-increase-brightness-by-step)
-	      ("C-<down>" . kurecolor-decrease-brightness-by-step)
-	      ("S-<up>" . kurecolor-increase-saturation-by-step)
-	      ("S-<down>" . kurecolor-decrease-saturation-by-step)
-	      ("C-h f" . describe-face))
+	 :prefix-map my-ctrl-z-prefix-map
+	 :prefix "C-z"
+	 ("C-<SPC>" . fixup-whitespace)
+	 ("C-e" . eval-defun)
+	 ("|" . contrib/toggle-window-split)
+	 (";" . comment-region)
+	 ("M-<up>" . kurecolor-increase-hue-by-step)
+	 ("M-<down>" . kurecolor-decrease-hue-by-step)
+	 ("C-<up>" . kurecolor-increase-brightness-by-step)
+	 ("C-<down>" . kurecolor-decrease-brightness-by-step)
+	 ("S-<up>" . kurecolor-increase-saturation-by-step)
+	 ("S-<down>" . kurecolor-decrease-saturation-by-step)
+	 ("C-h f" . describe-face))
 
 	(:map global-map
-		 :prefix-map my-meta-z-prefix-ma
-		 :prefix "M-z"
-		 ("M-r" . skye/recentf-open-all)
-		 (":" . uncomment-region))
+	 :prefix-map my-meta-z-prefix-map
+	 :prefix "M-z"
+	 ("M-r" . skye/open-common-files)
+	 (";" . uncomment-region))
 
 	(:map global-map
-	      ("<f5>" . revert-buffer)
-	      ([remap kill-buffer] . skye/kill-current-buffer)
-	      ("s-s" . save-buffer)
-	      ("s-f" . counsel-find-file)))
+	 ("<f5>" . revert-buffer)
+	 ([remap kill-buffer] . skye/kill-current-buffer)
+	 ("s-s" . save-buffer)
+	 ("s-f" . counsel-find-file)
+	 ("s-m" . mu4e))
+	)
     #+end_src
 
 ** Better autosaving
@@ -213,17 +253,17 @@
    Most of this didn't work. Auto-window-vscroll did for some reason.
    #+begin_src emacs-lisp
      (setq redisplay-dont-pause t
-       scroll-margin 1
-       scroll-step 1
-       scroll-conservatively 10000
-       scroll-preserve-screen-position 1)
+	   scroll-margin 1
+	   scroll-step 1
+	   scroll-conservatively 10000
+	   scroll-preserve-screen-position 1)
 
      (setq auto-window-vscroll nil)
    #+end_src
 ** Vertical instead of horizontal split
    #+begin_src emacs-lisp
-     (setq split-height-threshold nil)
-     (setq split-width-threshold 0)
+     (setq split-height-threshold nil) ;window.el
+     (setq split-width-threshold 0) ;window.el
    #+end_src
 ** Unicode stuff
    #+begin_src emacs-lisp
@@ -234,6 +274,12 @@
      (setq default-buffer-file-coding-system 'utf-8)
      (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
    #+end_src
+** Macros
+*** Tab and align in themes
+    #+begin_src emacs-lisp
+      (fset 'skye/tab-and-align
+	 (lambda (&optional arg) "Keyboard macro to align stuff in theme files." (interactive "p") (kmacro-exec-ring-item (quote ([4 26 67108896 14 tab] 0 "%d")) arg)))
+    #+end_src
 * Packages
 ** Try
    lets you try packages temporarily
@@ -254,7 +300,8 @@
        :ensure t
        :config
        (add-hook 'after-init-hook #'fancy-battery-mode)
-       (setq fancy-battery-show-percentage t))
+       (setq fancy-battery-show-percentage t)
+       (setq battery-update-interval 10))
    #+end_src
 ** Powerline
    This is a modeline replacement.
@@ -535,6 +582,8 @@
 	(setq skye/School (skye/org-get-path "SchoolWork.org"))
 	(setq skye/Habit (skye/org-get-path "Habit.org"))
 	(setq skye/archive (skye/org-get-path "archive.org"))
+	(setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
+	(setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
 
 	(setq org-agenda-files (list skye/Readme skye/Ideas skye/School skye/Habit))
 	(setq org-archive-location (concat skye/archive "::* From %s"))
@@ -572,7 +621,7 @@
 	(setq org-capture-templates '(
 				      ("e" "Email to be dealt with. Action item" entry
 				       (file+headline skye/Readme "Emails to deal with")
-				       "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^u \n :PROPERTIES: \n CREATED: %u \n :END:"
+				       "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
 				       )
 
 				      ("m" "Miscellaneous TODO. Refile" entry
@@ -590,10 +639,10 @@
 	      '((nil :maxlevel . 3)
 		(org-agenda-files :maxlevel . 2)))
 
-	(setq org-pretty-entities t)
+	(setq org-pretty-entities nil)
+	(setq org-preview-latex-default-process 'dvisvgm)
 	)
     #+end_src
-
 *** COMMENT Org-Bullets
     Makes org mode pretty
     #+begin_src emacs-lisp
@@ -615,6 +664,20 @@
 	(setq org-superstar-cycle-headline-bullets t)
 	(setq org-superstar-headline-bullets-list skye/bullets-list))
     #+end_src
+*** Org-gcal
+    #+begin_src emacs-lisp
+      (setq package-check-signature nil)
+
+
+      (use-package org-gcal
+      :ensure t
+      :config
+      (setq org-gcal-client-id "1088464552085-ibe132j38nq8ievc684modkr74g1jp1l.apps.googleusercontent.com"
+      org-gcal-client-secret "rDVqh3BtUC7Q0J8y8_pLQrEy"
+      org-gcal-file-alist '(("kaushik.harith@gmail.com" .  "~/Dropbox/life/calendar-personal.org")
+			    ("kaushiksriniva.harith@stonybrook.edu" . "~/Dropbox/life/calendar-stony.org"))))
+    #+end_src
+
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -639,6 +702,8 @@
       (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
 			       (getenv "PATH")))
       (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
+
+      (load "preview-latex.el" nil t t)
     #+end_src
 ** PDF-tools
    #+begin_src emacs-lisp
@@ -704,24 +769,36 @@
 	 ;(dired-mode . dired-filter-group-saved-groups)
 	 ))
     #+end_src
-** Vterm
-   #+begin_src emacs-lisp
-     (use-package vterm
-       :ensure t
-       :hook
-       (vterm-mode . contrib/inhibit-global-linum-mode)
-       (vterm-mode . (lambda () (visual-line-mode -1)))
-       :config
-       (setq vterm-shell "/usr/bin/bash")
-       )
-   #+end_src
-** Eshell
-   #+begin_src emacs-lisp
-     (use-package eshell
-       :ensure t
-       :hook
-       (eshell-mode . contrib/inhibit-global-linum-mode))
-   #+end_src
+** Shell stuff
+*** Vterm
+    #+begin_src emacs-lisp
+      (use-package vterm
+	:ensure t
+	:hook
+	(vterm-mode . contrib/inhibit-global-linum-mode)
+	(vterm-mode . (lambda () (visual-line-mode -1)))
+	(vterm-mode . skye/small-text-scale)
+	:config
+	(setq vterm-shell "/usr/bin/bash")
+	)
+    #+end_src
+*** Eshell
+    #+begin_src emacs-lisp
+      (use-package eshell
+	:ensure t
+	:hook
+	(eshell-mode . contrib/inhibit-global-linum-mode)
+	(eshell-mode . (lambda () (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+	(eshell-mode . skye/small-text-scale)
+	)
+    #+end_src
+*** COMMENT Eshell Fish like completion
+    #+begin_src emacs-lisp
+      (use-package fish-completion
+	:ensure t
+	:config
+	(when (and (executable-find "fish")) (global-fish-completion-mode)))
+    #+end_src
 ** Projectile
    #+begin_src emacs-lisp
      (use-package projectile
@@ -935,10 +1012,53 @@
    #+begin_src emacs-lisp
      (use-package yaml-mode
        :ensure t
-       :bind
-       ((:map yaml-mode-map
-	      ("C-m" . newline-and-indent))))
+       :hook
+       (yaml-mode . (lambda () (define-key yaml-mode-map (kbd "\C-m" 'newline-and-indent))))
+       )
    #+end_src
+** Multiple cursors
+   #+begin_src emacs-lisp
+     (use-package multiple-cursors
+       :ensure t
+       :bind
+       (("C-S-c C-S-c" . mc/edit-lines)
+	("C->" . mc/mark-next-like-this)
+	("C-<" . mc/mark-previous-like-this)
+	("C-c C-<" . mc/mark-all-like-this)))
+   #+end_src
+** Unicode Fonts
+   #+begin_src emacs-lisp
+     (use-package unicode-fonts
+       :ensure t
+       :config
+       (unicode-fonts-setup))
+   #+end_src
+** EAF
+   #+begin_src emacs-lisp
+     (use-package eaf
+       :load-path "/usr/share/emacs/site-lisp/eaf" ; Set to "/usr/share/emacs/site-lisp/eaf" if installed from AUR
+       :custom
+       (eaf-find-alternate-file-in-dired t)
+       :config
+       (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+       (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+       (eaf-bind-key take_photo "p" eaf-camera-keybinding)
+
+       (setq eaf-browser-continue-where-left-off t)
+
+       (setq browse-url-browser-function 'eaf-open-browser)
+       (defalias 'browse-web #'eaf-open-browser)
+
+       (setq eaf-browser-default-search-engine 'duckduckgo)
+       (eaf-setq eaf-browse-blank-page-url "https://duckduckgo.com"))
+   #+end_src
+** Hide mode line
+   #+begin_src emacs-lisp
+     (use-package hide-mode-line
+       :ensure t
+       :hook (eaf-mode . hide-mode-line-mode))
+   #+end_src
+
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
@@ -946,3 +1066,5 @@
     (put 'dired-find-alternate-file 'disabled nil)
     (put 'narrow-to-region 'disabled nil)
   #+end_src  
+
+
