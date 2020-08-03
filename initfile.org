@@ -1,5 +1,4 @@
 #+STARTUP: overview
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 #+TITLE: EMACS initialization file
 #+AUTHOR: Skye Srinivasan Harith
 #+EMAIL: kaushik.harith@gmail.com
@@ -49,8 +48,8 @@
 ** Frame transparency, fullscreen
    #+begin_src emacs-lisp
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
-     (set-frame-parameter (selected-frame) 'alpha '(100 . 50))
-     (add-to-list 'default-frame-alist '(alpha . (100 . 50)))
+     (set-frame-parameter (selected-frame) 'alpha '(95 . 50))
+     (add-to-list 'default-frame-alist '(alpha . (95 . 50)))
    #+end_src
 ** Pretty-fy symbols
    #+begin_src emacs-lisp
@@ -185,6 +184,27 @@
 	(interactive)
 	(dolist (file skye/common-file-list) (find-file file)))
     #+end_src
+*** Open Ibuffer on window split
+    #+begin_src emacs-lisp
+      (defun skye/custom-new-window-right ()
+	"Split the window to the right and open Ibuffer for ease of selection"
+	(interactive)
+	(split-window-horizontally)
+	(ibuffer))
+
+      (defun skye/custom-new-window-below ()
+	"Split the window to the right and open Ibuffer for ease of selection"
+	(interactive)
+	(split-window-vertically)
+	(ibuffer))
+    #+end_src
+*** Kill window and buffer on quit
+    #+begin_src emacs-lisp
+      (defun skye/quit-window ()
+	"If more than one window is open, close window on quit"
+	(interactive)
+	(if (> (length (window-list)) 1) (delete-window) (quit-window)))
+    #+end_src
 ** Custom keybinds
    Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope. Use the super key for things that are commonly associated with the "C-x C-" keybind.
 *** elisp mode specific binds
@@ -221,12 +241,12 @@
 	 ("C-<down>" . kurecolor-decrease-brightness-by-step)
 	 ("S-<up>" . kurecolor-increase-saturation-by-step)
 	 ("S-<down>" . kurecolor-decrease-saturation-by-step)
-	 ("C-h f" . describe-face))
+	 ("C-h f" . describe-face)
+	 ("C-r" . skye/open-common-files))
 
 	(:map global-map
 	 :prefix-map my-meta-z-prefix-map
 	 :prefix "M-z"
-	 ("M-r" . skye/open-common-files)
 	 (";" . uncomment-region))
 
 	(:map global-map
@@ -408,6 +428,7 @@
    #+begin_src emacs-lisp
      (use-package expand-region
        :ensure t
+       :after (org)
        :bind
        (:map global-map
 	     ("C-=" . er/expand-region)))
@@ -491,7 +512,7 @@
 		(swiper-backward . ivy-display-function-fallback)
 		(swiper-isearch-backward . ivy-display-function-fallback)
 		(t . ivy-posframe-display-at-frame-center)))
-	(ivy-posframe-mode 1))
+	(ivy-posframe-mode 0))
     #+end_src
 ** Company (Auto-completion)
 *** Company
@@ -563,11 +584,11 @@
 	(setq org-export-backends '(ascii html icalendar latex odt org))
 	:bind
 	(:map org-mode-map
-	      ("C-c C-x C-e" . skye/org-mark-and-archive)
-	      ("C-c C-x <up>" . org-cycle-list-bullet)
+	 ("C-c C-x C-e" . skye/org-mark-and-archive)
+	 ("C-c C-x <up>" . org-cycle-list-bullet)
 	 :map global-map
-	      ("C-c a" . org-agenda)
-	      ("C-c c" . org-capture))
+	 ("C-c a" . org-agenda)
+	 ("C-c c" . org-capture))
 	:config
 	(require 'org-tempo)
 
@@ -580,12 +601,11 @@
 	(setq skye/Readme (skye/org-get-path "README.org"))
 	(setq skye/Ideas (skye/org-get-path "Ideas.org"))
 	(setq skye/School (skye/org-get-path "SchoolWork.org"))
-	(setq skye/Habit (skye/org-get-path "Habit.org"))
 	(setq skye/archive (skye/org-get-path "archive.org"))
 	(setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
 	(setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
 
-	(setq org-agenda-files (list skye/Readme skye/Ideas skye/School skye/Habit))
+	(setq org-agenda-files (list skye/Readme skye/Ideas skye/School))
 	(setq org-archive-location (concat skye/archive "::* From %s"))
 
 	(setq org-ellipsis " ▼")
@@ -643,6 +663,10 @@
 	(setq org-preview-latex-default-process 'dvisvgm)
 	)
     #+end_src
+
+    #+RESULTS:
+    : org-capture
+
 *** COMMENT Org-Bullets
     Makes org mode pretty
     #+begin_src emacs-lisp
@@ -677,7 +701,16 @@
       org-gcal-file-alist '(("kaushik.harith@gmail.com" .  "~/Dropbox/life/calendar-personal.org")
 			    ("kaushiksriniva.harith@stonybrook.edu" . "~/Dropbox/life/calendar-stony.org"))))
     #+end_src
-
+*** Org-alert
+    #+begin_src emacs-lisp
+      (use-package org-alert
+	:ensure t
+	:init
+	(setq org-alert-interval '3600)
+	:config
+	(org-alert-enable)
+	(setq alert-default-style 'libnotify))
+    #+end_src
 ** Latex Mode
 *** Main latex stuff
    #+begin_src emacs-lisp
@@ -703,7 +736,7 @@
 			       (getenv "PATH")))
       (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
 
-      (load "preview-latex.el" nil t t)
+      ;; (load "preview-latex.el" nil t t)
     #+end_src
 ** PDF-tools
    #+begin_src emacs-lisp
@@ -734,7 +767,9 @@
       (use-package ibuffer
 	:bind
 	(("C-x C-b" . ibuffer)
-	 ("s-b" . ibuffer))
+	 ("s-b" . ibuffer)
+	 :map ibuffer-mode-map
+	 ("q" . skye/quit-window))
 	:config
 	(setq ibuffer-expert t)
 	(setq ibuffer-saved-filter-groups nil)
@@ -767,7 +802,10 @@
 	((dired-mode . dired-hide-details-mode)
 	 (dired-mode . all-the-icons-dired-mode)
 	 ;(dired-mode . dired-filter-group-saved-groups)
-	 ))
+	 )
+	:bind
+	(:map dired-mode-map
+	      ("q" . skye/quit-window)))
     #+end_src
 ** Shell stuff
 *** Vterm
@@ -870,7 +908,6 @@
     #+begin_src emacs-lisp
       (load "~/.emacs.d/mu4e-init.el")
     #+end_src
-
 *** mu4e-alert
     #+begin_src emacs-lisp
       (use-package mu4e-alert
@@ -978,14 +1015,14 @@
        :bind (("s-n" . next-buffer)
 	      ("s-p" . previous-buffer)
 	      ("s-o" . other-window)
-	      ("s-2" . split-window-below)
-	      ("s-3" . split-window-right)
+	      ("s-2" . skye/custom-new-window-below)
+	      ("s-3" . skye/custom-new-window-right)
 	      ("s-0" . delete-window)
 	      ("s-1" . delete-other-windows)
 	      ("s-5" . delete-frame)
 	      ("C-x +" . balance-windows-area)))
    #+end_src
-
+   
 ** COMMENT Evil mode stuff
 *** Evil Mode
     #+begin_src emacs-lisp
@@ -1026,19 +1063,13 @@
 	("C-<" . mc/mark-previous-like-this)
 	("C-c C-<" . mc/mark-all-like-this)))
    #+end_src
-** Unicode Fonts
-   #+begin_src emacs-lisp
-     (use-package unicode-fonts
-       :ensure t
-       :config
-       (unicode-fonts-setup))
-   #+end_src
 ** EAF
    #+begin_src emacs-lisp
      (use-package eaf
-       :load-path "/usr/share/emacs/site-lisp/eaf" ; Set to "/usr/share/emacs/site-lisp/eaf" if installed from AUR
+       :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
+       :demand
        :custom
-       (eaf-find-alternate-file-in-dired t)
+       (eaf-find-alternate-file-in-dired)
        :config
        (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
        (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
@@ -1046,12 +1077,15 @@
 
        (setq eaf-browser-continue-where-left-off t)
 
+       (setq eaf-enable-debug nil)
+
        (setq browse-url-browser-function 'eaf-open-browser)
        (defalias 'browse-web #'eaf-open-browser)
 
-       (setq eaf-browser-default-search-engine 'duckduckgo)
-       (eaf-setq eaf-browse-blank-page-url "https://duckduckgo.com"))
+       (setq eaf-browser-default-search-engine "duckduckgo")
+       (eaf-setq eaf-browse-blank-page-url "https://www.duckduckgo.com"))
    #+end_src
+
 ** Hide mode line
    #+begin_src emacs-lisp
      (use-package hide-mode-line
@@ -1059,6 +1093,135 @@
        :hook (eaf-mode . hide-mode-line-mode))
    #+end_src
 
+** COMMENT Centaur tabs 
+   #+begin_src emacs-lisp
+     (use-package centaur-tabs
+       :ensure t
+       :demand
+       :bind
+       ("C-<prior>" . centaur-tabs-backward)
+       ("C-<next>" . centaur-tabs-forward)
+       (:map centaur-tabs-mode-map
+	("<C-tab>" . centaur-tabs-forward-tab))
+       :hook
+       (dashboard-mode . centaur-tabs-local-mode)
+       (term-mode . centaur-tabs-local-mode)
+       (calendar-mode . centaur-tabs-local-mode)
+       (org-agenda-mode . centaur-tabs-local-mode)
+       (helpful-mode . centaur-tabs-local-mode)
+       :config
+       (centaur-tabs-mode t)
+       (setq centaur-tabs-style "bar")
+       (setq centaur-tabs-set-icons t)
+       (setq centaur-tabs-set-bar 'under)
+       (setq x-underline-at-descent-line t)
+       (setq centaur-tabs-set-modified-marker t)
+       (setq centaur-tabs-modified-marker "⊗")
+       (centaur-tabs-projectile-buffer-groups)
+
+       (setq centaur-tabs-cycle-scope 'tabs)
+
+       (defun centaur-tabs-buffer-groups ()
+	 "`centaur-tabs-buffer-groups' control buffers' group rules.
+
+      Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+      All buffer name start with * will group to \"Emacs\".
+      Other buffer group by `centaur-tabs-get-group-name' with project name."
+	 (list
+	  (cond
+	   ((memq major-mode '(eaf-mode)) "EmacsApplicationFramework")
+	   ((or (string-equal "*" (substring (buffer-name) 0 1))
+	       (memq major-mode '(magit-process-mode
+				  magit-status-mode
+				  magit-diff-mode
+				  magit-log-mode
+				  magit-file-mode
+				  magit-blob-mode
+				  magit-blame-mode
+				  )))
+	    "Emacs")
+	   ((derived-mode-p 'prog-mode)
+	    "Editing")
+	   ((derived-mode-p 'dired-mode)
+	    "Dired")
+	   ((memq major-mode '(helpful-mode
+			       help-mode))
+	    "Help")
+	   ((memq major-mode '(org-mode
+			       org-agenda-clockreport-mode
+			       org-src-mode
+			       org-agenda-mode
+			       org-beamer-mode
+			       org-indent-mode
+			       org-bullets-mode
+			       org-cdlatex-mode
+			       org-agenda-log-mode
+			       diary-mode))
+	    "OrgMode")
+	   (t
+	    (centaur-tabs-get-group-name (current-buffer))))))
+       )
+   #+end_src
+
+** COMMENT EXWM
+   #+begin_src emacs-lisp
+     (require 'exwm)
+     (require 'exwm-config)
+     (exwm-config-default)
+     (require 'exwm-randr)
+     (setq exwm-randr-workspace-output-plist '(0 "eDP1" 1 "eDP1" 2 "eDP1"))
+     (add-hook 'exwm-randr-screen-change-hook
+	       (lambda ()
+		 (start-process-shell-command
+		  "xrandr" nil "xrandr --output eDP1 --mode 1920x1080 --pos 0x0 --rotate normal --primary")))
+     (exwm-randr-enable)
+     (require 'exwm-systemtray)
+     (exwm-systemtray-enable)
+
+     (setq exwm-workspace-number 3)
+     (setq exwm-input-global-keys
+	   `(
+	     ;; Bind "s-r" to exit char-mode and fullscreen mode.
+	     ([?\s-r] . exwm-reset)
+	     ;; Bind "s-w" to switch workspace interactively.
+	     ([?\s-w] . exwm-workspace-switch)
+	     ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+	     ,@(mapcar (lambda (i)
+			 `(,(kbd (format "s-%d" i)) .
+			   (lambda ()
+			     (interactive)
+			     (exwm-workspace-switch-create ,i))))
+		       (number-sequence 0 9))
+	     ;; Bind "s-&" to launch applications ('M-&' also works if the output
+	     ;; buffer does not bother you).
+	     ((kbd "s-<SPC>") . (lambda (command)
+			  (interactive (list (read-shell-command "$ ")))
+			  (start-process-shell-command command nil command)))))
+
+     (setq exwm-input-simulation-keys
+	   '(
+	     ;; movement
+	     ([?\C-b] . [left])
+	     ([?\M-b] . [C-left])
+	     ([?\C-f] . [right])
+	     ([?\M-f] . [C-right])
+	     ([?\C-p] . [up])
+	     ([?\C-n] . [down])
+	     ([?\C-a] . [home])
+	     ([?\C-e] . [end])
+	     ([?\M-v] . [prior])
+	     ([?\C-v] . [next])
+	     ([?\C-d] . [delete])
+	     ([?\C-k] . [S-end delete])
+	     ;; cut/paste.
+	     ([?\C-w] . [?\C-x])
+	     ([?\M-w] . [?\C-c])
+	     ([?\C-y] . [?\C-v])
+	     ;; search
+	     ([?\C-s] . [?\C-f])))
+
+     (exwm-enable)
+   #+end_src
 * Lastly
   This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
   #+begin_src emacs-lisp
