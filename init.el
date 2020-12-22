@@ -12,7 +12,7 @@
   (package-install 'use-package))
 
 ;;Use org-babel to parse the init file. Something about tangling?? Must look into it.
-(org-babel-load-file (expand-file-name "~/.emacs.d/initfile.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
 
 
 ;; '(fringe-mode 0 nil (fringe))

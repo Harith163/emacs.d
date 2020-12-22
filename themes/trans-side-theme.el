@@ -62,7 +62,8 @@
 		      (pastel-lilac "#be9ddf")
 		      (pastel-violet "#9579d1")
 
-		      (standout "#00FF94")
+ 		      ;; (standout "#00FF94")
+		      (standout "#00AAA6")
 				      
 		      ;;Warning, comment, and other miscellanious colors
 		      (builtin "#8C73ED")
@@ -76,7 +77,7 @@
 		     
 		     (;; Default faces. Most commonly seen, used and inherited.
 		      (default (:font "Inconsolata LGC Markup" :foreground fg-white :background bg-main :height 130))
-		      ;; (default (:font "DejaVu Sans Mono" :foreground fg-white :background bg-main :height 130))
+		      ;; (default (:font "DejaVu Sans Mono" :foreground fg-white :background bg-main :height 160))
 		      (font-lock-builtin-face (:foreground builtin))
 		      (font-lock-comment-face (:foreground comment))
 		      (font-lock-doc-face (:foreground purple-dark))
