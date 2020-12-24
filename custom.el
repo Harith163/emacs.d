@@ -3,7 +3,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(bufler-workspace-tabs-mode t)
  '(custom-enabled-themes '(trans-side))
  '(custom-safe-themes
    '("a9c8c7039688d24acf92b1a727371638420fc6f4b7470ccd8d532d8dc902f260" "c466350849fedd9623c9ebfe3f7fed0e6833a22fadf59460997fb290ecc9569d" "a535f698c0ae2aa9ebbfcee2c1f30bf15fd6af0786ffcd4e4c0bccda4b4a72aa" "c4adad5571da678375e9bd3f0c4ba948fd248ee967648da697bb00b83f4cbffa" "0dc7a24738282c5e9091faea1222ac90cab8991bc17979180d83a2dc9f721c5f" "b8e33b8025f11c2e41e9a0a9377bf916d27d49d17482ef0fdacd86978d37ae8e" default))

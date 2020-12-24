@@ -22,7 +22,31 @@
   (telephone-line-primary-right-separator 'telephone-line-cubed-right)
   (telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
   (telephone-line-height 24)
+
   :config
+  (defface pinkblue '((t (:foreground "#FF619D" :background "#000038"))) "")
+  (defface greenblack '((t (:foreground "#00ff68" :background "#000028"))) "")
+
+  (setq telephone-line-faces
+	'((whiteblack . (pinkblue . pinkblue))
+	  (greenblack . (greenblack . greenblack))
+	  (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+	  (nil . (mode-line . mode-line-inactive))))
+
+
+
+  (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
+					telephone-line-erc-modified-channels-segment
+					telephone-line-process-segment))
+			     (nil . (telephone-line-airline-position-segment))
+			     (greenblack .(telephone-line-buffer-name-segment))
+			     (whiteblack . (telephone-line-major-mode-segment
+					    telephone-line-minor-mode-segment))))
+
+  (setq telephone-line-center-lhs nil)
+  (setq telephone-line-center-rhs nil)
+  (setq telephone-line-rhs nil)
+
   (telephone-line-mode t))
 
 (fset 'yes-or-no-p 'y-or-n-p)
