@@ -14,6 +14,7 @@
 		      (bg-main "#00000f")
 		      (bg-black "#080808")
 		      (bg-dark "#303030")
+		      (bg-dark2 "#1f1f1f")		      
 		      (bg-gray "#c6c6c6")
 		      (fg-white "#FFFFFF")
 		      (fg-dark "#5e5e5e")
@@ -114,8 +115,8 @@
 		      (line-number-current-line (:inherit 'line-number))
 
 		      ;;Mode line 
-		      (mode-line (:box (:line-width 1 :color nil :style 'released-button) :foreground aqua-light-alt :background bg-black))
-		      (mode-line-inactive (:weight 'light :box (:line-width 1 :color nil :style 'pressed-button) :foreground aqua-light-alt :background bg-black :inherit 'mode-line))
+		      (mode-line (:box (:line-width 1 :color nil :style 'released-button) :foreground aqua-light-alt :background bg-dark2))
+		      (mode-line-inactive (:weight 'light :box (:line-width 1 :color nil :style 'pressed-button) :foreground aqua-light-alt :background bg-dark :inherit 'mode-line))
 		      (mode-line-highlight (:box nil :foreground aqua-light :weight 'bold))
 		      (mode-line-emphasis (:weight 'bold :foreground mygray1))
 		      (mode-line-buffer-id (:weight 'bold :bold t :foreground aqua-light-alt :background nil))

@@ -8,7 +8,7 @@
   These commands set a full name and user email adress to be referenced in places like org mode's author and mu4e.
 
   #+begin_src emacs-lisp
-    (setq user-full-name "Skye Srinivasan Harith")
+    (setq user-full-name "Kaushik Srinivasan Harith")
     (setq user-mail-address "kaushik.harith@gmail.com")
   #+end_src
 
@@ -55,11 +55,11 @@
 
        :config
        (defface pinkblue '((t (:foreground "#FF619D" :background "#000038"))) "")
-       (defface greenblack '((t (:foreground "#00ff68" :background "#000028"))) "")
+       (defface blackgreen '((t (:foreground "#000028" :background "#98ff98"))) "")
   
        (setq telephone-line-faces
 	     '((whiteblack . (pinkblue . pinkblue))
-	       (greenblack . (greenblack . greenblack))
+	       (blackgreen . (blackgreen . blackgreen))
 	       (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
 	       (nil . (mode-line . mode-line-inactive))))
 
@@ -69,7 +69,7 @@
 					     telephone-line-erc-modified-channels-segment
 					     telephone-line-process-segment))
 				  (nil . (telephone-line-airline-position-segment))
-				  (greenblack .(telephone-line-buffer-name-segment))
+				  (blackgreen .(telephone-line-buffer-name-segment))
 				  (whiteblack . (telephone-line-major-mode-segment
 						 telephone-line-minor-mode-segment))))
 
@@ -210,6 +210,17 @@
      (setq custom-file (concat user-emacs-directory "custom.el"))
 
      (load-file custom-file)
+   #+end_src
+
+** UTF-8 stuff
+   Idk what UTF-8 is.
+   #+begin_src emacs-lisp
+     (prefer-coding-system       'utf-8)
+     (set-default-coding-systems 'utf-8)
+     (set-terminal-coding-system 'utf-8)
+     (set-keyboard-coding-system 'utf-8)
+     (setq default-buffer-file-coding-system 'utf-8)
+     (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
    #+end_src
 
 * Custom functions
@@ -690,6 +701,22 @@
 	 (ivy-prescient-mode 1))
      #+end_src
 
+*** Yasnippets
+    Mainly used for smart physics snippets in org mode.
+
+    #+begin_src emacs-lisp
+      (use-package yasnippet
+	:ensure t
+	:config
+	(yas-global-mode 1)
+
+	(setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
+
+      (use-package yasnippet-snippets
+	:ensure t)
+
+    #+end_src
+    
 ** Packages that make me want to use emacs
 *** Org mode
     Org mode is great. It really is. I just wish it made loving it a little easier.
@@ -873,7 +900,7 @@
 	 (org-msg-mode)
        )
      #+end_src
-
+     
 * Lastly,
   Things that are to be done at the end. This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
 

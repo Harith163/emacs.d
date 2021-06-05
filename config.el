@@ -25,11 +25,11 @@
 
   :config
   (defface pinkblue '((t (:foreground "#FF619D" :background "#000038"))) "")
-  (defface greenblack '((t (:foreground "#00ff68" :background "#000028"))) "")
+  (defface blackgreen '((t (:foreground "#000028" :background "#98ff98"))) "")
 
   (setq telephone-line-faces
 	'((whiteblack . (pinkblue . pinkblue))
-	  (greenblack . (greenblack . greenblack))
+	  (blackgreen . (blackgreen . blackgreen))
 	  (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
 	  (nil . (mode-line . mode-line-inactive))))
 
@@ -39,7 +39,7 @@
 					telephone-line-erc-modified-channels-segment
 					telephone-line-process-segment))
 			     (nil . (telephone-line-airline-position-segment))
-			     (greenblack .(telephone-line-buffer-name-segment))
+			     (blackgreen .(telephone-line-buffer-name-segment))
 			     (whiteblack . (telephone-line-major-mode-segment
 					    telephone-line-minor-mode-segment))))
 
@@ -150,6 +150,13 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 
 (load-file custom-file)
+
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 (defun contrib/toggle-window-split ()
   (interactive)
@@ -457,6 +464,16 @@ behavior added."
   (setq ivy-prescient-enable-filtering nil)
   (setq ivy-prescient-enable-sorting t)
   (ivy-prescient-mode 1))
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1)
+
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
+
+(use-package yasnippet-snippets
+  :ensure t)
 
 (use-package org
   :ensure org-superstar
