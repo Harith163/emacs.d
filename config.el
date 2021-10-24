@@ -1,4 +1,4 @@
-(setq user-full-name "Skye Srinivasan Harith")
+(setq user-full-name "Kaushik Srinivasan Harith")
 (setq user-mail-address "kaushik.harith@gmail.com")
 
 (setq inhibit-startup-message t) ;startup.el
@@ -15,39 +15,11 @@
 
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 
-(use-package telephone-line
-  :custom 
-  (telephone-line-primary-left-separator 'telephone-line-cubed-left)
-  (telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left)
-  (telephone-line-primary-right-separator 'telephone-line-cubed-right)
-  (telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-  (telephone-line-height 24)
-
+(use-package nano-modeline
+  :ensure t
   :config
-  (defface pinkblue '((t (:foreground "#FF619D" :background "#000038"))) "")
-  (defface blackgreen '((t (:foreground "#000028" :background "#98ff98"))) "")
-
-  (setq telephone-line-faces
-	'((whiteblack . (pinkblue . pinkblue))
-	  (blackgreen . (blackgreen . blackgreen))
-	  (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-	  (nil . (mode-line . mode-line-inactive))))
-
-
-
-  (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
-					telephone-line-erc-modified-channels-segment
-					telephone-line-process-segment))
-			     (nil . (telephone-line-airline-position-segment))
-			     (blackgreen .(telephone-line-buffer-name-segment))
-			     (whiteblack . (telephone-line-major-mode-segment
-					    telephone-line-minor-mode-segment))))
-
-  (setq telephone-line-center-lhs nil)
-  (setq telephone-line-center-rhs nil)
-  (setq telephone-line-rhs nil)
-
-  (telephone-line-mode t))
+  (setq nano-modeline-position 'mode-line)
+  (nano-modeline-mode))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -139,7 +111,6 @@
   :bind (("s-n" . next-buffer)
 	 ("s-p" . previous-buffer)
 	 ("s-o" . other-window)
-	 ("s-3" . bufler-list)
 	 ("s-0" . delete-window)
 	 ("s-1" . delete-other-windows)
 	 ("s-5" . delete-frame)
@@ -260,7 +231,7 @@ behavior added."
    ("<f5>" . revert-buffer)
    ([remap kill-buffer] . skye/kill-current-buffer)
    ("s-s" . save-buffer)
-   ("s-m" . mu4e))
+   )
   )
 
 (use-package which-key
@@ -326,6 +297,11 @@ behavior added."
 (use-package all-the-icons-dired
   :ensure t
   :diminish "")
+
+(use-package all-the-icons-ibuffer
+  :ensure t
+  :config
+  (all-the-icons-ibuffer-mode))
 
 (all-the-icons-ivy-setup)
 (all-the-icons-ivy-rich-mode 1)
@@ -416,13 +392,11 @@ behavior added."
   :config
   (setq restart-emacs-restore-frames t))
 
-(use-package bufler
+(use-package ibuffer
   :ensure t
   :bind
-  (("C-x C-b" . bufler)
-   ("s-b" . bufler))
-  :config
-  (bufler-tabs-mode 0))
+  (("C-x C-b" . ibuffer)
+   ("s-b" . ibuffer)))
 
 (use-package dired
   :config
@@ -594,30 +568,11 @@ behavior added."
 
 ;; (load "preview-latex.el" nil t t)
 
-(load "~/.emacs.d/mu4e-init.el")
-
-(use-package mu4e-alert
+(use-package xenops
   :ensure t
-  :config
-  (mu4e-alert-set-default-style 'libnotify)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
-
-(require 'org-mu4e)
-
-(use-package org-msg
-  :ensure t
-  :config
-  (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
-	org-msg-startup "hidestars indent inlineimages"
-	org-msg-greeting-fmt "\nHi *%s*,\n\n"
-	org-msg-greeting-name-limit 3
-	org-msg-text-plain-alternative t
-	org-msg-signature "
-Regards,
-*Kaushik S Harith* ")
-  (org-msg-mode)
-)
+  :hook
+  (latex-mode . xenops-mode)
+  (LaTeX-mode . xenops-mode))
 
 (put 'scroll-left 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)

@@ -1,6 +1,6 @@
 #+STARTUP: overview
 #+TITLE: EMACS initialization file
-#+AUTHOR: Skye Srinivasan Harith
+#+AUTHOR: Kaushik Srinivasan Harith
 #+EMAIL: kaushik.harith@gmail.com
 #+OPTIONS: toc:t todo:nil
 
@@ -34,7 +34,7 @@
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
      (load-theme 'trans-side t)
    #+end_src
-
+   
 ** Setting the default frame
    After using transparency for a while and not having (fullscreen . maximized) working properly I've settled on just pushing the frame to the edges of the screen.
    #+begin_src emacs-lisp
@@ -42,44 +42,17 @@
    #+end_src
 
 ** Modeline shenanigans
-   The package i'm using right now to make pretty the modeline is *Telephone Line*. Very customizable. Warrants more investigation.
+*** Nano-modeline
+    Testing out nano-modeline.
+    
+    #+begin_src emacs-lisp
+      (use-package nano-modeline
+	:ensure t
+	:config
+	(setq nano-modeline-position 'mode-line)
+	(nano-modeline-mode))
 
-   #+begin_src emacs-lisp
-     (use-package telephone-line
-       :custom 
-       (telephone-line-primary-left-separator 'telephone-line-cubed-left)
-       (telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left)
-       (telephone-line-primary-right-separator 'telephone-line-cubed-right)
-       (telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-       (telephone-line-height 24)
-
-       :config
-       (defface pinkblue '((t (:foreground "#FF619D" :background "#000038"))) "")
-       (defface blackgreen '((t (:foreground "#000028" :background "#98ff98"))) "")
-  
-       (setq telephone-line-faces
-	     '((whiteblack . (pinkblue . pinkblue))
-	       (blackgreen . (blackgreen . blackgreen))
-	       (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-	       (nil . (mode-line . mode-line-inactive))))
-
-
-
-       (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
-					     telephone-line-erc-modified-channels-segment
-					     telephone-line-process-segment))
-				  (nil . (telephone-line-airline-position-segment))
-				  (blackgreen .(telephone-line-buffer-name-segment))
-				  (whiteblack . (telephone-line-major-mode-segment
-						 telephone-line-minor-mode-segment))))
-
-       (setq telephone-line-center-lhs nil)
-       (setq telephone-line-center-rhs nil)
-       (setq telephone-line-rhs nil)
-
-       (telephone-line-mode t))
-
-   #+end_src
+    #+end_src
 
 * Tweaks to emacs' functioning
   This is a list of non-cosmetic changes to the way emacs naturally functions. 
@@ -191,7 +164,6 @@
        :bind (("s-n" . next-buffer)
 	      ("s-p" . previous-buffer)
 	      ("s-o" . other-window)
-	      ("s-3" . bufler-list)
 	      ("s-0" . delete-window)
 	      ("s-1" . delete-other-windows)
 	      ("s-5" . delete-frame)
@@ -329,7 +301,7 @@
     #+end_src
 
 ** Kill window on quit buffer
-   Usefull for things like dired, bufler etc that don't kill the window on quitting.
+   Usefull for things like dired, ibuffer etc that don't kill the window on quitting.
 
     #+begin_src emacs-lisp
       (defun skye/quit-window ()
@@ -370,7 +342,7 @@
 	 ("<f5>" . revert-buffer)
 	 ([remap kill-buffer] . skye/kill-current-buffer)
 	 ("s-s" . save-buffer)
-	 ("s-m" . mu4e))
+	 )
 	)
     #+end_src
 
@@ -491,6 +463,14 @@
        (use-package all-the-icons-dired
 	 :ensure t
 	 :diminish "")
+     #+end_src
+
+**** all the icons ibuffer
+     #+begin_src emacs-lisp
+       (use-package all-the-icons-ibuffer
+	 :ensure t
+	 :config
+	 (all-the-icons-ibuffer-mode))
      #+end_src
 
 **** all the icons ivy
@@ -625,17 +605,15 @@
 	(setq restart-emacs-restore-frames t))
     #+end_src
 
-*** Bufler
+*** ibuffer
     Replaces ibuffer. Same function. Less pretty.
 
     #+begin_src emacs-lisp
-      (use-package bufler
+      (use-package ibuffer
 	:ensure t
 	:bind
-	(("C-x C-b" . bufler)
-	 ("s-b" . bufler))
-	:config
-	(bufler-tabs-mode 0))
+	(("C-x C-b" . ibuffer)
+	 ("s-b" . ibuffer)))
 
     #+end_src
 
@@ -861,46 +839,17 @@
        ;; (load "preview-latex.el" nil t t)
      #+end_src
 
-*** Mu4e and Email
-    This is very cool. Use mbsync to download the emails. Use *mu4e* to index.
-
-**** mu4e
-     #+begin_src emacs-lisp
-       (load "~/.emacs.d/mu4e-init.el")
-     #+end_src
-
-**** mu4e-alert
-     #+begin_src emacs-lisp
-       (use-package mu4e-alert
-	 :ensure t
-	 :config
-	 (mu4e-alert-set-default-style 'libnotify)
-	 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-	 (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
-     #+end_src
-
-**** Org-mu4e
-     #+begin_src emacs-lisp
-       (require 'org-mu4e)
-     #+end_src
-
-**** Org-Message
-     #+begin_src emacs-lisp
-       (use-package org-msg
-	 :ensure t
-	 :config
-	 (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
-	       org-msg-startup "hidestars indent inlineimages"
-	       org-msg-greeting-fmt "\nHi *%s*,\n\n"
-	       org-msg-greeting-name-limit 3
-	       org-msg-text-plain-alternative t
-	       org-msg-signature "
-       Regards,
-       ,*Kaushik S Harith* ")
-	 (org-msg-mode)
-       )
-     #+end_src
+**** Xenops
+     Real time rendering of latex fragments.
      
+     #+begin_src emacs-lisp
+       (use-package xenops
+	 :ensure t
+	 :hook
+	 (latex-mode . xenops-mode)
+	 (LaTeX-mode . xenops-mode))
+     #+end_src
+
 * Lastly,
   Things that are to be done at the end. This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
 
