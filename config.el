@@ -39,67 +39,59 @@
 (use-package window
   :init
   (setq display-buffer-alist
-	'(;; top side window
-	  ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
-	   (display-buffer-in-side-window)
-	   (window-height . 0.25)
-	   (side . top)
-	   (slot . 0)
-	   (window-parameters . ((no-other-window . t))))
-	  ("\\*Messages.*"
-	   (display-buffer-in-side-window)
-	   (window-height . 0.25)
-	   (side . top)
-	   (slot . 1)
-	   (window-parameters . ((no-other-window . t))))
-	  ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
-	   (display-buffer-in-side-window)
-	   (window-height . 0.25)
-	   (side . top)
-	   (slot . 2)
-	   (window-parameters . ((no-other-window . t))))
-	  ;; bottom side window
-	  ("\\*\\(Output\\|Register Preview\\).*"
-	   (display-buffer-in-side-window)
-	   (window-width . 0.20)       ; See the :hook
-	   (side . bottom)
-	   (slot . -1)
-	   (window-parameters . ((no-other-window . t))))
-	  (".*\\*\\(Completions\\|Embark.*Occur\\).*"
-	   (display-buffer-in-side-window)
-	   (window-height . 0.25)
-	   (side . bottom)
-	   (slot . 0)
-	   (window-parameters . ((no-other-window . t))))
-	  ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
-	   (display-buffer-in-side-window)
-	   (window-width . 0.40)
-	   (side . right)
-	   (slot . 1))
-	  ;; left side window
-	  ("\\*Help.*"
-	   (display-buffer-in-side-window)
-	   (window-width . 0.25)       ; See the :hook
-	   (side . left)
-	   (slot . 0)
-	   (window-parameters . ((no-other-window . t))))
-	  ;; right side window
-	  ("\\*Faces\\*"
-	   (display-buffer-in-side-window)
-	   (window-width . 0.25)
-	   (side . right)
-	   (slot . 0)
-	   (window-parameters . ((no-other-window . t)
-				 (mode-line-format . (" "
-						      mode-line-buffer-identification)))))
-	  ("\\*Custom.*"
-	   (display-buffer-in-side-window)
-	   (window-width . 0.25)
-	   (side . right)
-	   (slot . 1))
-	  ;; bottom buffer (NOT side window)
-	  ("\\*\\vc-\\(incoming\\|outgoing\\).*"
-	   (display-buffer-at-bottom))))
+        '(;; top side window
+          ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
+           (display-buffer-in-side-window)
+           (window-height . 0.25)
+           (side . top)
+           (slot . 0))
+          ("\\*Messages.*"
+           (display-buffer-in-side-window)
+           (window-height . 0.25)
+           (side . top)
+           (slot . 1))
+          ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+           (display-buffer-in-side-window)
+           (window-height . 0.25)
+           (side . top)
+           (slot . 2))
+          ;; bottom side window
+          ("\\*\\(Output\\|Register Preview\\).*"
+           (display-buffer-in-side-window)
+           (window-width . 0.20)       ; See the :hook
+           (side . bottom)
+           (slot . -1))
+          (".*\\*\\(Completions\\|Embark.*Occur\\).*"
+           (display-buffer-in-side-window)
+           (window-height . 0.25)
+           (side . bottom)
+           (slot . 0))
+          ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
+           (display-buffer-in-side-window)
+           (window-width . 0.40)
+           (side . right)
+           (slot . 1))
+          ;; left side window
+          ("\\*Help.*"
+           (display-buffer-in-side-window)
+           (window-width . 0.25)       ; See the :hook
+           (side . left)
+           (slot . 0))
+          ;; right side window
+          ("\\*Faces\\*"
+           (display-buffer-in-side-window)
+           (window-width . 0.25)
+           (side . right)
+           (slot . 0)
+           (window-parameters . ((mode-line-format . (" " mode-line-buffer-identification)))))
+          ("\\*Custom.*"
+           (display-buffer-in-side-window)
+           (window-width . 0.25)
+           (side . right)
+           (slot . 1))
+          ;; bottom buffer (NOT side window)
+          ("\\*\\vc-\\(incoming\\|outgoing\\).*"
+           (display-buffer-at-bottom))))
   (setq window-combination-resize t)
   (setq even-window-sizes 'height-only)
   (setq window-sides-vertical nil)
@@ -107,14 +99,14 @@
   ;; the `use-package-hook-name-suffix' variable.  The "-hook" suffix is
   ;; not an error of mine.
   :hook ((help-mode . visual-line-mode)
-	 (custom-mode . visual-line-mode))
+         (custom-mode . visual-line-mode))
   :bind (("s-n" . next-buffer)
-	 ("s-p" . previous-buffer)
-	 ("s-o" . other-window)
-	 ("s-0" . delete-window)
-	 ("s-1" . delete-other-windows)
-	 ("s-5" . delete-frame)
-	 ("C-x +" . balance-windows-area)))
+         ("s-p" . previous-buffer)
+         ("s-o" . other-window)
+         ("s-0" . delete-window)
+         ("s-1" . delete-other-windows)
+         ("s-5" . delete-frame)
+         ("C-x +" . balance-windows-area)))
 
 (setq auto-window-vscroll nil)
 
@@ -133,19 +125,19 @@
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
-	 (next-win-buffer (window-buffer (next-window)))
-	 (this-win-edges (window-edges (selected-window)))
-	 (next-win-edges (window-edges (next-window)))
-	 (this-win-2nd (not (and (<= (car this-win-edges)
-		     (car next-win-edges))
-		     (<= (cadr this-win-edges)
-		     (cadr next-win-edges)))))
-	 (splitter
-	  (if (= (car this-win-edges)
-	     (car (window-edges (next-window))))
-	  'split-window-horizontally
-	'split-window-vertically)))
-    (delete-other-windows)
+             (next-win-buffer (window-buffer (next-window)))
+         (this-win-edges (window-edges (selected-window)))
+         (next-win-edges (window-edges (next-window)))
+         (this-win-2nd (not (and (<= (car this-win-edges)
+                                     (car next-win-edges))
+                                 (<= (cadr this-win-edges)
+                                     (cadr next-win-edges)))))
+         (splitter
+          (if (= (car this-win-edges)
+                 (car (window-edges (next-window))))
+              'split-window-horizontally
+            'split-window-vertically)))
+        (delete-other-windows)
     (let ((first-win (selected-window)))
       (funcall splitter)
       (if this-win-2nd (other-window 1))
@@ -162,29 +154,29 @@ This function is a combination of `keyboard-quit' and
 behavior added."
   (interactive)
   (cond ((region-active-p)
-	 ;; Avoid adding the region to the window selection.
-	 (setq saved-region-selection nil)
-	 (let (select-active-regions)
-	   (deactivate-mark)))
-	((eq last-command 'mode-exited) nil)
-	(current-prefix-arg
-	 nil)
-	(defining-kbd-macro
-	  (message
-	   (substitute-command-keys
-	    "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
-	  (cancel-kbd-macro-events))
-	((active-minibuffer-window)
-	 (when (get-buffer-window "*Completions*")
-	   ;; hide completions first so point stays in active window when
-	   ;; outside the minibuffer
-	   (minibuffer-hide-completions))
-	 (abort-recursive-edit))
-	(t
-	 (when completion-in-region-mode
-	   (completion-in-region-mode -1))
-	 (let ((debug-on-quit nil))
-	   (signal 'quit nil)))))
+         ;; Avoid adding the region to the window selection.
+         (setq saved-region-selection nil)
+         (let (select-active-regions)
+           (deactivate-mark)))
+        ((eq last-command 'mode-exited) nil)
+        (current-prefix-arg
+         nil)
+        (defining-kbd-macro
+          (message
+           (substitute-command-keys
+            "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
+          (cancel-kbd-macro-events))
+        ((active-minibuffer-window)
+         (when (get-buffer-window "*Completions*")
+           ;; hide completions first so point stays in active window when
+           ;; outside the minibuffer
+           (minibuffer-hide-completions))
+         (abort-recursive-edit))
+        (t
+         (when completion-in-region-mode
+           (completion-in-region-mode -1))
+         (let ((debug-on-quit nil))
+           (signal 'quit nil)))))
 
 (global-set-key [remap keyboard-quit] #'contrib/keyboard-quit-context+)
 
@@ -299,9 +291,7 @@ behavior added."
   :diminish "")
 
 (use-package all-the-icons-ibuffer
-  :ensure t
-  :config
-  (all-the-icons-ibuffer-mode))
+  :ensure t)
 
 (all-the-icons-ivy-setup)
 (all-the-icons-ivy-rich-mode 1)
@@ -311,7 +301,7 @@ behavior added."
   :after (org)
   :bind
   (:map global-map
-	("C-=" . er/expand-region)))
+        ("C-=" . er/expand-region)))
 
 (use-package counsel
   :ensure t)
@@ -325,23 +315,23 @@ behavior added."
   :ensure t
   :bind
   (:map global-map
-	("C-s" . swiper)
-	("C-r" . swiper-backward)
-	("C-c C-r" . ivy-resume)
-	("<f6>" . ivy-resume)
-	("M-x" . counsel-M-x)
-	("C-x C-f" . counsel-find-file)
-	("s-f" . counsel-find-file)	
-	("<f1> f" . counsel-describe-function)
-	("<f1> v" . counsel-describe-variable)
-	("<f1> l" . counsel-load-library)
-	("<f2> i" . counsel-info-lookup-symbol)
-	("<f2> u" . counsel-unicode-char)
-	("C-c g" . counsel-git)
-	("C-c j" . counsel-git-grep)
-	("C-c k" . counsel-ag)
-	("C-x l" . counsel-locate)
-	("M-y" . counsel-yank-pop))
+        ("C-s" . swiper)
+        ("C-r" . swiper-backward)
+        ("C-c C-r" . ivy-resume)
+        ("<f6>" . ivy-resume)
+        ("M-x" . counsel-M-x)
+        ("C-x C-f" . counsel-find-file)
+        ("s-f" . counsel-find-file)	
+        ("<f1> f" . counsel-describe-function)
+        ("<f1> v" . counsel-describe-variable)
+        ("<f1> l" . counsel-load-library)
+        ("<f2> i" . counsel-info-lookup-symbol)
+        ("<f2> u" . counsel-unicode-char)
+        ("C-c g" . counsel-git)
+        ("C-c j" . counsel-git-grep)
+        ("C-c k" . counsel-ag)
+        ("C-x l" . counsel-locate)
+        ("M-y" . counsel-yank-pop))
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -394,9 +384,45 @@ behavior added."
 
 (use-package ibuffer
   :ensure t
+
   :bind
   (("C-x C-b" . ibuffer)
-   ("s-b" . ibuffer)))
+   ("s-b" . ibuffer))
+
+  :config
+  (setq ibuffer-expert t)
+  (setq ibuffer-saved-filter-groups
+        '(("home"
+           ("Magit" (or (mode . magit-process-mode)
+                        (mode . magit-diff-mode)
+                        (mode . magit-mode)
+                        (mode . magit)
+                        (mode . magit-blame-mode)
+                        (mode . magit-blob-mode)
+                        (mode . magit-cherry-mode)
+                        (mode . magit-file-mode)
+                        (mode . magit-wip-initial-backup-mode)
+                        (mode . magit-log-mode)
+                        (mode . magit-log-select-mode)
+                        (mode . magit-submodule-list-mode)))
+           ("Latex" (or (mode . latex-mode)
+                        (mode . bibtex-mode)
+                        (mode . latex-mode)))
+           ("Org" (mode . org-mode))
+           ("Help" (or (name . "\*Help\*")
+                       (name . "\*Apropos\*")
+                       (name . "\*info\*")
+                       (mode . special-mode)
+                       (mode . messages-buffer-mode)
+                       (mode . fundamental-mode))))))
+
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-auto-mode 1)
+               (ibuffer-switch-to-saved-filter-groups "home")
+               (all-the-icons-ibuffer-mode 1)))
+
+  )
 
 (use-package dired
   :config
@@ -409,8 +435,7 @@ behavior added."
   ((dired-mode . dired-hide-details-mode)
    (dired-mode . all-the-icons-dired-mode))
   :bind
-  (:map dired-mode-map
-	("q" . skye/quit-window)))
+  (:map dired-mode-map ("q" . skye/quit-window)))
 
 (use-package lorem-ipsum
   :ensure t)
@@ -428,12 +453,12 @@ behavior added."
   :after (prescient ivy)
   :config
   (setq ivy-prescient-sort-commands
-	'(:not counsel-grep
-	       counsel-rg
-	       counsel-switch-buffer
-	       ivy-switch-buffer
-	       swiper
-	       swiper-multi))
+        '(:not counsel-grep
+               counsel-rg
+               counsel-switch-buffer
+               ivy-switch-buffer
+               swiper
+               swiper-multi))
   (setq ivy-prescient-retain-classic-highlighting t)
   (setq ivy-prescient-enable-filtering nil)
   (setq ivy-prescient-enable-sorting t)
@@ -454,6 +479,7 @@ behavior added."
   :hook
   (org-mode . org-cdlatex-mode)
   (org-mode . (lambda () (org-superstar-mode)))
+  (org-mode . org-indent-mode)
   :init
   (setq org-highlight-latex-and-related '(native latex script))
   (setq org-export-backends '(ascii html icalendar latex odt org))
@@ -500,9 +526,9 @@ behavior added."
     "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
     (interactive)
     (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
-	      :action '(1
-			("o" org-todo "action 1")
-			("j" org-todo "action 2")))
+              :action '(1
+                        ("o" org-todo "action 1")
+                        ("j" org-todo "action 2")))
     (org-archive-subtree))
 
   (add-to-list 'org-modules 'org-habit)
@@ -514,25 +540,25 @@ behavior added."
   (setq org-default-notes-file skye/Readme)
 
   (setq org-capture-templates '(
-				("e" "Email to be dealt with. Action item" entry
-				 (file+headline skye/Readme "Emails to deal with")
-				 "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
-				 )
+                                ("e" "Email to be dealt with. Action item" entry
+                                 (file+headline skye/Readme "Emails to deal with")
+                                 "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
+                                 )
 
-				("m" "Miscellaneous TODO. Refile" entry
-				 (file+headline skye/Readme "Miscellaneous")
-				 "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
-				 )
+                                ("m" "Miscellaneous TODO. Refile" entry
+                                 (file+headline skye/Readme "Miscellaneous")
+                                 "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
+                                 )
 
-				("t" "Date-less TODO. Generic" entry
-				 (file skye/Readme)
-				 "* ☛TODO %^{PROMPT} \n  %?"
-				 )
-				))
+                                ("t" "Date-less TODO. Generic" entry
+                                 (file skye/Readme)
+                                 "* ☛TODO %^{PROMPT} \n  %?"
+                                 )
+                                ))
 
   (setq org-refile-targets
-	'((nil :maxlevel . 3)
-	  (org-agenda-files :maxlevel . 2)))
+        '((nil :maxlevel . 3)
+          (org-agenda-files :maxlevel . 2)))
 
   (setq org-pretty-entities nil)
   (setq org-preview-latex-default-process 'dvisvgm)
@@ -563,7 +589,7 @@ behavior added."
     ))
 
 (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
-			 (getenv "PATH")))
+                         (getenv "PATH")))
 (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
 
 ;; (load "preview-latex.el" nil t t)
