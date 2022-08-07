@@ -415,7 +415,9 @@ This is a list of packages that are installed and used. There are two types of p
        :ensure t
        :diminish ""
        :init
-       (global-undo-tree-mode))
+       (global-undo-tree-mode)
+       :config
+       (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
    #+end_src 
 
 *** Quickly jump around -
