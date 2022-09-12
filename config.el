@@ -1,6 +1,405 @@
 (setq user-full-name "Kaushik Srinivasan Harith")
 (setq user-mail-address "kaushik.harith@gmail.com")
 
+(use-package all-the-icons
+  :ensure t
+  :diminish "")
+
+(use-package all-the-icons-dired
+  :ensure t
+  :diminish "")
+
+(use-package all-the-icons-ibuffer
+  :ensure t)
+
+(all-the-icons-ivy-setup)
+(all-the-icons-ivy-rich-mode 1)
+
+(use-package prescient
+  :ensure
+  :config
+  (setq prescient-history-length 200)
+  (setq prescient-save-file "~/.emacs.d/prescient-items")
+  (setq prescient-filter-method '(literal regexp))
+  (prescient-persist-mode 1))
+
+(use-package ivy-prescient
+  :ensure
+  :after (prescient ivy)
+  :config
+  (setq ivy-prescient-sort-commands
+        '(:not counsel-grep
+               counsel-rg
+               counsel-switch-buffer
+               ivy-switch-buffer
+               swiper
+               swiper-multi))
+  (setq ivy-prescient-retain-classic-highlighting t)
+  (setq ivy-prescient-enable-filtering nil)
+  (setq ivy-prescient-enable-sorting t)
+  (ivy-prescient-mode 1))
+
+(use-package company
+  :diminish ""
+  :ensure t
+  :init
+  (setq company-require-match nil) ; Don't require match, so you can still move your cursor as expected.
+  (setq company-tooltip-align-annotations t) ; Align annotation to the right side.
+  (setq company-eclim-auto-save nil) ; Stop eclim auto save.
+  (setq company-dabbrev-downcase nil) ; No downcase when completion.
+
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 4)
+  (add-hook 'prog-mode-hook 'company-mode)
+
+  (defun jcs--company-complete-selection--advice-around (fn)
+    "Advice execute around `company-complete-selection' command."
+    (let ((company-dabbrev-downcase t)) (call-interactively fn))) (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+
+(use-package company-fuzzy
+  :ensure t
+  :after (company)
+  :diminish ""
+  :config
+  (global-company-fuzzy-mode 1)
+  (setq company-fuzzy-prefix-ontop t)
+  (setq company-fuzzy-sorting-backend 'alphabetic)
+  (setq company-fuzzy-show-annotation t))
+
+(use-package company-auctex
+  :ensure t
+  :init
+  (company-auctex-init))
+
+(use-package counsel
+  :ensure t)
+
+(use-package swiper
+  :ensure t)
+
+(use-package ivy
+  :demand
+  :diminish ""
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-s" . swiper)
+        ("C-r" . swiper-backward)
+        ("C-c C-r" . ivy-resume)
+        ("<f6>" . ivy-resume)
+        ("M-x" . counsel-M-x)
+        ("C-x C-f" . counsel-find-file)
+        ("s-f" . counsel-find-file)	
+        ("<f1> f" . counsel-describe-function)
+        ("<f1> v" . counsel-describe-variable)
+        ("<f1> l" . counsel-load-library)
+        ("<f2> i" . counsel-info-lookup-symbol)
+        ("<f2> u" . counsel-unicode-char)
+        ("C-c g" . counsel-git)
+        ("C-c j" . counsel-git-grep)
+        ("C-c k" . counsel-ag)
+        ("C-x l" . counsel-locate)
+        ("M-y" . counsel-yank-pop))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq swiper-use-visual-line nil)
+  (setq swiper-use-visual-line-p (lambda (a) nil)))
+
+(use-package diminish
+  :ensure t)
+
+(use-package dired
+  :config
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches "-al --group-directories-first --time-style=iso")
+  (setq dired-dwim-target t)
+  :hook
+  ((dired-mode . dired-hide-details-mode)
+   (dired-mode . all-the-icons-dired-mode))
+  :bind
+  (:map dired-mode-map ("q" . skye/quit-window)))
+
+(electric-pair-mode 1)
+
+(use-package expand-region
+  :ensure t
+  :after (org)
+  :bind
+  (:map global-map
+        ("C-=" . er/expand-region)))
+
+(use-package ibuffer
+  :ensure t
+
+  :bind
+  (("C-x C-b" . ibuffer)
+   ("s-b" . ibuffer))
+
+  :config
+  (setq ibuffer-expert t)
+  (setq ibuffer-saved-filter-groups
+        '(("home"
+           ("Magit" (or (mode . magit-process-mode)
+                        (mode . magit-diff-mode)
+                        (mode . magit-mode)
+                        (mode . magit)
+                        (mode . magit-blame-mode)
+                        (mode . magit-blob-mode)
+                        (mode . magit-cherry-mode)
+                        (mode . magit-file-mode)
+                        (mode . magit-wip-initial-backup-mode)
+                        (mode . magit-log-mode)
+                        (mode . magit-log-select-mode)
+                        (mode . magit-submodule-list-mode)))
+           ("Latex" (or (mode . latex-mode)
+                        (mode . bibtex-mode)
+                        (mode . latex-mode)))
+           ("Org" (mode . org-mode))
+           ("Help" (or (name . "\*Help\*")
+                       (name . "\*Apropos\*")
+                       (name . "\*info\*")
+                       (mode . special-mode)
+                       (mode . messages-buffer-mode)
+                       (mode . fundamental-mode))))))
+
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-auto-mode 1)
+               (ibuffer-switch-to-saved-filter-groups "home")
+               (all-the-icons-ibuffer-mode 1)))
+
+  )
+
+(ivy-rich-mode 1)
+(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+
+(use-package lorem-ipsum
+  :ensure t)
+
+(use-package magit
+  :ensure t)
+
+(use-package ace-window
+  :ensure t
+  :bind
+  ([remap other-window] . ace-window)
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  )
+
+(use-package avy
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-;" . avy-goto-char)
+        ("C-'" . avy-goto-char-2)
+        ("M-g l" . avy-goto-line)
+        ("M-g r" . avy-resume)
+        :map org-mode-map
+        ("C-'" . avy-goto-char-2))
+  )
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  (Latex-mode . rainbow-delimiters-mode)
+  :config
+  (rainbow-delimiters-mode 1))
+
+(use-package rainbow-mode
+  :ensure t)
+
+(use-package linum-relative
+  :ensure t
+  :init
+  (global-linum-mode t)
+  :config
+  (linum-relative-mode)
+  (add-hook 'doc-view-mode-hook 'contrib/inhibit-global-linum-mode))
+
+(use-package restart-emacs
+  :ensure t
+  :config
+  (setq restart-emacs-restore-frames t))
+
+(use-package try
+  :ensure t)
+
+(use-package undo-tree
+  :ensure t
+  :diminish ""
+  :init
+  (global-undo-tree-mode)
+  :config
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+
+(use-package which-key
+  :diminish ""
+  :ensure t
+  :config (which-key-mode))
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1)
+
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+(use-package latex
+  :defer t
+  :ensure auctex
+  :mode ("//.tex//" . latex-mode)
+  :hook
+  (LaTeX-mode . outline-minor-mode)
+  :config
+  (progn
+    (setq TeX-fold-mode t)
+    (setq TeX-parse-self t)
+    (setq TeX-save-query nil)
+    (setq TeX-PDF-mode t)
+    (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+    ))
+
+(setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
+                       (getenv "PATH")))
+(add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
+
+;; (load "preview-latex.el" nil t t)
+
+(use-package xenops
+  :ensure t
+  :hook
+  (latex-mode . xenops-mode)
+  (LaTeX-mode . xenops-mode))
+
+(add-to-list 'load-path "~/.emacs.d/mu4e")
+
+(require 'mu4e)
+(require 'mu4e-contrib)
+
+(setq mu4e-trash-folder "/TRASH")
+(setq mu4e-sent-folder "/SENT")
+(setq mu4e-drafts-folder "/drafts")
+
+(setq mu4e-headers-results-limit 500)
+
+;; tell message-mode how to send mail
+(setq message-send-mail-function 'smtpmail-send-it)
+;; if our mail server lives at smtp.example.org; if you have a local
+;; mail-server, simply use 'localhost' here.
+(setq smtpmail-smtp-server "smtp.gmail.com")
+(setq smtpmail-smtp-service 587)       
+(setq smtpmail-stream-type 'starttls)
+
+(setq mu4e-get-mail-command "mbsync -a")
+
+(use-package org
+  :ensure org-superstar
+  :hook
+  (org-mode . org-cdlatex-mode)
+  (org-mode . (lambda () (org-superstar-mode)))
+  (org-mode . org-indent-mode)
+  :init
+  (setq org-highlight-latex-and-related '(native latex script))
+  (setq org-export-backends '(ascii html icalendar latex odt org))
+  :bind
+  (:map org-mode-map
+        ("C-c C-x C-e" . skye/org-mark-and-archive)
+        ("C-c C-x <up>" . org-cycle-list-bullet)
+        :map global-map
+        ("C-c a" . org-agenda)
+        ("C-c c" . org-capture))
+  :config
+  (require 'org-tempo)
+
+  (setq org-directory "~/Documents/life/")
+
+  (defun skye/org-get-path (stringname)
+    "Use concat to generate full path."
+    (concat (file-name-as-directory org-directory) stringname))
+
+  (setq skye/Readme (skye/org-get-path "README.org"))
+  (setq skye/Ideas (skye/org-get-path "Ideas.org"))
+  (setq skye/School (skye/org-get-path "SchoolWork.org"))
+  (setq skye/archive (skye/org-get-path "archive.org"))
+  (setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
+  (setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
+
+  (setq org-agenda-files (list skye/Readme skye/Ideas skye/School))
+  (setq org-archive-location (concat skye/archive "::* From %s"))
+
+  (setq org-ellipsis " ▼")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+
+  (setq org-todo-keywords '((sequence "☛TODO(t)" "|" "⚑WAITING(w!)") (sequence "|" "❌CANCELED(c)" "|" "✔DONE(d)")))
+
+  (setq org-enforce-todo-dependencies t)
+  (setq org-enforce-todo-checkbox-dependencies t)
+
+  (setq skye/bullets-list '("◉" "●" "○" "⊙"))
+
+  (setq org-src-window-setup 'current-window)
+
+  (defun skye/org-mark-and-archive ()
+    "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
+    (interactive)
+    (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
+              :action '(1
+                        ("o" org-todo "action 1")
+                        ("j" org-todo "action 2")))
+    (org-archive-subtree))
+
+  (add-to-list 'org-modules 'org-habit)
+
+  (setq org-habit-graph-column 80)
+  (setq org-habit-show-habits-only-for-today t)
+  (setq org-habit-show-all-today t)
+
+  (setq org-default-notes-file skye/Readme)
+
+  (setq org-capture-templates '(
+                                ("e" "Email to be dealt with. Action item" entry
+                                 (file+headline skye/Readme "Emails to deal with")
+                                 "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
+                                 )
+
+                                ("m" "Miscellaneous TODO. Refile" entry
+                                 (file+headline skye/Readme "Miscellaneous")
+                                 "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
+                                 )
+
+                                ("t" "Date-less TODO. Generic" entry
+                                 (file skye/Readme)
+                                 "* ☛TODO %^{PROMPT} \n  %?"
+                                 )
+                                ))
+
+  (setq org-refile-targets
+        '((nil :maxlevel . 3)
+          (org-agenda-files :maxlevel . 2)))
+
+  (setq org-pretty-entities nil)
+  (setq org-preview-latex-default-process 'dvisvgm)
+  )
+
+(use-package org-superstar
+  :ensure t
+  :after
+  (org)
+  :config
+  (setq org-superstar-leading-bullet ?\s)
+  (setq org-superstar-cycle-headline-bullets t)
+  (setq org-superstar-headline-bullets-list skye/bullets-list))
+
 (setq inhibit-startup-message t) ;startup.el
 (tool-bar-mode -1) ;tool-bar.el
 (menu-bar-mode -1) ;menu-bar.el
@@ -10,8 +409,10 @@
 (tab-bar-mode 0) ;tab-bar.el
 (global-tab-line-mode 0) ;tab-line.el
 
+(set-face-attribute 'default nil :font "Inconsolata LGC Markup" :height 130)
+
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'trans-side t)
+(load-theme 'TransSide t)
 
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 
@@ -114,30 +515,42 @@
 
 (load-file custom-file)
 
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+
+(use-package unicode-fonts
+  :ensure t
+  :config
+  (unicode-fonts-setup))
+
 (defun contrib/toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
              (next-win-buffer (window-buffer (next-window)))
-         (this-win-edges (window-edges (selected-window)))
-         (next-win-edges (window-edges (next-window)))
-         (this-win-2nd (not (and (<= (car this-win-edges)
-                                     (car next-win-edges))
-                                 (<= (cadr this-win-edges)
-                                     (cadr next-win-edges)))))
-         (splitter
-          (if (= (car this-win-edges)
-                 (car (window-edges (next-window))))
-              'split-window-horizontally
-            'split-window-vertically)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
         (delete-other-windows)
-    (let ((first-win (selected-window)))
-      (funcall splitter)
-      (if this-win-2nd (other-window 1))
-      (set-window-buffer (selected-window) this-win-buffer)
-      (set-window-buffer (next-window) next-win-buffer)
-      (select-window first-win)
-      (if this-win-2nd (other-window 1))))))
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
 
 (defun contrib/keyboard-quit-context+ ()
   "Quit current context.
@@ -196,402 +609,37 @@ behavior added."
   (interactive)
   (if (> (length (window-list)) 1) (delete-window) (quit-window)))
 
+(defun skye/reload-theme ()
+  "Reload a theme by disabling that theme first"
+  (interactive)
+  (let ((theme 'TransSide))
+  (eval-buffer (current-buffer))
+  (disable-theme theme)
+  (enable-theme theme)))
+
 (use-package emacs
   :bind
   (:map global-map
-   :prefix-map my-ctrl-z-prefix-map
-   :prefix "C-z"
-   ("C-<SPC>" . fixup-whitespace)
-   ("C-e" . eval-defun)
-   ("|" . contrib/toggle-window-split)
-   (";" . comment-region)
-   ("C-h f" . describe-face))
+        :prefix-map my-ctrl-z-prefix-map
+        :prefix "C-z"
+        ("C-<SPC>" . fixup-whitespace)
+        ("C-e" . eval-defun)
+        ("|" . contrib/toggle-window-split)
+        (";" . comment-region)
+        ("C-h f" . describe-face))
 
   (:map global-map
-   :prefix-map my-meta-z-prefix-map
-   :prefix "M-z"
-   (";" . uncomment-region))
+        :prefix-map my-meta-z-prefix-map
+        :prefix "M-z"
+        (";" . uncomment-region))
 
   (:map global-map
-   ("<f5>" . revert-buffer)
-   ([remap kill-buffer] . skye/kill-current-buffer)
-   ("s-s" . save-buffer)
-   )
+        ("<f5>" . revert-buffer)
+        ([remap kill-buffer] . skye/kill-current-buffer)
+        ("s-s" . save-buffer)
+        ("<f4>" . skye/reload-theme)
+        )
   )
-
-(use-package which-key
-  :diminish ""
-  :ensure t
-  :config (which-key-mode))
-
-(use-package try
-  :ensure t)
-
-(use-package linum-relative
-  :ensure t
-  :init
-  (global-linum-mode t)
-  :config
-  (linum-relative-mode)
-  (add-hook 'doc-view-mode-hook 'contrib/inhibit-global-linum-mode))
-
-(use-package rainbow-delimiters
-  :ensure t
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  (Latex-mode . rainbow-delimiters-mode)
-  :config
-  (rainbow-delimiters-mode 1))
-
-(use-package rainbow-mode
-  :ensure t)
-
-(use-package diminish
-  :ensure t)
-
-(use-package undo-tree
-  :ensure t
-  :diminish ""
-  :init
-  (global-undo-tree-mode))
-
-(use-package ace-window
-  :ensure t
-  :bind
-  ([remap other-window] . ace-window)
-  :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  )
-
-(use-package avy
-  :ensure t
-  :bind
-  (:map global-map
-  ("C-;" . avy-goto-char)
-  ("C-'" . avy-goto-char-2)
-  ("M-g l" . avy-goto-line)
-  ("M-g r" . avy-resume)
-  :map org-mode-map
-  ("C-'" . avy-goto-char-2))
-  )
-
-(use-package all-the-icons
-  :ensure t
-  :diminish "")
-
-(use-package all-the-icons-dired
-  :ensure t
-  :diminish "")
-
-(use-package all-the-icons-ibuffer
-  :ensure t)
-
-(all-the-icons-ivy-setup)
-(all-the-icons-ivy-rich-mode 1)
-
-(use-package expand-region
-  :ensure t
-  :after (org)
-  :bind
-  (:map global-map
-        ("C-=" . er/expand-region)))
-
-(use-package counsel
-  :ensure t)
-
-(use-package swiper
-  :ensure t)
-
-(use-package ivy
-  :demand
-  :diminish ""
-  :ensure t
-  :bind
-  (:map global-map
-        ("C-s" . swiper)
-        ("C-r" . swiper-backward)
-        ("C-c C-r" . ivy-resume)
-        ("<f6>" . ivy-resume)
-        ("M-x" . counsel-M-x)
-        ("C-x C-f" . counsel-find-file)
-        ("s-f" . counsel-find-file)	
-        ("<f1> f" . counsel-describe-function)
-        ("<f1> v" . counsel-describe-variable)
-        ("<f1> l" . counsel-load-library)
-        ("<f2> i" . counsel-info-lookup-symbol)
-        ("<f2> u" . counsel-unicode-char)
-        ("C-c g" . counsel-git)
-        ("C-c j" . counsel-git-grep)
-        ("C-c k" . counsel-ag)
-        ("C-x l" . counsel-locate)
-        ("M-y" . counsel-yank-pop))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq swiper-use-visual-line nil)
-  (setq swiper-use-visual-line-p (lambda (a) nil)))
-
-(ivy-rich-mode 1)
-(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-
-(use-package magit
-  :ensure t)
-
-(use-package company
-  :diminish ""
-  :ensure t
-  :init
-  (setq company-require-match nil) ; Don't require match, so you can still move your cursor as expected.
-  (setq company-tooltip-align-annotations t) ; Align annotation to the right side.
-  (setq company-eclim-auto-save nil) ; Stop eclim auto save.
-  (setq company-dabbrev-downcase nil) ; No downcase when completion.
-
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 4)
-  (add-hook 'prog-mode-hook 'company-mode)
-
-  (defun jcs--company-complete-selection--advice-around (fn)
-    "Advice execute around `company-complete-selection' command."
-    (let ((company-dabbrev-downcase t)) (call-interactively fn))) (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
-
-(use-package company-fuzzy
-  :ensure t
-  :after (company)
-  :diminish ""
-  :config
-  (global-company-fuzzy-mode 1)
-  (setq company-fuzzy-prefix-ontop t)
-  (setq company-fuzzy-sorting-backend 'alphabetic)
-  (setq company-fuzzy-show-annotation t))
-
-(use-package company-auctex
-  :ensure t
-  :init
-  (company-auctex-init))
-
-(use-package restart-emacs
-  :ensure t
-  :config
-  (setq restart-emacs-restore-frames t))
-
-(use-package ibuffer
-  :ensure t
-
-  :bind
-  (("C-x C-b" . ibuffer)
-   ("s-b" . ibuffer))
-
-  :config
-  (setq ibuffer-expert t)
-  (setq ibuffer-saved-filter-groups
-        '(("home"
-           ("Magit" (or (mode . magit-process-mode)
-                        (mode . magit-diff-mode)
-                        (mode . magit-mode)
-                        (mode . magit)
-                        (mode . magit-blame-mode)
-                        (mode . magit-blob-mode)
-                        (mode . magit-cherry-mode)
-                        (mode . magit-file-mode)
-                        (mode . magit-wip-initial-backup-mode)
-                        (mode . magit-log-mode)
-                        (mode . magit-log-select-mode)
-                        (mode . magit-submodule-list-mode)))
-           ("Latex" (or (mode . latex-mode)
-                        (mode . bibtex-mode)
-                        (mode . latex-mode)))
-           ("Org" (mode . org-mode))
-           ("Help" (or (name . "\*Help\*")
-                       (name . "\*Apropos\*")
-                       (name . "\*info\*")
-                       (mode . special-mode)
-                       (mode . messages-buffer-mode)
-                       (mode . fundamental-mode))))))
-
-  (add-hook 'ibuffer-mode-hook
-            '(lambda ()
-               (ibuffer-auto-mode 1)
-               (ibuffer-switch-to-saved-filter-groups "home")
-               (all-the-icons-ibuffer-mode 1)))
-
-  )
-
-(use-package dired
-  :config
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-listing-switches "-al --group-directories-first --time-style=iso")
-  (setq dired-dwim-target t)
-  :hook
-  ((dired-mode . dired-hide-details-mode)
-   (dired-mode . all-the-icons-dired-mode))
-  :bind
-  (:map dired-mode-map ("q" . skye/quit-window)))
-
-(use-package lorem-ipsum
-  :ensure t)
-
-(use-package prescient
-  :ensure
-  :config
-  (setq prescient-history-length 200)
-  (setq prescient-save-file "~/.emacs.d/prescient-items")
-  (setq prescient-filter-method '(literal regexp))
-  (prescient-persist-mode 1))
-
-(use-package ivy-prescient
-  :ensure
-  :after (prescient ivy)
-  :config
-  (setq ivy-prescient-sort-commands
-        '(:not counsel-grep
-               counsel-rg
-               counsel-switch-buffer
-               ivy-switch-buffer
-               swiper
-               swiper-multi))
-  (setq ivy-prescient-retain-classic-highlighting t)
-  (setq ivy-prescient-enable-filtering nil)
-  (setq ivy-prescient-enable-sorting t)
-  (ivy-prescient-mode 1))
-
-(use-package yasnippet
-  :ensure t
-  :config
-  (yas-global-mode 1)
-
-  (setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
-
-(use-package yasnippet-snippets
-  :ensure t)
-
-(use-package org
-  :ensure org-superstar
-  :hook
-  (org-mode . org-cdlatex-mode)
-  (org-mode . (lambda () (org-superstar-mode)))
-  (org-mode . org-indent-mode)
-  :init
-  (setq org-highlight-latex-and-related '(native latex script))
-  (setq org-export-backends '(ascii html icalendar latex odt org))
-  :bind
-  (:map org-mode-map
-   ("C-c C-x C-e" . skye/org-mark-and-archive)
-   ("C-c C-x <up>" . org-cycle-list-bullet)
-   :map global-map
-   ("C-c a" . org-agenda)
-   ("C-c c" . org-capture))
-  :config
-  (require 'org-tempo)
-
-  (setq org-directory "~/Documents/life/")
-
-  (defun skye/org-get-path (stringname)
-    "Use concat to generate full path."
-    (concat (file-name-as-directory org-directory) stringname))
-
-  (setq skye/Readme (skye/org-get-path "README.org"))
-  (setq skye/Ideas (skye/org-get-path "Ideas.org"))
-  (setq skye/School (skye/org-get-path "SchoolWork.org"))
-  (setq skye/archive (skye/org-get-path "archive.org"))
-  (setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
-  (setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
-
-  (setq org-agenda-files (list skye/Readme skye/Ideas skye/School))
-  (setq org-archive-location (concat skye/archive "::* From %s"))
-
-  (setq org-ellipsis " ▼")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-
-  (setq org-todo-keywords '((sequence "☛TODO(t)" "|" "⚑WAITING(w!)") (sequence "|" "❌CANCELED(c)" "|" "✔DONE(d)")))
-
-  (setq org-enforce-todo-dependencies t)
-  (setq org-enforce-todo-checkbox-dependencies t)
-
-  (setq skye/bullets-list '("◉" "●" "○" "⊙"))
-
-  (setq org-src-window-setup 'current-window)
-
-  (defun skye/org-mark-and-archive ()
-    "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
-    (interactive)
-    (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
-              :action '(1
-                        ("o" org-todo "action 1")
-                        ("j" org-todo "action 2")))
-    (org-archive-subtree))
-
-  (add-to-list 'org-modules 'org-habit)
-
-  (setq org-habit-graph-column 80)
-  (setq org-habit-show-habits-only-for-today t)
-  (setq org-habit-show-all-today t)
-
-  (setq org-default-notes-file skye/Readme)
-
-  (setq org-capture-templates '(
-                                ("e" "Email to be dealt with. Action item" entry
-                                 (file+headline skye/Readme "Emails to deal with")
-                                 "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
-                                 )
-
-                                ("m" "Miscellaneous TODO. Refile" entry
-                                 (file+headline skye/Readme "Miscellaneous")
-                                 "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
-                                 )
-
-                                ("t" "Date-less TODO. Generic" entry
-                                 (file skye/Readme)
-                                 "* ☛TODO %^{PROMPT} \n  %?"
-                                 )
-                                ))
-
-  (setq org-refile-targets
-        '((nil :maxlevel . 3)
-          (org-agenda-files :maxlevel . 2)))
-
-  (setq org-pretty-entities nil)
-  (setq org-preview-latex-default-process 'dvisvgm)
-  )
-
-(use-package org-superstar
-  :ensure t
-  :after
-  (org)
-  :config
-  (setq org-superstar-leading-bullet ?\s)
-  (setq org-superstar-cycle-headline-bullets t)
-  (setq org-superstar-headline-bullets-list skye/bullets-list))
-
-(use-package latex
-  :defer t
-  :ensure auctex
-  :mode ("//.tex//" . latex-mode)
-  :hook
-  (LaTeX-mode . outline-minor-mode)
-  :config
-  (progn
-    (setq TeX-fold-mode t)
-    (setq TeX-parse-self t)
-    (setq TeX-save-query nil)
-    (setq TeX-PDF-mode t)
-    (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
-    ))
-
-(setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
-                         (getenv "PATH")))
-(add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
-
-;; (load "preview-latex.el" nil t t)
-
-(use-package xenops
-  :ensure t
-  :hook
-  (latex-mode . xenops-mode)
-  (LaTeX-mode . xenops-mode))
 
 (put 'scroll-left 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
