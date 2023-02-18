@@ -1,0 +1,935 @@
+#+startup: overview
+#+title: Emacs Config File
+#+author: Kaushik Skye Harith
+#+email: skye.harith@gmail.com
+#+options: toc:t todo:nil
+
+* User Information
+This contains basic user information regarding the user such as email id and name. It is used throughout emacs in places such as Org mode preambles and Mu4e.
+
+#+begin_src emacs-lisp
+  (setq user-full-name "Kaushik Skye Harith")
+  (setq user-mail-address "skye.harith@gmail.com")
+#+end_src
+
+* Tweaks to emacs' functioning
+This is a list of non-cosmetic changes to the way emacs naturally functions. 
+
+** Y/N instead of yes-or-no
+It's low-key obnoxious to have to type out yes or no each time a prompt comes up.
+
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+** Better autosaving
+Auto-saving for default emacs puts the auto saved files in the current working directory. I like having it in a seperate folder. This also maintains more new versions and fewer old versions from the point of file save. 
+
+#+begin_src emacs-lisp
+  (setq backup-by-copying t      ; don't clobber symlinks
+        backup-directory-alist '(("." . "~/.emacs.d/saves/"))    ; don't litter my fs tree
+        delete-old-versions t
+        kept-new-versions 6
+        kept-old-versions 2
+        version-control t)       ; use versioned backups
+
+  (setq auto-save-file-name-transforms
+        `((".*" "~/.emacs.d/saves/" t)))
+#+end_src
+
+** Vertical splits as defualt
+For reasons beyond my knowledge, emacs chooses to split new windows length-wise instead of breadth-wise. 
+
+#+begin_src emacs-lisp
+  (setq split-height-threshold nil) ;window.el
+  (setq split-width-threshold 0) ;window.el
+#+end_src
+
+** Window Management
+Emacs places windows way too inconsistently. This fixes that. Stoled from Protesilaos' config.
+
+#+begin_src emacs-lisp
+  (use-package window
+    :straight nil
+    :init
+    (setq display-buffer-alist
+	  '(;; top side window
+	    ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
+	     (display-buffer-in-side-window)
+	     (window-height . 0.25)
+	     (side . top)
+	     (slot . 0))
+	    ("\\*Messages.*"
+	     (display-buffer-in-side-window)
+	     (window-height . 0.25)
+	     (side . top)
+	     (slot . 1))
+	    ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+	     (display-buffer-in-side-window)
+	     (window-height . 0.25)
+	     (side . top)
+	     (slot . 2))
+	    ;; bottom side window
+	    ("\\*\\(Output\\|Register Preview\\).*"
+	     (display-buffer-in-side-window)
+	     (window-width . 0.20)       ; See the :hook
+	     (side . bottom)
+	     (slot . -1))
+	    (".*\\*\\(Completions\\|Embark.*Occur\\).*"
+	     (display-buffer-in-side-window)
+	     (window-height . 0.25)
+	     (side . bottom)
+	     (slot . 0))
+	    ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
+	     (display-buffer-in-side-window)
+	     (window-width . 0.40)
+	     (side . right)
+	     (slot . 1))
+	    ;; left side window
+	    ("\\*Help.*"
+	     (display-buffer-in-side-window)
+	     (window-width . 0.25)       ; See the :hook
+	     (side . left)
+	     (slot . 0))
+	    ;; right side window
+	    ("\\*Faces\\*"
+	     (display-buffer-in-side-window)
+	     (window-width . 0.25)
+	     (side . right)
+	     (slot . 0)
+	     (window-parameters . ((mode-line-format . (" " mode-line-buffer-identification)))))
+	    ("\\*Custom.*"
+	     (display-buffer-in-side-window)
+	     (window-width . 0.25)
+	     (side . right)
+	     (slot . 1))
+	    ;; bottom buffer (NOT side window)
+	    ("\\*\\vc-\\(incoming\\|outgoing\\).*"
+	     (display-buffer-at-bottom))))
+    (setq window-combination-resize t)
+    (setq even-window-sizes 'height-only)
+    (setq window-sides-vertical nil)
+    ;; Note that the the syntax for `use-package' hooks is controlled by
+    ;; the `use-package-hook-name-suffix' variable.  The "-hook" suffix is
+    ;; not an error of mine.
+    :hook ((help-mode . visual-line-mode)
+	   (custom-mode . visual-line-mode))
+    :bind (("s-n" . next-buffer)
+	   ("s-p" . previous-buffer)
+	   ("s-o" . other-window)
+	   ("s-0" . delete-window)
+	   ("s-1" . delete-other-windows)
+	   ("s-5" . delete-frame)
+	   ("C-x +" . balance-windows-area)))
+#+end_src
+
+** Smoother scrolling
+I've had some difficulty with getting the recommended "scroll- margin, step, conservatively etc" not working. Auto-window-vscroll does work.
+
+#+begin_src emacs-lisp
+  (setq auto-window-vscroll nil)
+#+end_src
+
+** Custom-set variables get their own file
+I like a clean init.el. Custom-set variables getting thrown in init.el isn't my favourite thing. The solution is to put it in its own file lol. Laziness is always the best solution.
+
+#+begin_src emacs-lisp
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+
+  (load-file custom-file)
+#+end_src
+
+** Misc
+
+#+begin_src emacs-lisp
+  (global-visual-line-mode t)
+
+  (setq initial-major-mode 'org-mode)
+  (setq default-major-mode 'org-mode)
+  (setq font-lock-maximum-decoration t)
+#+end_src
+
+* Tweaks to emacs' appearance
+** Nano stuff
+Nano emacs is a nifty collection of vanilla esque presets for emacs. I have merged some of those things into my own config.
+
+*** Basics
+Some simple stuff
+
+#+begin_src emacs-lisp
+  (straight-use-package
+   '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+
+  (require 'nano-faces)
+
+  (require 'nano-layout)
+  (window-divider-mode 0)
+
+  (require 'nano-defaults)
+
+  (require 'nano-session)
+#+end_src
+
+*** Modeline
+Nano modeline mode from repo is not used because it doesn't support themeing of faces
+
+#+begin_src emacs-lisp
+  (use-package nano-modeline
+    :config
+    (setq nano-modeline-position 'bottom)
+    (nano-modeline-mode))
+#+end_src
+
+** Setting the default frame
+After using transparency for a while and not having (fullscreen . maximized) working properly I've settled on just pushing the frame to the edges of the screen.
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+#+end_src
+
+** Font and font size
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :font "Inconsolata LGC Markup" :height 130)
+#+end_src
+
+** TransSide theme
+This is my own custom theme based on the colors of the trans flag. Pink and Blue are regularly used as highlight and accent colors with purple/lavenders acting as a unifying inbetween.
+
+#+begin_src emacs-lisp
+  (use-package autothemer)
+
+  (use-package TransSide-theme
+    :straight (TransSide-theme :type git :host github :repo "Harith163/TransSide-theme")
+    :ensure t)
+
+  (load-theme 'TransSide 1)
+#+end_src
+
+* Custom functions
+This is a catch all place to dump custom functions. 
+
+** Window splits. 
+This is a function to toggle how the window is split
+
+#+begin_src emacs-lisp
+  (defun contrib/toggle-window-split ()
+    (interactive)
+    (if (= (count-windows) 2)
+        (let* ((this-win-buffer (window-buffer))
+               (next-win-buffer (window-buffer (next-window)))
+               (this-win-edges (window-edges (selected-window)))
+               (next-win-edges (window-edges (next-window)))
+               (this-win-2nd (not (and (<= (car this-win-edges)
+                                           (car next-win-edges))
+                                       (<= (cadr this-win-edges)
+                                           (cadr next-win-edges)))))
+               (splitter
+                (if (= (car this-win-edges)
+                       (car (window-edges (next-window))))
+                    'split-window-horizontally
+                  'split-window-vertically)))
+          (delete-other-windows)
+          (let ((first-win (selected-window)))
+            (funcall splitter)
+            (if this-win-2nd (other-window 1))
+            (set-window-buffer (selected-window) this-win-buffer)
+            (set-window-buffer (next-window) next-win-buffer)
+            (select-window first-win)
+            (if this-win-2nd (other-window 1))))))
+#+end_src
+
+** Intelligent minibuffer quits
+Quitting out of the minibuffer can be a bit finicky. This function forces focus to the minibuffer when it is "active". For the time being, I also remap C-g here. To be refiled.
+
+#+begin_src emacs-lisp
+  (defun contrib/keyboard-quit-context+ ()
+    "Quit current context.
+
+  This function is a combination of `keyboard-quit' and
+  `keyboard-escape-quit' with some parts omitted and some custom
+  behavior added."
+    (interactive)
+    (cond ((region-active-p)
+           ;; Avoid adding the region to the window selection.
+           (setq saved-region-selection nil)
+           (let (select-active-regions)
+             (deactivate-mark)))
+          ((eq last-command 'mode-exited) nil)
+          (current-prefix-arg
+           nil)
+          (defining-kbd-macro
+            (message
+             (substitute-command-keys
+              "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
+            (cancel-kbd-macro-events))
+          ((active-minibuffer-window)
+           (when (get-buffer-window "*Completions*")
+             ;; hide completions first so point stays in active window when
+             ;; outside the minibuffer
+             (minibuffer-hide-completions))
+           (abort-recursive-edit))
+          (t
+           (when completion-in-region-mode
+             (completion-in-region-mode -1))
+           (let ((debug-on-quit nil))
+             (signal 'quit nil)))))
+
+  (global-set-key [remap keyboard-quit] #'contrib/keyboard-quit-context+)
+#+end_src
+
+** Inhibit linum mode
+This function is to be used in conjunction with hooks for modes that don't need line numbers.
+   
+#+begin_src emacs-lisp
+  (defun contrib/inhibit-global-linum-mode ()
+    "Counter-act `global-linum-mode'."
+    (add-hook 'after-change-major-mode-hook (lambda () (linum-mode 0)) :append :local))
+#+end_src
+
+** Kill current buffer 
+A mini function that I use for my own quick quit for things like ibuffer etc.
+
+#+begin_src emacs-lisp
+  (defun skye/kill-current-buffer ()
+    (interactive)
+    (kill-buffer (current-buffer)))
+#+end_src
+
+** Buffer scale
+Self explanatory, to change buffer text size.
+
+#+begin_src emacs-lisp
+  (defun skye/small-text-scale ()
+    "Make the buffer text zoom smaller"
+    (interactive)
+    (text-scale-set -1))
+
+  (defun skye/big-text-scale ()
+    "Make the buffer text zoom bigger"
+    (interactive)
+    (text-scale-set 1))
+#+end_src
+
+** Kill window on quit buffer
+Usefull for things like dired, ibuffer etc that don't kill the window on quitting.
+
+#+begin_src emacs-lisp
+  (defun skye/quit-window ()
+    "If more than one window is open, close window on quit"
+    (interactive)
+    (if (> (length (window-list)) 1) (delete-window) (quit-window)))
+#+end_src
+
+** Reload theme
+
+#+begin_src emacs-lisp
+  (defun skye/reload-theme ()
+    "Reload a theme by disabling that theme first"
+    (interactive)
+    (let ((theme 'TransSide))
+    (eval-buffer (current-buffer))
+    (disable-theme theme)
+    (enable-theme theme)))
+#+end_src
+
+* Custom Keybinds
+This is a list of custom keybinds that I couldn't fit in with the package declarations. Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope. Use the super key for things that are commonly associated with the "C-x C-" keybind.
+
+The following functions are bound
+  - remove redundant white space between text
+  - evalueate top-level function instead of function at point (elisp/global)
+  - a custom function to toggle window split from horizontal to vertical.
+  - revert buffer 
+  - comment and uncoment region.
+  - Describe the face at point. Prefixed with Ctrl-z to distinguish between this and describe-function
+
+#+begin_src emacs-lisp
+  (use-package emacs
+    :straight nil
+    :bind
+    (:map global-map
+	  :prefix-map my-ctrl-z-prefix-map
+	  :prefix "C-z"
+	  ("C-<SPC>" . fixup-whitespace)
+	  ("C-e" . eval-defun)
+	  ("|" . contrib/toggle-window-split)
+	  (";" . comment-region)
+	  ("C-h f" . describe-face))
+
+    (:map global-map
+	  :prefix-map my-meta-z-prefix-map
+	  :prefix "M-z"
+	  (";" . uncomment-region))
+
+    (:map global-map
+	  ("<f5>" . revert-buffer)
+	  ([remap kill-buffer] . skye/kill-current-buffer)
+	  ("s-s" . save-buffer)
+	  ("<f4>" . skye/reload-theme)
+	  )
+    ) 
+#+end_src
+
+* Packages
+** Packages that make navigating emacs easier
+*** All the icons 
+All-the-icons provides fancy icons for all the lists and menus in emacs, but requires some setup in the form of font installlation.
+
+**** All the icons
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons)
+#+end_src
+
+**** All the icons for dired
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-dired)
+#+end_src
+
+**** All the icons for ibuffer
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-ibuffer)
+#+end_src
+
+**** All the icons for ivy
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-ivy)
+  (use-package all-the-icons-ivy-rich)
+
+  (all-the-icons-ivy-setup)
+  (all-the-icons-ivy-rich-mode 1)
+#+end_src
+
+*** Clever M-x listings
+Though there exist built in emacs functionality for this kind of listing, prescient is what I used first so its what I'mma use now until i revamp my init file for the 1000th time.
+
+**** Prescient    
+
+#+begin_src emacs-lisp
+  (use-package prescient
+    :config
+    (setq prescient-history-length 200)
+    (setq prescient-save-file "~/.emacs.d/prescient-items")
+    (setq prescient-filter-method '(literal regexp))
+    (prescient-persist-mode 1))
+#+end_src
+
+**** Ivy-Prescient
+Ivy + prescient. What do you want me to say, future me?
+
+#+begin_src emacs-lisp
+  (use-package ivy-prescient
+    :after (prescient ivy)
+    :config
+    (setq ivy-prescient-sort-commands
+          '(:not counsel-grep
+                 counsel-rg
+                 counsel-switch-buffer
+                 ivy-switch-buffer
+                 swiper
+                 swiper-multi))
+    (setq ivy-prescient-retain-classic-highlighting t)
+    (setq ivy-prescient-enable-filtering nil)
+    (setq ivy-prescient-enable-sorting t)
+    (ivy-prescient-mode 1))
+#+end_src
+
+*** Company mode
+This is what I use for auto-completion. Beware using it everywhere lest you get annoyed. The other option is auto-complete-mode which i tried but didn't enjoy much.
+
+**** Company itself
+The crux of it all. Currently only hooked to prog mode. NOT adding latex or org mode to that list.
+
+#+begin_src emacs-lisp
+  (use-package company
+    :diminish ""
+    :init
+    (setq company-require-match nil) ; Don't require match, so you can still move your cursor as expected.
+    (setq company-tooltip-align-annotations t) ; Align annotation to the right side.
+    (setq company-eclim-auto-save nil) ; Stop eclim auto save.
+    (setq company-dabbrev-downcase nil) ; No downcase when completion.
+
+    :config
+    (setq company-idle-delay 0)
+    (setq company-minimum-prefix-length 4)
+    (add-hook 'prog-mode-hook 'company-mode)
+
+    (defun jcs--company-complete-selection--advice-around (fn)
+      "Advice execute around `company-complete-selection' command."
+      (let ((company-dabbrev-downcase t)) (call-interactively fn))) (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
+#+end_src
+
+**** Company fuzzy
+Fuzzy match text so that you don't have to sit there and type shit out letter by letter to chance on the function you need.
+
+#+begin_src emacs-lisp
+  (use-package company-fuzzy
+    :after (company)
+    :config
+    (global-company-fuzzy-mode 1)
+    (setq company-fuzzy-prefix-ontop t)
+    (setq company-fuzzy-sorting-backend 'alphabetic)
+    (setq company-fuzzy-show-annotation t))
+#+end_src
+
+**** Company AucTeX
+Company auto complete for auctex. Is this contradicting my previous statement? Maybe? No?
+
+#+begin_src emacs-lisp
+  (use-package company-auctex
+    :init
+    (company-auctex-init))
+#+end_src
+
+*** Completion frame works
+The built in minibuffer completion frame work is too old school. Helm would be a much more feature rich solution to this problem, but ivy is a good middle ground for my use case.
+
+#+begin_src emacs-lisp
+  (use-package counsel)
+
+  (use-package swiper)
+
+  (use-package ivy
+    :demand
+    :bind
+    (:map global-map
+          ("C-s" . swiper)
+          ("C-r" . swiper-backward)
+          ("C-c C-r" . ivy-resume)
+          ("<f6>" . ivy-resume)
+          ("M-x" . counsel-M-x)
+          ("C-x C-f" . counsel-find-file)
+          ("s-f" . counsel-find-file)	
+          ("<f1> f" . counsel-describe-function)
+          ("<f1> v" . counsel-describe-variable)
+          ("<f1> l" . counsel-load-library)
+          ("<f2> i" . counsel-info-lookup-symbol)
+          ("<f2> u" . counsel-unicode-char)
+          ("C-c g" . counsel-git)
+          ("C-c j" . counsel-git-grep)
+          ("C-c k" . counsel-ag)
+          ("C-x l" . counsel-locate)
+          ("M-y" . counsel-yank-pop))
+    :config
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq swiper-use-visual-line nil)
+    (setq swiper-use-visual-line-p (lambda (a) nil)))
+#+end_src
+
+*** Dired
+Dired or Dir-ed is the built in directory editor for emacs. Since it treats every thing as a text buffer, there are some powerful things we can do with it. I'm not smart enough to use it to its potential.
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :straight nil
+    :config
+    (setq dired-recursive-copies 'always)
+    (setq dired-recursive-deletes 'always)
+    (setq delete-by-moving-to-trash t)
+    (setq dired-listing-switches "-al --group-directories-first --time-style=iso")
+    (setq dired-dwim-target t)
+    :hook
+    ((dired-mode . dired-hide-details-mode)
+     (dired-mode . all-the-icons-dired-mode))
+    :bind
+    (:map dired-mode-map ("q" . skye/quit-window)))
+#+end_src
+
+*** Electric pair mode
+Common things that come in pairs are forced to exist in pairs. Part of vanilla emacs. Small change made in org mode to ignore <> completion.
+
+#+begin_src emacs-lisp
+  (use-package elec-pair
+    :straight nil
+    :hook
+    (org-mode . (lambda ()
+		  (setq-local electric-pair-inhibit-predicate
+			      `(lambda (c)
+				 (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
+    (org-mode . (lambda ()
+		  (setq-local electric-pair-pairs (append electric-pair-pairs '((?$ . ?$))))))
+    :config
+    (electric-pair-mode 1))
+#+end_src
+
+*** Expand-region
+This changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
+
+#+begin_src emacs-lisp
+  (use-package expand-region
+    :after (org)
+    :bind
+    (:map global-map
+          ("C-=" . er/expand-region)))
+#+end_src
+
+*** Ibuffer
+Ibuffer is best buffer. Alternatives exist as with everything else but this is neatest.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :straight nil
+    :hook
+    (ibuffer-mode . (lambda ()
+		      (ibuffer-auto-mode 1)
+		      (ibuffer-switch-to-saved-filter-groups "home")
+		      (all-the-icons-ibuffer-mode 1)))
+    :bind
+    (("C-x C-b" . ibuffer)
+     ("s-b" . ibuffer))
+
+    :config
+    (setq ibuffer-expert t)
+    (setq ibuffer-saved-filter-groups
+	  '(("home"
+	     ("Magit" (or (mode . magit-process-mode)
+			  (mode . magit-diff-mode)
+			  (mode . magit-mode)
+			  (mode . magit)
+			  (mode . magit-blame-mode)
+			  (mode . magit-blob-mode)
+			  (mode . magit-cherry-mode)
+			  (mode . magit-file-mode)
+			  (mode . magit-wip-initial-backup-mode)
+			  (mode . magit-log-mode)
+			  (mode . magit-log-select-mode)
+			  (mode . magit-submodule-list-mode)))
+	     ("Latex" (or (mode . latex-mode)
+			  (mode . bibtex-mode)
+			  (mode . latex-mode)))
+	     ("Org" (mode . org-mode))
+	     ("Help" (or (name . "\*Help\*")
+			 (name . "\*Apropos\*")
+			 (name . "\*info\*")
+			 (mode . special-mode)
+			 (mode . messages-buffer-mode)
+			 (mode . fundamental-mode))))))
+    )
+
+#+end_src
+
+*** Ivy rich
+Fancier Ivy that provides loads more info.
+
+#+begin_src emacs-lisp
+  (use-package ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+#+end_src
+
+*** Lorem Ipsum
+Lorem Ipsum dolor sit amet. Usefull for quickly sketching out a document's looks at scale
+    
+#+begin_src emacs-lisp
+  (use-package lorem-ipsum)
+#+end_src
+
+*** Magit
+Use git from within emacs!! Magit is the reason i don't use git from CLI anymore
+
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
+
+*** Quickly jump around -
+Using letters from the home row to quickly navigate to a point on the screen. Much quicker than getting there with the cursor but uses brain power instead. Meh
+
+**** Ace-Window
+
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :bind
+    ([remap other-window] . ace-window)
+    :config
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+#+end_src
+
+**** Avy
+
+#+begin_src emacs-lisp
+  (use-package avy
+    :bind
+    (:map global-map
+          ("C-;" . avy-goto-char)
+          ("C-'" . avy-goto-char-2)
+          ("M-g l" . avy-goto-line)
+          ("M-g r" . avy-resume)
+          :map org-mode-map
+          ("C-'" . avy-goto-char-2))
+    )
+#+end_src
+
+*** Rainbow delimiters
+Delimiters is a fancy word/way of saying brackets, parenthesis, curly brackets etc. My personal favourite mini package maybe second to rainbow mode.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook
+    (prog-mode . rainbow-delimiters-mode)
+    (Latex-mode . rainbow-delimiters-mode)
+    :config
+    (rainbow-delimiters-mode 1))
+#+end_src
+
+*** Rainbow mode
+Turns any hex color code that appears in a file into the actual color it represents!!
+
+#+begin_src emacs-lisp
+  (use-package rainbow-mode)
+#+end_src
+
+*** Relative line numbers.
+A simple package that shows the line number you're. If one wants absolute lines then *linum* is the way to go, but I hate math and only use line numbers for navigating, so *linum-relative* is the way to go.
+    
+#+begin_src emacs-lisp
+  (use-package linum-relative
+    :init
+    (global-linum-mode t)
+    :hook
+    (doc-view-mode . contrib/inhibit-global-linum-mode)
+    :config
+    (linum-relative-mode))
+#+end_src
+
+*** Restart emacs from within emacs 
+This is the quickest and the best thing ever for people who constantly change their mind/fuck things up (a.k.a me)
+    
+#+begin_src emacs-lisp
+  (use-package restart-emacs
+    :config
+    (setq restart-emacs-restore-frames t))
+#+end_src
+    
+*** Try
+Lets you try packages until you close emacs.
+    
+#+begin_src emacs-lisp
+  (use-package try)
+#+end_src
+
+*** Undo tree
+This replaces the default undo behaviour in emacs and gives you a nice tree timeline to navigate. Standard ctrl-/ and ctrl-shift-/ with a tree given by ctrl-x u. q to quit and choose.
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode)
+    :config
+    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+#+end_src 
+
+*** Which-Key
+Provides completion for keybinds in the minibuffer. Its great.
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :config (which-key-mode))
+#+end_src
+
+*** Yasnippets
+Mainly used for smart physics snippets in org mode.
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :config
+    (yas-global-mode 1)
+
+    (setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
+
+  (use-package yasnippet-snippets)
+#+end_src
+
+** Packages that make me want to use emacs
+These are the packages that drive my day to day use of emacs.
+
+*** Latex stuff
+This is primarily there to fix things that org-export doesn't get right. Org mode to latex is the best pipeline.
+
+**** Main latex stuff
+#+begin_src emacs-lisp
+  (use-package latex
+    :defer t
+    :straight auctex
+    :mode ("//.tex//" . latex-mode)
+    :hook
+    (LaTeX-mode . outline-minor-mode)
+    :config
+    (progn
+      (setq TeX-fold-mode t)
+      (setq TeX-parse-self t)
+      (setq TeX-save-query nil)
+      (setq TeX-PDF-mode t)
+      (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
+      ))
+#+end_src
+
+**** Auctex things
+Basically adding to $PATH. Why this didn't work when doing it through my zshrc, we'll never know.
+
+#+begin_src emacs-lisp
+  (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
+                         (getenv "PATH")))
+  (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
+
+  ;; (load "preview-latex.el" nil t t)
+#+end_src
+
+**** Xenops
+Real time rendering of latex fragments.
+     
+#+begin_src emacs-lisp
+  (use-package xenops
+    :hook
+    (latex-mode . xenops-mode)
+    (LaTeX-mode . xenops-mode))
+#+end_src
+
+**** CDLatex
+#+begin_src emacs-lisp
+  (use-package cdlatex)
+#+end_src
+*** Org mode stuff
+**** Org mode
+EVERYTHING IN ORG MODE!!
+
+#+begin_src emacs-lisp
+  (use-package org
+    :hook
+    (org-mode . org-cdlatex-mode)
+    (org-mode . (lambda () (org-superstar-mode)))
+    (org-mode . org-indent-mode)
+
+    :init
+    (setq org-highlight-latex-and-related '(native latex script))
+    (setq org-export-backends '(ascii html icalendar latex odt org))
+
+    :bind
+    (:map org-mode-map
+      ("C-c C-x C-e" . skye/org-mark-and-archive)
+      ("C-c C-x <up>" . org-cycle-list-bullet)
+      :map global-map
+      ("C-c a" . org-agenda)
+      ("C-c c" . org-capture))
+
+    :config
+    (require 'org-tempo)
+
+    (setq org-directory "~/Documents/life/")
+
+    (defun skye/org-get-path (stringname)
+      "Use concat to generate full path."
+      (concat (file-name-as-directory org-directory) stringname))
+
+    (setq skye/Readme (skye/org-get-path "README.org"))
+    (setq skye/Ideas (skye/org-get-path "Ideas.org"))
+    (setq skye/School (skye/org-get-path "SchoolWork.org"))
+    (setq skye/archive (skye/org-get-path "archive.org"))
+    (setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
+    (setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
+
+    (setq org-agenda-files (list skye/Readme skye/Ideas skye/School))
+    (setq org-archive-location (concat skye/archive "::* From %s"))
+
+    (setq org-ellipsis " ▼")
+    (setq org-src-fontify-natively t)
+    (setq org-src-tab-acts-natively t)
+
+    (setq org-todo-keywords '((sequence "☛TODO(t)" "|" "⚑WAITING(w!)") (sequence "|" "❌CANCELED(c)" "|" "✔DONE(d)")))
+
+    (setq org-enforce-todo-dependencies t)
+    (setq org-enforce-todo-checkbox-dependencies t)
+
+    (setq skye/bullets-list '("◉" "●" "○" "⊙"))
+
+    (setq org-src-window-setup 'current-window)
+
+    (defun skye/org-mark-and-archive ()
+      "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
+      (interactive)
+      (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
+        :action '(1
+              ("o" org-todo "action 1")
+              ("j" org-todo "action 2")))
+      (org-archive-subtree))
+
+    (add-to-list 'org-modules 'org-habit)
+
+    (setq org-habit-graph-column 80)
+    (setq org-habit-show-habits-only-for-today t)
+    (setq org-habit-show-all-today t)
+
+    (setq org-default-notes-file skye/Readme)
+
+    (setq org-capture-templates '(
+                  ("e" "Email to be dealt with. Action item" entry
+                   (file+headline skye/Readme "Emails to deal with")
+                   "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
+                   )
+
+                  ("m" "Miscellaneous TODO. Refile" entry
+                   (file+headline skye/Readme "Miscellaneous")
+                   "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
+                   )
+
+                  ("t" "Date-less TODO. Generic" entry
+                   (file skye/Readme)
+                   "* ☛TODO %^{PROMPT} \n  %?"
+                   )
+                  ))
+
+    (setq org-refile-targets
+      '((nil :maxlevel . 3)
+        (org-agenda-files :maxlevel . 2)))
+
+    (setq org-pretty-entities nil)
+    (setq org-preview-latex-default-process 'dvisvgm)
+
+    (setq org-fontify-todo-headline t)
+    (setq org-fontify-done-headline t)
+    )
+#+end_src
+
+**** Org-superstar
+Fancy stars and hiding of ugly stars. Kinda like a better version of *org-bullets*
+     
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :config
+    (setq org-superstar-leading-bullet ?\s)
+    (setq org-superstar-cycle-headline-bullets t)
+    (setq org-superstar-headline-bullets-list skye/bullets-list))
+#+end_src
+
+*** EAF
+Emacs application framework basically gives you a way to run javascript in emacs. I like the pdf reader but that is it.
+
+#+begin_src emacs-lisp
+  (use-package eaf
+    :straight (emacs-application-framework :type git :host github :repo "emacs-eaf/emacs-application-framework")
+    :load-path "~/.emacs.d/straight/repos/emacs-application-framework/"
+    :custom
+    ; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
+    (eaf-browser-continue-where-left-off t)
+    (eaf-browser-enable-adblocker t)
+    (browse-url-browser-function 'eaf-open-browser)
+    :config
+    (require 'eaf-browser)
+    (require 'eaf-pdf-viewer))
+#+end_src
+
+* Lastly
+Things that are to be done at the end. This should only load if everything else doesn't fail. Should consider putting some of this in a different place.
+
+#+begin_src emacs-lisp
+  (put 'scroll-left 'disabled nil)
+  (put 'dired-find-alternate-file 'disabled nil)
+  (put 'narrow-to-region 'disabled nil)
+#+end_src  
