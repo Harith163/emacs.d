@@ -8,19 +8,13 @@
 This contains basic user information regarding the user such as email id and name. It is used throughout emacs in places such as Org mode preambles and Mu4e.
 
 #+begin_src emacs-lisp
-  (setq user-full-name "Kaushik Skye Harith")
-  (setq user-mail-address "skye.harith@gmail.com")
+  ;; -*- lexical-binding: t -*-
+    (setq user-full-name "Kaushik Skye Harith")
+    (setq user-mail-address "skye.harith@gmail.com")
 #+end_src
 
 * Tweaks to emacs' functioning
 This is a list of non-cosmetic changes to the way emacs naturally functions. 
-
-** Y/N instead of yes-or-no
-It's low-key obnoxious to have to type out yes or no each time a prompt comes up.
-
-#+begin_src emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
 
 ** Better autosaving
 Auto-saving for default emacs puts the auto saved files in the current working directory. I like having it in a seperate folder. This also maintains more new versions and fewer old versions from the point of file save. 
@@ -83,7 +77,7 @@ Emacs places windows way too inconsistently. This fixes that. Stoled from Protes
 	    ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
 	     (display-buffer-in-side-window)
 	     (window-width . 0.40)
-	     (side . right)
+	     (side . bottom)
 	     (slot . 1))
 	    ;; left side window
 	    ("\\*Help.*"
@@ -123,13 +117,6 @@ Emacs places windows way too inconsistently. This fixes that. Stoled from Protes
 	   ("C-x +" . balance-windows-area)))
 #+end_src
 
-** Smoother scrolling
-I've had some difficulty with getting the recommended "scroll- margin, step, conservatively etc" not working. Auto-window-vscroll does work.
-
-#+begin_src emacs-lisp
-  (setq auto-window-vscroll nil)
-#+end_src
-
 ** Custom-set variables get their own file
 I like a clean init.el. Custom-set variables getting thrown in init.el isn't my favourite thing. The solution is to put it in its own file lol. Laziness is always the best solution.
 
@@ -146,7 +133,6 @@ I like a clean init.el. Custom-set variables getting thrown in init.el isn't my 
 
   (setq initial-major-mode 'org-mode)
   (setq default-major-mode 'org-mode)
-  (setq font-lock-maximum-decoration t)
 #+end_src
 
 * Tweaks to emacs' appearance
@@ -180,64 +166,30 @@ Nano modeline mode from repo is not used because it doesn't support themeing of 
     (nano-modeline-mode))
 #+end_src
 
-** Setting the default frame
-After using transparency for a while and not having (fullscreen . maximized) working properly I've settled on just pushing the frame to the edges of the screen.
-
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-#+end_src
-
 ** Font and font size
 
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :font "Inconsolata LGC Markup" :height 130)
 #+end_src
 
-** TransSide theme
+** COMMENT TransSide theme
 This is my own custom theme based on the colors of the trans flag. Pink and Blue are regularly used as highlight and accent colors with purple/lavenders acting as a unifying inbetween.
 
 #+begin_src emacs-lisp
-  (use-package autothemer)
+  (use-package TransSide
+    :straight (TransSide :type git :host github :repo "Harith163/TransSide-theme")
+    :config
+    (load-theme 'TransSide-dark t))
+#+end_src
 
-  (use-package TransSide-theme
-    :straight (TransSide-theme :type git :host github :repo "Harith163/TransSide-theme")
-    :ensure t)
-
-  (load-theme 'TransSide 1)
+** Transparency
+#+begin_src emacs-lisp
+   (set-frame-parameter (selected-frame) 'alpha '(98 . 50))
+   (add-to-list 'default-frame-alist '(alpha . (98 . 50)))
 #+end_src
 
 * Custom functions
 This is a catch all place to dump custom functions. 
-
-** Window splits. 
-This is a function to toggle how the window is split
-
-#+begin_src emacs-lisp
-  (defun contrib/toggle-window-split ()
-    (interactive)
-    (if (= (count-windows) 2)
-        (let* ((this-win-buffer (window-buffer))
-               (next-win-buffer (window-buffer (next-window)))
-               (this-win-edges (window-edges (selected-window)))
-               (next-win-edges (window-edges (next-window)))
-               (this-win-2nd (not (and (<= (car this-win-edges)
-                                           (car next-win-edges))
-                                       (<= (cadr this-win-edges)
-                                           (cadr next-win-edges)))))
-               (splitter
-                (if (= (car this-win-edges)
-                       (car (window-edges (next-window))))
-                    'split-window-horizontally
-                  'split-window-vertically)))
-          (delete-other-windows)
-          (let ((first-win (selected-window)))
-            (funcall splitter)
-            (if this-win-2nd (other-window 1))
-            (set-window-buffer (selected-window) this-win-buffer)
-            (set-window-buffer (next-window) next-win-buffer)
-            (select-window first-win)
-            (if this-win-2nd (other-window 1))))))
-#+end_src
 
 ** Intelligent minibuffer quits
 Quitting out of the minibuffer can be a bit finicky. This function forces focus to the minibuffer when it is "active". For the time being, I also remap C-g here. To be refiled.
@@ -276,15 +228,6 @@ Quitting out of the minibuffer can be a bit finicky. This function forces focus 
              (signal 'quit nil)))))
 
   (global-set-key [remap keyboard-quit] #'contrib/keyboard-quit-context+)
-#+end_src
-
-** Inhibit linum mode
-This function is to be used in conjunction with hooks for modes that don't need line numbers.
-   
-#+begin_src emacs-lisp
-  (defun contrib/inhibit-global-linum-mode ()
-    "Counter-act `global-linum-mode'."
-    (add-hook 'after-change-major-mode-hook (lambda () (linum-mode 0)) :append :local))
 #+end_src
 
 ** Kill current buffer 
@@ -327,10 +270,11 @@ Usefull for things like dired, ibuffer etc that don't kill the window on quittin
   (defun skye/reload-theme ()
     "Reload a theme by disabling that theme first"
     (interactive)
-    (let ((theme 'TransSide))
+    (let ((theme-name (split-string (buffer-name) "-")))
+      (let ((theme (car (read-from-string (concat (car theme-name) "-" (car (cdr theme-name)))))))
     (eval-buffer (current-buffer))
     (disable-theme theme)
-    (enable-theme theme)))
+    (enable-theme theme))))
 #+end_src
 
 * Custom Keybinds
@@ -353,7 +297,6 @@ The following functions are bound
 	  :prefix "C-z"
 	  ("C-<SPC>" . fixup-whitespace)
 	  ("C-e" . eval-defun)
-	  ("|" . contrib/toggle-window-split)
 	  (";" . comment-region)
 	  ("C-h f" . describe-face))
 
@@ -365,7 +308,6 @@ The following functions are bound
     (:map global-map
 	  ("<f5>" . revert-buffer)
 	  ([remap kill-buffer] . skye/kill-current-buffer)
-	  ("s-s" . save-buffer)
 	  ("<f4>" . skye/reload-theme)
 	  )
     ) 
@@ -388,137 +330,111 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
   (use-package all-the-icons-dired)
 #+end_src
 
-**** All the icons for ibuffer
+**** All the icons for completions
 
 #+begin_src emacs-lisp
-  (use-package all-the-icons-ibuffer)
+  (use-package all-the-icons-completion)
 #+end_src
 
-**** All the icons for ivy
+*** CdLaTeX
 
 #+begin_src emacs-lisp
-  (use-package all-the-icons-ivy)
-  (use-package all-the-icons-ivy-rich)
-
-  (all-the-icons-ivy-setup)
-  (all-the-icons-ivy-rich-mode 1)
+  (use-package cdlatex)
 #+end_src
 
-*** Clever M-x listings
-Though there exist built in emacs functionality for this kind of listing, prescient is what I used first so its what I'mma use now until i revamp my init file for the 1000th time.
-
-**** Prescient    
+*** Completion Stuff
 
 #+begin_src emacs-lisp
-  (use-package prescient
-    :config
-    (setq prescient-history-length 200)
-    (setq prescient-save-file "~/.emacs.d/prescient-items")
-    (setq prescient-filter-method '(literal regexp))
-    (prescient-persist-mode 1))
-#+end_src
-
-**** Ivy-Prescient
-Ivy + prescient. What do you want me to say, future me?
-
-#+begin_src emacs-lisp
-  (use-package ivy-prescient
-    :after (prescient ivy)
-    :config
-    (setq ivy-prescient-sort-commands
-          '(:not counsel-grep
-                 counsel-rg
-                 counsel-switch-buffer
-                 ivy-switch-buffer
-                 swiper
-                 swiper-multi))
-    (setq ivy-prescient-retain-classic-highlighting t)
-    (setq ivy-prescient-enable-filtering nil)
-    (setq ivy-prescient-enable-sorting t)
-    (ivy-prescient-mode 1))
-#+end_src
-
-*** Company mode
-This is what I use for auto-completion. Beware using it everywhere lest you get annoyed. The other option is auto-complete-mode which i tried but didn't enjoy much.
-
-**** Company itself
-The crux of it all. Currently only hooked to prog mode. NOT adding latex or org mode to that list.
-
-#+begin_src emacs-lisp
-  (use-package company
-    :diminish ""
+  (use-package vertico
+    :straight (vertico :files (:defaults "extensions/*")
+                       :includes (vertico-indexed
+                                  vertico-flat
+                                  vertico-grid
+                                  vertico-mouse
+                                  vertico-quick
+                                  vertico-buffer
+                                  vertico-repeat
+                                  vertico-reverse
+                                  vertico-directory
+                                  vertico-multiform
+                                  vertico-unobtrusive
+                                  ))
+    :bind
+    (:map vertico-map
+          ("C-g" . contrib/keyboard-quit-context+)
+          ("C-M-n" . vertico-next-group)
+          ("C-M-p" . vertico-previous-group))
+    :custom
+    (vertico-count 8)                    ; Number of candidates to display
+    (vertico-resize t)
+    (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
     :init
-    (setq company-require-match nil) ; Don't require match, so you can still move your cursor as expected.
-    (setq company-tooltip-align-annotations t) ; Align annotation to the right side.
-    (setq company-eclim-auto-save nil) ; Stop eclim auto save.
-    (setq company-dabbrev-downcase nil) ; No downcase when completion.
+    (vertico-mode)
+    )
 
-    :config
-    (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 4)
-    (add-hook 'prog-mode-hook 'company-mode)
-
-    (defun jcs--company-complete-selection--advice-around (fn)
-      "Advice execute around `company-complete-selection' command."
-      (let ((company-dabbrev-downcase t)) (call-interactively fn))) (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around))
-#+end_src
-
-**** Company fuzzy
-Fuzzy match text so that you don't have to sit there and type shit out letter by letter to chance on the function you need.
-
-#+begin_src emacs-lisp
-  (use-package company-fuzzy
-    :after (company)
-    :config
-    (global-company-fuzzy-mode 1)
-    (setq company-fuzzy-prefix-ontop t)
-    (setq company-fuzzy-sorting-backend 'alphabetic)
-    (setq company-fuzzy-show-annotation t))
-#+end_src
-
-**** Company AucTeX
-Company auto complete for auctex. Is this contradicting my previous statement? Maybe? No?
-
-#+begin_src emacs-lisp
-  (use-package company-auctex
+  (use-package marginalia
+    :custom
+    (marginalia-max-relative-age 0)
+    (marginalia-align 'right)
     :init
-    (company-auctex-init))
-#+end_src
+    (marginalia-mode))
 
-*** Completion frame works
-The built in minibuffer completion frame work is too old school. Helm would be a much more feature rich solution to this problem, but ivy is a good middle ground for my use case.
-
-#+begin_src emacs-lisp
-  (use-package counsel)
-
-  (use-package swiper)
-
-  (use-package ivy
-    :demand
+  (use-package consult
     :bind
     (:map global-map
-          ("C-s" . swiper)
-          ("C-r" . swiper-backward)
-          ("C-c C-r" . ivy-resume)
-          ("<f6>" . ivy-resume)
-          ("M-x" . counsel-M-x)
-          ("C-x C-f" . counsel-find-file)
-          ("s-f" . counsel-find-file)	
-          ("<f1> f" . counsel-describe-function)
-          ("<f1> v" . counsel-describe-variable)
-          ("<f1> l" . counsel-load-library)
-          ("<f2> i" . counsel-info-lookup-symbol)
-          ("<f2> u" . counsel-unicode-char)
-          ("C-c g" . counsel-git)
-          ("C-c j" . counsel-git-grep)
-          ("C-c k" . counsel-ag)
-          ("C-x l" . counsel-locate)
-          ("M-y" . counsel-yank-pop))
+          ("C-s" . consult-line)
+          ("C-x b" . consult-buffer)
+       ))
+
+  (use-package savehist
+    :config (savehist-mode))
+#+end_src
+
+*** Corfu
+#+begin_src emacs-lisp
+  (use-package corfu
     :config
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq swiper-use-visual-line nil)
-    (setq swiper-use-visual-line-p (lambda (a) nil)))
+    (setq corfu-auto t)
+    (setq corfu-auto-delay 0)
+    (setq corfu-auto-prefix 0)
+    (setq corfu-quit-no-match t)
+    :init
+    (global-corfu-mode))
+
+  (use-package cape
+    ;; Bind dedicated completion commands
+    ;; Alternative prefix keys: C-c p, M-p, M-+, ...
+    :bind (("C-c p p" . completion-at-point) ;; capf
+           ("C-c p t" . complete-tag)        ;; etags
+           ("C-c p d" . cape-dabbrev)        ;; or dabbrev-completion
+           ("C-c p h" . cape-history)
+           ("C-c p f" . cape-file)
+           ("C-c p k" . cape-keyword)
+           ("C-c p s" . cape-symbol)
+           ("C-c p a" . cape-abbrev)
+           ("C-c p i" . cape-ispell)
+           ("C-c p l" . cape-line)
+           ("C-c p w" . cape-dict)
+           ("C-c p \\" . cape-tex)
+           ("C-c p _" . cape-tex)
+           ("C-c p ^" . cape-tex)
+           ("C-c p &" . cape-sgml)
+           ("C-c p r" . cape-rfc1345))
+    :init
+    ;; Add `completion-at-point-functions', used by `completion-at-point'.
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-history)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-tex)
+    (add-to-list 'completion-at-point-functions #'cape-sgml)
+    (add-to-list 'completion-at-point-functions #'cape-rfc1345)
+    (add-to-list 'completion-at-point-functions #'cape-abbrev)
+    (add-to-list 'completion-at-point-functions #'cape-ispell)
+    (add-to-list 'completion-at-point-functions #'cape-dict)
+    (add-to-list 'completion-at-point-functions #'cape-symbol)
+    (add-to-list 'completion-at-point-functions #'cape-line)
+  )
 #+end_src
 
 *** Dired
@@ -558,6 +474,30 @@ Common things that come in pairs are forced to exist in pairs. Part of vanilla e
     (electric-pair-mode 1))
 #+end_src
 
+*** Embark
+
+#+begin_src emacs-lisp
+  (use-package embark
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+    (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+
+    :config
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
+
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
 *** Expand-region
 This changes the default mark position behaviour. Now, pressing ctrl-= after setting a mark will intelligently expand the highlighted region.
 
@@ -567,68 +507,6 @@ This changes the default mark position behaviour. Now, pressing ctrl-= after set
     :bind
     (:map global-map
           ("C-=" . er/expand-region)))
-#+end_src
-
-*** Ibuffer
-Ibuffer is best buffer. Alternatives exist as with everything else but this is neatest.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer
-    :straight nil
-    :hook
-    (ibuffer-mode . (lambda ()
-		      (ibuffer-auto-mode 1)
-		      (ibuffer-switch-to-saved-filter-groups "home")
-		      (all-the-icons-ibuffer-mode 1)))
-    :bind
-    (("C-x C-b" . ibuffer)
-     ("s-b" . ibuffer))
-
-    :config
-    (setq ibuffer-expert t)
-    (setq ibuffer-saved-filter-groups
-	  '(("home"
-	     ("Magit" (or (mode . magit-process-mode)
-			  (mode . magit-diff-mode)
-			  (mode . magit-mode)
-			  (mode . magit)
-			  (mode . magit-blame-mode)
-			  (mode . magit-blob-mode)
-			  (mode . magit-cherry-mode)
-			  (mode . magit-file-mode)
-			  (mode . magit-wip-initial-backup-mode)
-			  (mode . magit-log-mode)
-			  (mode . magit-log-select-mode)
-			  (mode . magit-submodule-list-mode)))
-	     ("Latex" (or (mode . latex-mode)
-			  (mode . bibtex-mode)
-			  (mode . latex-mode)))
-	     ("Org" (mode . org-mode))
-	     ("Help" (or (name . "\*Help\*")
-			 (name . "\*Apropos\*")
-			 (name . "\*info\*")
-			 (mode . special-mode)
-			 (mode . messages-buffer-mode)
-			 (mode . fundamental-mode))))))
-    )
-
-#+end_src
-
-*** Ivy rich
-Fancier Ivy that provides loads more info.
-
-#+begin_src emacs-lisp
-  (use-package ivy-rich
-  :config
-  (ivy-rich-mode 1)
-  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
-#+end_src
-
-*** Lorem Ipsum
-Lorem Ipsum dolor sit amet. Usefull for quickly sketching out a document's looks at scale
-    
-#+begin_src emacs-lisp
-  (use-package lorem-ipsum)
 #+end_src
 
 *** Magit
@@ -686,19 +564,6 @@ Turns any hex color code that appears in a file into the actual color it represe
   (use-package rainbow-mode)
 #+end_src
 
-*** Relative line numbers.
-A simple package that shows the line number you're. If one wants absolute lines then *linum* is the way to go, but I hate math and only use line numbers for navigating, so *linum-relative* is the way to go.
-    
-#+begin_src emacs-lisp
-  (use-package linum-relative
-    :init
-    (global-linum-mode t)
-    :hook
-    (doc-view-mode . contrib/inhibit-global-linum-mode)
-    :config
-    (linum-relative-mode))
-#+end_src
-
 *** Restart emacs from within emacs 
 This is the quickest and the best thing ever for people who constantly change their mind/fuck things up (a.k.a me)
     
@@ -708,13 +573,6 @@ This is the quickest and the best thing ever for people who constantly change th
     (setq restart-emacs-restore-frames t))
 #+end_src
     
-*** Try
-Lets you try packages until you close emacs.
-    
-#+begin_src emacs-lisp
-  (use-package try)
-#+end_src
-
 *** Undo tree
 This replaces the default undo behaviour in emacs and gives you a nice tree timeline to navigate. Standard ctrl-/ and ctrl-shift-/ with a tree given by ctrl-x u. q to quit and choose.
 
@@ -734,67 +592,30 @@ Provides completion for keybinds in the minibuffer. Its great.
     :config (which-key-mode))
 #+end_src
 
-*** Yasnippets
-Mainly used for smart physics snippets in org mode.
-
+*** Yuck Mode
 #+begin_src emacs-lisp
-  (use-package yasnippet
-    :config
-    (yas-global-mode 1)
-
-    (setq yas-snippet-dirs '("~/.emacs.d/snippets/")))
-
-  (use-package yasnippet-snippets)
+  (use-package yuck-mode)
 #+end_src
 
 ** Packages that make me want to use emacs
 These are the packages that drive my day to day use of emacs.
 
-*** Latex stuff
-This is primarily there to fix things that org-export doesn't get right. Org mode to latex is the best pipeline.
-
-**** Main latex stuff
+*** Languages
+**** Language Server Protocol
 #+begin_src emacs-lisp
-  (use-package latex
+  (use-package eglot
     :defer t
-    :straight auctex
-    :mode ("//.tex//" . latex-mode)
     :hook
-    (LaTeX-mode . outline-minor-mode)
-    :config
-    (progn
-      (setq TeX-fold-mode t)
-      (setq TeX-parse-self t)
-      (setq TeX-save-query nil)
-      (setq TeX-PDF-mode t)
-      (add-hook 'LaTeX-mode-hook 'cdlatex-mode)
-      ))
+    (prog-mode . eglot-ensure)
+    (text-mode . eglot-ensure))
+
+  (use-package eglot-ltex
+    :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
+    :init (setq eglot-languagetool-server-path "/bin/ltex-ls"))
 #+end_src
-
-**** Auctex things
-Basically adding to $PATH. Why this didn't work when doing it through my zshrc, we'll never know.
-
+**** Rust mode
 #+begin_src emacs-lisp
-  (setenv "PATH" (concat "/opt/texlive/2020/bin/x86_64-linux:"
-                         (getenv "PATH")))
-  (add-to-list 'exec-path "/opt/texlive/2020/bin/x86_64-linux")
-
-  ;; (load "preview-latex.el" nil t t)
-#+end_src
-
-**** Xenops
-Real time rendering of latex fragments.
-     
-#+begin_src emacs-lisp
-  (use-package xenops
-    :hook
-    (latex-mode . xenops-mode)
-    (LaTeX-mode . xenops-mode))
-#+end_src
-
-**** CDLatex
-#+begin_src emacs-lisp
-  (use-package cdlatex)
+  (use-package rust-mode)
 #+end_src
 *** Org mode stuff
 **** Org mode
@@ -804,7 +625,6 @@ EVERYTHING IN ORG MODE!!
   (use-package org
     :hook
     (org-mode . org-cdlatex-mode)
-    (org-mode . (lambda () (org-superstar-mode)))
     (org-mode . org-indent-mode)
 
     :init
@@ -829,20 +649,16 @@ EVERYTHING IN ORG MODE!!
       (concat (file-name-as-directory org-directory) stringname))
 
     (setq skye/Readme (skye/org-get-path "README.org"))
-    (setq skye/Ideas (skye/org-get-path "Ideas.org"))
-    (setq skye/School (skye/org-get-path "SchoolWork.org"))
     (setq skye/archive (skye/org-get-path "archive.org"))
-    (setq skye/calendar-personal (skye/org-get-path "calendar-personal.org"))
-    (setq skye/calendar-stony (skye/org-get-path "calendar-stony.org"))
 
-    (setq org-agenda-files (list skye/Readme skye/Ideas skye/School))
+    (setq org-agenda-files (list skye/Readme))
     (setq org-archive-location (concat skye/archive "::* From %s"))
 
     (setq org-ellipsis " ▼")
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
 
-    (setq org-todo-keywords '((sequence "☛TODO(t)" "|" "⚑WAITING(w!)") (sequence "|" "❌CANCELED(c)" "|" "✔DONE(d)")))
+    (setq org-todo-keywords '((sequence "TODO(t)" "|" "WAITING(w!)") (sequence "|" "CANCELLED(c)" "|" "DONE(d)")))
 
     (setq org-enforce-todo-dependencies t)
     (setq org-enforce-todo-checkbox-dependencies t)
@@ -854,41 +670,10 @@ EVERYTHING IN ORG MODE!!
     (defun skye/org-mark-and-archive ()
       "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
       (interactive)
-      (ivy-read "Choose a final TODO state:" '("✔DONE" "❌CANCELED")
-        :action '(1
-              ("o" org-todo "action 1")
-              ("j" org-todo "action 2")))
+      (org-todo (completing-read "Choose a final TODO state" '("✔DONE" "❌CANCELED")))
       (org-archive-subtree))
 
-    (add-to-list 'org-modules 'org-habit)
-
-    (setq org-habit-graph-column 80)
-    (setq org-habit-show-habits-only-for-today t)
-    (setq org-habit-show-all-today t)
-
-    (setq org-default-notes-file skye/Readme)
-
-    (setq org-capture-templates '(
-                  ("e" "Email to be dealt with. Action item" entry
-                   (file+headline skye/Readme "Emails to deal with")
-                   "* ☛TODO %:from %? \n %a \n SCHEDULED: %^t DEADLINE: %^t \n :PROPERTIES: \n CREATED: %u \n :END:"
-                   )
-
-                  ("m" "Miscellaneous TODO. Refile" entry
-                   (file+headline skye/Readme "Miscellaneous")
-                   "* ☛TODO %^{PROMPT} %? \n SCHEDULED: %^t DEADLINE: %^u"
-                   )
-
-                  ("t" "Date-less TODO. Generic" entry
-                   (file skye/Readme)
-                   "* ☛TODO %^{PROMPT} \n  %?"
-                   )
-                  ))
-
-    (setq org-refile-targets
-      '((nil :maxlevel . 3)
-        (org-agenda-files :maxlevel . 2)))
-
+  
     (setq org-pretty-entities nil)
     (setq org-preview-latex-default-process 'dvisvgm)
 
@@ -896,16 +681,11 @@ EVERYTHING IN ORG MODE!!
     (setq org-fontify-done-headline t)
     )
 #+end_src
-
-**** Org-superstar
-Fancy stars and hiding of ugly stars. Kinda like a better version of *org-bullets*
-     
+**** Org-modern
 #+begin_src emacs-lisp
-  (use-package org-superstar
+  (use-package org-modern
     :config
-    (setq org-superstar-leading-bullet ?\s)
-    (setq org-superstar-cycle-headline-bullets t)
-    (setq org-superstar-headline-bullets-list skye/bullets-list))
+    (global-org-modern-mode))
 #+end_src
 
 *** EAF
@@ -913,6 +693,7 @@ Emacs application framework basically gives you a way to run javascript in emacs
 
 #+begin_src emacs-lisp
   (use-package eaf
+    :defer t
     :straight (emacs-application-framework :type git :host github :repo "emacs-eaf/emacs-application-framework")
     :load-path "~/.emacs.d/straight/repos/emacs-application-framework/"
     :custom
@@ -932,4 +713,27 @@ Things that are to be done at the end. This should only load if everything else 
   (put 'scroll-left 'disabled nil)
   (put 'dired-find-alternate-file 'disabled nil)
   (put 'narrow-to-region 'disabled nil)
+
+  (setq font-lock-maximum-decoration t)
+    (use-package orderless
+    :custom
+    (completion-styles '(orderless))      ; Use orderless
+    (completion-category-defaults nil)    ; I want to be in control!
+    (orderless-matching-styles
+     '(orderless-literal
+       orderless-prefixes
+       orderless-initialism
+       orderless-regexp
+       )))
 #+end_src  
+
+** Matu-gen theme
+#+begin_src emacs-lisp
+  (use-package f)
+  (use-package s)
+  (use-package autothemer)
+
+  (load-file "~/.emacs.d/testing/matu-theme.el")
+  (load-file "~/.emacs.d/testing/matu-gen-theme.el")
+  (load-theme 'matu-gen 1)
+#+end_src
