@@ -9,8 +9,8 @@ This contains basic user information regarding the user such as email id and nam
 
 #+begin_src emacs-lisp
   ;; -*- lexical-binding: t -*-
-    (setq user-full-name "Kaushik Skye Harith")
-    (setq user-mail-address "skye.harith@gmail.com")
+    (setq user-full-name "Kaushik Srinivasan Harith")
+    (setq user-mail-address "kaushik@archeanchemicals.com")
 #+end_src
 
 * Tweaks to emacs' functioning
@@ -156,20 +156,32 @@ Some simple stuff
   (require 'nano-session)
 #+end_src
 
-*** Modeline
+*** COMMENT Modeline
 Nano modeline mode from repo is not used because it doesn't support themeing of faces
 
 #+begin_src emacs-lisp
   (use-package nano-modeline
+    :straight (:type git :host github :repo "rougier/nano-modeline")
     :config
-    (setq nano-modeline-position 'bottom)
-    (nano-modeline-mode))
+    (add-hook 'prog-mode-hook            #'nano-modeline-prog-mode)
+    (add-hook 'text-mode-hook            #'nano-modeline-text-mode)
+    (add-hook 'org-mode-hook             #'nano-modeline-org-mode)
+    (add-hook 'pdf-view-mode-hook        #'nano-modeline-pdf-mode)
+    (add-hook 'mu4e-headers-mode-hook    #'nano-modeline-mu4e-headers-mode)
+    (add-hook 'mu4e-view-mode-hook       #'nano-modeline-mu4e-message-mode)
+    (add-hook 'elfeed-show-mode-hook     #'nano-modeline-elfeed-entry-mode)
+    (add-hook 'elfeed-search-mode-hook   #'nano-modeline-elfeed-search-mode)
+    (add-hook 'term-mode-hook            #'nano-modeline-term-mode)
+    (add-hook 'xwidget-webkit-mode-hook  #'nano-modeline-xwidget-mode)
+    (add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
+    (add-hook 'org-capture-mode-hook     #'nano-modeline-org-capture-mode)
+    (add-hook 'org-agenda-mode-hook      #'nano-modeline-org-agenda-mode))
 #+end_src
 
 ** Font and font size
 
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Inconsolata LGC Markup" :height 130)
+  (set-face-attribute 'default nil :font "Dejavu Sans Mono" :height 130)
 #+end_src
 
 ** COMMENT TransSide theme
@@ -180,6 +192,19 @@ This is my own custom theme based on the colors of the trans flag. Pink and Blue
     :straight (TransSide :type git :host github :repo "Harith163/TransSide-theme")
     :config
     (load-theme 'TransSide-dark t))
+#+end_src
+
+** Adwaita Theme
+#+begin_src emacs-lisp
+  (use-package modus-themes
+    :config
+    (load-theme 'modus-vivendi 1))
+#+end_src
+
+** Modeline
+#+begin_src emacs-lisp
+  (use-package simple-modeline
+    :hook (after-init . simple-modeline-mode))
 #+end_src
 
 ** Transparency
@@ -413,7 +438,6 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
            ("C-c p s" . cape-symbol)
            ("C-c p a" . cape-abbrev)
            ("C-c p i" . cape-ispell)
-           ("C-c p l" . cape-line)
            ("C-c p w" . cape-dict)
            ("C-c p \\" . cape-tex)
            ("C-c p _" . cape-tex)
@@ -424,7 +448,6 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
     ;; Add `completion-at-point-functions', used by `completion-at-point'.
     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
     (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-history)
     (add-to-list 'completion-at-point-functions #'cape-keyword)
     (add-to-list 'completion-at-point-functions #'cape-tex)
     (add-to-list 'completion-at-point-functions #'cape-sgml)
@@ -433,7 +456,6 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
     (add-to-list 'completion-at-point-functions #'cape-ispell)
     (add-to-list 'completion-at-point-functions #'cape-dict)
     (add-to-list 'completion-at-point-functions #'cape-symbol)
-    (add-to-list 'completion-at-point-functions #'cape-line)
   )
 #+end_src
 
@@ -603,15 +625,12 @@ These are the packages that drive my day to day use of emacs.
 *** Languages
 **** Language Server Protocol
 #+begin_src emacs-lisp
-  (use-package eglot
-    :defer t
-    :hook
-    (prog-mode . eglot-ensure)
-    (text-mode . eglot-ensure))
-
-  (use-package eglot-ltex
-    :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
-    :init (setq eglot-languagetool-server-path "/bin/ltex-ls"))
+  (use-package lsp-ltex
+    :hook (text-mode . (lambda ()
+                         (require 'lsp-ltex)
+                         (lsp)))  ; or lsp-deferred
+    :init
+    (setq lsp-ltex-version "16.0.0"))
 #+end_src
 **** Rust mode
 #+begin_src emacs-lisp
@@ -642,13 +661,13 @@ EVERYTHING IN ORG MODE!!
     :config
     (require 'org-tempo)
 
-    (setq org-directory "~/Documents/life/")
+    (setq org-directory "~/Dropbox/Org/Daily")
 
     (defun skye/org-get-path (stringname)
       "Use concat to generate full path."
       (concat (file-name-as-directory org-directory) stringname))
 
-    (setq skye/Readme (skye/org-get-path "README.org"))
+    (setq skye/Readme (skye/org-get-path "Task List.org"))
     (setq skye/archive (skye/org-get-path "archive.org"))
 
     (setq org-agenda-files (list skye/Readme))
@@ -658,7 +677,7 @@ EVERYTHING IN ORG MODE!!
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
 
-    (setq org-todo-keywords '((sequence "TODO(t)" "|" "WAITING(w!)") (sequence "|" "CANCELLED(c)" "|" "DONE(d)")))
+    (setq org-todo-keywords '((sequence "TODO(t)" "|" "Doing(i!)" "|" "Waiting(w!)") (sequence "|" "CANCELLED(c)" "|" "DONE(d)")))
 
     (setq org-enforce-todo-dependencies t)
     (setq org-enforce-todo-checkbox-dependencies t)
@@ -670,10 +689,10 @@ EVERYTHING IN ORG MODE!!
     (defun skye/org-mark-and-archive ()
       "Mark the state of the current subtree as either DONE or CANCELLED and export to my archive.org file"
       (interactive)
-      (org-todo (completing-read "Choose a final TODO state" '("✔DONE" "❌CANCELED")))
+      (org-todo (completing-read "Choose a final TODO state" '("DONE" "CANCELLED")))
       (org-archive-subtree))
 
-  
+
     (setq org-pretty-entities nil)
     (setq org-preview-latex-default-process 'dvisvgm)
 
@@ -727,7 +746,7 @@ Things that are to be done at the end. This should only load if everything else 
        )))
 #+end_src  
 
-** Matu-gen theme
+** COMMENT Matu-gen theme
 #+begin_src emacs-lisp
   (use-package f)
   (use-package s)
