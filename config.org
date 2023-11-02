@@ -9,8 +9,8 @@ This contains basic user information regarding the user such as email id and nam
 
 #+begin_src emacs-lisp
   ;; -*- lexical-binding: t -*-
-    (setq user-full-name "Kaushik Srinivasan Harith")
-    (setq user-mail-address "kaushik@archeanchemicals.com")
+  (setq user-full-name "Kaushik Srinivasan Harith")
+  (setq user-mail-address "kaushik@archeanchemicals.com")
 #+end_src
 
 * Tweaks to emacs' functioning
@@ -47,59 +47,59 @@ Emacs places windows way too inconsistently. This fixes that. Stoled from Protes
     :straight nil
     :init
     (setq display-buffer-alist
-	  '(;; top side window
-	    ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
-	     (display-buffer-in-side-window)
-	     (window-height . 0.25)
-	     (side . top)
-	     (slot . 0))
-	    ("\\*Messages.*"
-	     (display-buffer-in-side-window)
-	     (window-height . 0.25)
-	     (side . top)
-	     (slot . 1))
-	    ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
-	     (display-buffer-in-side-window)
-	     (window-height . 0.25)
-	     (side . top)
-	     (slot . 2))
-	    ;; bottom side window
-	    ("\\*\\(Output\\|Register Preview\\).*"
-	     (display-buffer-in-side-window)
-	     (window-width . 0.20)       ; See the :hook
-	     (side . bottom)
-	     (slot . -1))
-	    (".*\\*\\(Completions\\|Embark.*Occur\\).*"
-	     (display-buffer-in-side-window)
-	     (window-height . 0.25)
-	     (side . bottom)
-	     (slot . 0))
-	    ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
-	     (display-buffer-in-side-window)
-	     (window-width . 0.40)
-	     (side . bottom)
-	     (slot . 1))
-	    ;; left side window
-	    ("\\*Help.*"
-	     (display-buffer-in-side-window)
-	     (window-width . 0.25)       ; See the :hook
-	     (side . left)
-	     (slot . 0))
-	    ;; right side window
-	    ("\\*Faces\\*"
-	     (display-buffer-in-side-window)
-	     (window-width . 0.25)
-	     (side . right)
-	     (slot . 0)
-	     (window-parameters . ((mode-line-format . (" " mode-line-buffer-identification)))))
-	    ("\\*Custom.*"
-	     (display-buffer-in-side-window)
-	     (window-width . 0.25)
-	     (side . right)
-	     (slot . 1))
-	    ;; bottom buffer (NOT side window)
-	    ("\\*\\vc-\\(incoming\\|outgoing\\).*"
-	     (display-buffer-at-bottom))))
+          '(;; top side window
+            ("\\*\\(Flycheck\\|Flymake\\|Package-Lint\\|vc-git :\\).*" ;; This bit is useless to me currently. Rethink it later. 
+             (display-buffer-in-side-window)
+             (window-height . 0.25)
+             (side . top)
+             (slot . 0))
+            ("\\*Messages.*"
+             (display-buffer-in-side-window)
+             (window-height . 0.25)
+             (side . top)
+             (slot . 1))
+            ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+             (display-buffer-in-side-window)
+             (window-height . 0.25)
+             (side . top)
+             (slot . 2))
+            ;; bottom side window
+            ("\\*\\(Output\\|Register Preview\\).*"
+             (display-buffer-in-side-window)
+             (window-width . 0.20)       ; See the :hook
+             (side . bottom)
+             (slot . -1))
+            (".*\\*\\(Completions\\|Embark.*Occur\\).*"
+             (display-buffer-in-side-window)
+             (window-height . 0.25)
+             (side . bottom)
+             (slot . 0))
+            ("^\\(\\*e?shell\\|vterm\\).*" ;; You don't use eshell. get rid of it
+             (display-buffer-in-side-window)
+             (window-width . 0.40)
+             (side . bottom)
+             (slot . 1))
+            ;; left side window
+            ("\\*Help.*"
+             (display-buffer-in-side-window)
+             (window-width . 0.25)       ; See the :hook
+             (side . left)
+             (slot . 0))
+            ;; right side window
+            ("\\*Faces\\*"
+             (display-buffer-in-side-window)
+             (window-width . 0.25)
+             (side . right)
+             (slot . 0)
+             (window-parameters . ((mode-line-format . (" " mode-line-buffer-identification)))))
+            ("\\*Custom.*"
+             (display-buffer-in-side-window)
+             (window-width . 0.25)
+             (side . right)
+             (slot . 1))
+            ;; bottom buffer (NOT side window)
+            ("\\*\\vc-\\(incoming\\|outgoing\\).*"
+             (display-buffer-at-bottom))))
     (setq window-combination-resize t)
     (setq even-window-sizes 'height-only)
     (setq window-sides-vertical nil)
@@ -107,14 +107,14 @@ Emacs places windows way too inconsistently. This fixes that. Stoled from Protes
     ;; the `use-package-hook-name-suffix' variable.  The "-hook" suffix is
     ;; not an error of mine.
     :hook ((help-mode . visual-line-mode)
-	   (custom-mode . visual-line-mode))
+           (custom-mode . visual-line-mode))
     :bind (("s-n" . next-buffer)
-	   ("s-p" . previous-buffer)
-	   ("s-o" . other-window)
-	   ("s-0" . delete-window)
-	   ("s-1" . delete-other-windows)
-	   ("s-5" . delete-frame)
-	   ("C-x +" . balance-windows-area)))
+           ("s-p" . previous-buffer)
+           ("s-o" . other-window)
+           ("s-0" . delete-window)
+           ("s-1" . delete-other-windows)
+           ("s-5" . delete-frame)
+           ("C-x +" . balance-windows-area)))
 #+end_src
 
 ** Custom-set variables get their own file
@@ -133,84 +133,54 @@ I like a clean init.el. Custom-set variables getting thrown in init.el isn't my 
 
   (setq initial-major-mode 'org-mode)
   (setq default-major-mode 'org-mode)
+
+  (setenv "PATH" (concat (getenv "PATH") ":/home/kaushik/.local/bin"))
+  (setq exec-path (append exec-path '("/home/kaushik/.local/bin")))
+
+  (delete-selection-mode 1)
 #+end_src
 
 * Tweaks to emacs' appearance
 ** Nano stuff
 Nano emacs is a nifty collection of vanilla esque presets for emacs. I have merged some of those things into my own config.
 
-*** Basics
-Some simple stuff
-
 #+begin_src emacs-lisp
   (straight-use-package
-   '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+   '(nano :type git :host github :repo "rougier/nano-emacs"))
+  (add-to-list 'load-path "~/.emacs.d/straight/repos/nano-emacs/")
+  ;; (require 'nano)
 
-  (require 'nano-faces)
+  ;; (nano-theme-set-dark)
+
+  ;; (nano-refresh-theme)
 
   (require 'nano-layout)
-  (window-divider-mode 0)
-
   (require 'nano-defaults)
-
   (require 'nano-session)
+  (let ((inhibit-message t))
+    (message "Welcome to GNU Emacs / N Λ N O edition")
+    (message (format "Initialization time: %s" (emacs-init-time))))
+
+  (require 'nano-help)
 #+end_src
-
-*** COMMENT Modeline
-Nano modeline mode from repo is not used because it doesn't support themeing of faces
-
-#+begin_src emacs-lisp
-  (use-package nano-modeline
-    :straight (:type git :host github :repo "rougier/nano-modeline")
-    :config
-    (add-hook 'prog-mode-hook            #'nano-modeline-prog-mode)
-    (add-hook 'text-mode-hook            #'nano-modeline-text-mode)
-    (add-hook 'org-mode-hook             #'nano-modeline-org-mode)
-    (add-hook 'pdf-view-mode-hook        #'nano-modeline-pdf-mode)
-    (add-hook 'mu4e-headers-mode-hook    #'nano-modeline-mu4e-headers-mode)
-    (add-hook 'mu4e-view-mode-hook       #'nano-modeline-mu4e-message-mode)
-    (add-hook 'elfeed-show-mode-hook     #'nano-modeline-elfeed-entry-mode)
-    (add-hook 'elfeed-search-mode-hook   #'nano-modeline-elfeed-search-mode)
-    (add-hook 'term-mode-hook            #'nano-modeline-term-mode)
-    (add-hook 'xwidget-webkit-mode-hook  #'nano-modeline-xwidget-mode)
-    (add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
-    (add-hook 'org-capture-mode-hook     #'nano-modeline-org-capture-mode)
-    (add-hook 'org-agenda-mode-hook      #'nano-modeline-org-agenda-mode))
-#+end_src
-
-** Font and font size
-
-#+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Dejavu Sans Mono" :height 130)
-#+end_src
-
-** COMMENT TransSide theme
-This is my own custom theme based on the colors of the trans flag. Pink and Blue are regularly used as highlight and accent colors with purple/lavenders acting as a unifying inbetween.
-
+** TransSide Theme
 #+begin_src emacs-lisp
   (use-package TransSide
     :straight (TransSide :type git :host github :repo "Harith163/TransSide-theme")
     :config
-    (load-theme 'TransSide-dark t))
+    (load-theme 'TransSide-light t))
 #+end_src
-
-** Adwaita Theme
-#+begin_src emacs-lisp
-  (use-package modus-themes
-    :config
-    (load-theme 'modus-vivendi 1))
-#+end_src
-
 ** Modeline
 #+begin_src emacs-lisp
-  (use-package simple-modeline
-    :hook (after-init . simple-modeline-mode))
+  (use-package doom-modeline
+    :init
+    (doom-modeline-mode 1))
 #+end_src
 
-** Transparency
+** Misc stuff
 #+begin_src emacs-lisp
-   (set-frame-parameter (selected-frame) 'alpha '(98 . 50))
-   (add-to-list 'default-frame-alist '(alpha . (98 . 50)))
+  (set-face-attribute 'default nil :height 130)
+  (set-face-attribute 'mode-line nil :height 140)
 #+end_src
 
 * Custom functions
@@ -236,10 +206,10 @@ Quitting out of the minibuffer can be a bit finicky. This function forces focus 
           (current-prefix-arg
            nil)
           (defining-kbd-macro
-            (message
-             (substitute-command-keys
-              "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
-            (cancel-kbd-macro-events))
+           (message
+            (substitute-command-keys
+             "Quit is ignored during macro defintion, use \\[kmacro-end-macro] if you want to stop macro definition"))
+           (cancel-kbd-macro-events))
           ((active-minibuffer-window)
            (when (get-buffer-window "*Completions*")
              ;; hide completions first so point stays in active window when
@@ -297,44 +267,44 @@ Usefull for things like dired, ibuffer etc that don't kill the window on quittin
     (interactive)
     (let ((theme-name (split-string (buffer-name) "-")))
       (let ((theme (car (read-from-string (concat (car theme-name) "-" (car (cdr theme-name)))))))
-    (eval-buffer (current-buffer))
-    (disable-theme theme)
-    (enable-theme theme))))
+        (eval-buffer (current-buffer))
+        (disable-theme theme)
+        (enable-theme theme))))
 #+end_src
 
 * Custom Keybinds
 This is a list of custom keybinds that I couldn't fit in with the package declarations. Use "C-z" for all my custom keybinds and use "M-z" for functions that are related but broader/inverse in scope. Use the super key for things that are commonly associated with the "C-x C-" keybind.
 
 The following functions are bound
-  - remove redundant white space between text
-  - evalueate top-level function instead of function at point (elisp/global)
-  - a custom function to toggle window split from horizontal to vertical.
-  - revert buffer 
-  - comment and uncoment region.
-  - Describe the face at point. Prefixed with Ctrl-z to distinguish between this and describe-function
+- remove redundant white space between text
+- evalueate top-level function instead of function at point (elisp/global)
+- a custom function to toggle window split from horizontal to vertical.
+- revert buffer 
+- comment and uncoment region.
+- Describe the face at point. Prefixed with Ctrl-z to distinguish between this and describe-function
 
 #+begin_src emacs-lisp
   (use-package emacs
     :straight nil
     :bind
     (:map global-map
-	  :prefix-map my-ctrl-z-prefix-map
-	  :prefix "C-z"
-	  ("C-<SPC>" . fixup-whitespace)
-	  ("C-e" . eval-defun)
-	  (";" . comment-region)
-	  ("C-h f" . describe-face))
+          :prefix-map my-ctrl-z-prefix-map
+          :prefix "C-z"
+          ("C-<SPC>" . fixup-whitespace)
+          ("C-e" . eval-defun)
+          (";" . comment-region)
+          ("C-h f" . describe-face))
 
     (:map global-map
-	  :prefix-map my-meta-z-prefix-map
-	  :prefix "M-z"
-	  (";" . uncomment-region))
+          :prefix-map my-meta-z-prefix-map
+          :prefix "M-z"
+          (";" . uncomment-region))
 
     (:map global-map
-	  ("<f5>" . revert-buffer)
-	  ([remap kill-buffer] . skye/kill-current-buffer)
-	  ("<f4>" . skye/reload-theme)
-	  )
+          ("<f5>" . revert-buffer)
+          ([remap kill-buffer] . skye/kill-current-buffer)
+          ("<f4>" . skye/reload-theme)
+          )
     ) 
 #+end_src
 
@@ -350,7 +320,6 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
 #+end_src
 
 **** All the icons for dired
-
 #+begin_src emacs-lisp
   (use-package all-the-icons-dired)
 #+end_src
@@ -409,7 +378,7 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
     (:map global-map
           ("C-s" . consult-line)
           ("C-x b" . consult-buffer)
-       ))
+          ))
 
   (use-package savehist
     :config (savehist-mode))
@@ -446,17 +415,12 @@ All-the-icons provides fancy icons for all the lists and menus in emacs, but req
            ("C-c p r" . cape-rfc1345))
     :init
     ;; Add `completion-at-point-functions', used by `completion-at-point'.
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
     (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-keyword)
     (add-to-list 'completion-at-point-functions #'cape-tex)
-    (add-to-list 'completion-at-point-functions #'cape-sgml)
-    (add-to-list 'completion-at-point-functions #'cape-rfc1345)
     (add-to-list 'completion-at-point-functions #'cape-abbrev)
     (add-to-list 'completion-at-point-functions #'cape-ispell)
     (add-to-list 'completion-at-point-functions #'cape-dict)
-    (add-to-list 'completion-at-point-functions #'cape-symbol)
-  )
+    )
 #+end_src
 
 *** Dired
@@ -486,12 +450,12 @@ Common things that come in pairs are forced to exist in pairs. Part of vanilla e
     :straight nil
     :hook
     (org-mode . (lambda ()
-		  (setq-local electric-pair-inhibit-predicate
-			      `(lambda (c)
-				 (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+                  (setq-local electric-pair-inhibit-predicate
+                              `(lambda (c)
+                                 (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 
     (org-mode . (lambda ()
-		  (setq-local electric-pair-pairs (append electric-pair-pairs '((?$ . ?$))))))
+                  (setq-local electric-pair-pairs (append electric-pair-pairs '((?$ . ?$))))))
     :config
     (electric-pair-mode 1))
 #+end_src
@@ -538,6 +502,69 @@ Use git from within emacs!! Magit is the reason i don't use git from CLI anymore
   (use-package magit)
 #+end_src
 
+*** Org PDF convenience tools
+#+begin_src emacs-lisp
+  (defun md-compile ()
+    "Compiles the currently loaded markdown file using pandoc into a PDF"
+    (interactive)
+    (save-buffer)
+    (shell-command (concat "pandoc " (buffer-file-name) " -o "
+                           (replace-regexp-in-string "md" "pdf" (buffer-file-name)))))
+
+  (defun update-other-buffer ()
+    (interactive)
+    (other-window 1)
+    (revert-buffer nil t)
+    (other-window -1))
+
+  (defun md-compile-and-update-other-buffer ()
+    "Has as a premise that it's run from a markdown-mode buffer and the
+     other buffer already has the PDF open"
+    (interactive)
+    (md-compile)
+    (update-other-buffer))
+
+  (defun latex-compile-and-update-other-buffer ()
+    "Has as a premise that it's run from a latex-mode buffer and the
+     other buffer already has the PDF open"
+    (interactive)
+    (save-buffer)
+    (shell-command (concat "pdflatex " (buffer-file-name)))
+    (switch-to-buffer (other-buffer))
+    (kill-buffer)
+    (update-other-buffer))
+
+  (defun org-compile-beamer-and-update-other-buffer ()
+    "Has as a premise that it's run from an org-mode buffer and the
+     other buffer already has the PDF open"
+    (interactive)
+    (org-beamer-export-to-pdf)
+    (update-other-buffer))
+
+  (defun org-compile-latex-and-update-other-buffer ()
+    "Has as a premise that it's run from an org-mode buffer and the
+     other buffer already has the PDF open"
+    (interactive)
+    (org-latex-export-to-pdf)
+    (update-other-buffer))
+
+  (eval-after-load 'latex-mode
+    '(define-key latex-mode-map (kbd "C-c r") 'latex-compile-and-update-other-buffer))
+
+  (define-key org-mode-map (kbd "C-c lr") 'org-compile-latex-and-update-other-buffer)
+  (define-key org-mode-map (kbd "C-c br") 'org-compile-beamer-and-update-other-buffer)
+
+  (eval-after-load 'markdown-mode
+    '(define-key markdown-mode-map (kbd "C-c r") 'md-compile-and-update-other-buffer))
+#+end_src
+
+*** PDF-tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :hook
+    (doc-view-mode . pdf-view-mode)
+    (pdf-view-mode . pdf-view-themed-minor-mode))
+#+end_src
 *** Quickly jump around -
 Using letters from the home row to quickly navigate to a point on the screen. Much quicker than getting there with the cursor but uses brain power instead. Meh
 
@@ -592,9 +619,9 @@ This is the quickest and the best thing ever for people who constantly change th
 #+begin_src emacs-lisp
   (use-package restart-emacs
     :config
-    (setq restart-emacs-restore-frames t))
+    (setq restart-emacs-restore-frames nil))
 #+end_src
-    
+
 *** Undo tree
 This replaces the default undo behaviour in emacs and gives you a nice tree timeline to navigate. Standard ctrl-/ and ctrl-shift-/ with a tree given by ctrl-x u. q to quit and choose.
 
@@ -614,27 +641,193 @@ Provides completion for keybinds in the minibuffer. Its great.
     :config (which-key-mode))
 #+end_src
 
-*** Yuck Mode
-#+begin_src emacs-lisp
-  (use-package yuck-mode)
-#+end_src
-
 ** Packages that make me want to use emacs
 These are the packages that drive my day to day use of emacs.
 
 *** Languages
 **** Language Server Protocol
 #+begin_src emacs-lisp
-  (use-package lsp-ltex
-    :hook (text-mode . (lambda ()
-                         (require 'lsp-ltex)
-                         (lsp)))  ; or lsp-deferred
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; LSP-MODE CONFIGURATION
+  ;;
+  ;;     add to init.el
+  ;;
+  ;; `lsp-mode` excels over eglot in that you can run it in parallel alongside
+  ;; other LSPs.
+
+  (use-package lsp-mode
+    :commands lsp
+    :hook
+    ((LaTeX-mode
+      TeX-mode
+      bibtex-mode
+      c++-mode
+      c-mode
+      makefile-mode
+      markdown-mode
+      org-mode
+      python-mode
+      rust-mode
+      sh-mode
+      text-mode
+      toml-mode
+      yaml-mode
+      ) . (lambda ()
+      (uniteai-mode 1)
+      (lsp)))
+
     :init
-    (setq lsp-ltex-version "16.0.0"))
-#+end_src
-**** Rust mode
-#+begin_src emacs-lisp
-  (use-package rust-mode)
+    ;; Tell lsp-mode not to ask if you're ok with the server modifying the document.
+    (setq lsp-restart 'auto-restart)
+
+    :config
+    ;; if it can't launch the right LSP, don't pester
+    (setq lsp-enable-suggest-server-download nil)
+    (lsp-register-client
+     (make-lsp-client
+
+      ;; STDIO Mode
+      :new-connection (lsp-stdio-connection `("uniteai_lsp" "--stdio"))
+
+      ;; ;; TCP Mode
+      ;; :new-connection (lsp-tcp-connection
+      ;;                  (lambda (port)
+      ;;                    `("uniteai_lsp" "--tcp" "--lsp_port" ,(number-to-string port))))
+
+      :priority -3
+      :major-modes '(python-mode markdown-mode org-mode)
+      :server-id 'uniteai
+      :add-on? t  ; run in parallel to other LSPs
+      ))
+    (setq lsp-headerline-breadcrumb-enable nil)
+    :bind
+    ;; Code Actions
+    ("M-'" . lsp-execute-code-action))
+
+
+  ;;;;;;;;;;
+
+  ;; Global stopping
+  (defun lsp-stop ()
+    (interactive)
+    (let* ((doc (lsp--text-document-identifier)))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.stop"
+                              :arguments ,(vector doc)))))
+
+  ;; Example Counter
+  (defun lsp-example-counter ()
+    (interactive)
+    (let* ((doc (lsp--text-document-identifier))
+           (pos (lsp--cur-position)))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.exampleCounter"
+                              :arguments ,(vector doc pos)))))
+
+  ;; Document
+  (defun lsp-document ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* (
+           (doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.document"
+                              :arguments ,(vector doc range)))))
+
+  ;; Local LLM
+  (defun lsp-local-llm ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* ((doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.localLlmStream"
+                              :arguments ,(vector doc range)))))
+
+  ;; Transcription
+  (defun lsp-transcribe ()
+    (interactive)
+    (let* ((doc (lsp--text-document-identifier))
+           (pos (lsp--cur-position)))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.transcribe"
+                              :arguments ,(vector doc pos)))))
+
+  ;; OpenAI
+  (defun lsp-openai-gpt ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* (
+           (doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.openaiAutocompleteStream"
+                              :arguments ,(vector doc range "FROM_CONFIG_COMPLETION" "FROM_CONFIG")))))
+
+  (defun lsp-openai-chatgpt ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* (
+           (doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.openaiAutocompleteStream"
+                              :arguments ,(vector doc range "FROM_CONFIG_CHAT" "FROM_CONFIG")))))
+
+
+  ;; Local LLM
+  (defun lsp-text-to-speech-save ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* ((doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.textToSpeechSave"
+                              :arguments ,(vector doc range)))))
+
+  ;; Local LLM
+  (defun lsp-text-to-speech-play ()
+    (interactive)
+    (unless (region-active-p)
+      (error "No region selected"))
+    (let* ((doc (lsp--text-document-identifier))
+           (range (list :start (lsp--point-to-position (region-beginning))
+                        :end (lsp--point-to-position (region-end)))))
+      (lsp-request "workspace/executeCommand"
+                   `(:command "command.textToSpeechPlay"
+                              :arguments ,(vector doc range)))))
+
+
+  (define-minor-mode uniteai-mode
+    "Minor mode for interacting with UniteAI server."
+    :lighter " UniteAI"
+    :keymap (let ((map (make-sparse-keymap)))
+              (define-key map (kbd "C-c l s") 'lsp-stop)
+              (define-key map (kbd "C-c l e") 'lsp-example-counter)
+              (define-key map (kbd "C-c l l") 'lsp-local-llm)
+              (define-key map (kbd "C-c l g") 'lsp-openai-gpt)
+              (define-key map (kbd "C-c l v") 'lsp-transcribe)
+              (define-key map (kbd "C-c l g") 'lsp-openai-gpt)
+              (define-key map (kbd "C-c l c") 'lsp-openai-chatgpt)
+              (define-key map (kbd "C-c l d") 'lsp-document)
+
+              (define-key map (kbd "C-c l a s") 'lsp-text-to-speech-save)
+              (define-key map (kbd "C-c l a p") 'lsp-text-to-speech-play)
+              map))
+
+
+  (setq lsp-tcp-connection-timeout 5.0)  ; default was 2.0
 #+end_src
 *** Org mode stuff
 **** Org mode
@@ -648,20 +841,22 @@ EVERYTHING IN ORG MODE!!
 
     :init
     (setq org-highlight-latex-and-related '(native latex script))
-    (setq org-export-backends '(ascii html icalendar latex odt org))
+    (setq org-export-backends '(latex odt org))
+    (define-key org-mode-map (kbd "C-c C-x C-e") nil)
 
     :bind
     (:map org-mode-map
-      ("C-c C-x C-e" . skye/org-mark-and-archive)
-      ("C-c C-x <up>" . org-cycle-list-bullet)
-      :map global-map
-      ("C-c a" . org-agenda)
-      ("C-c c" . org-capture))
+          ("C-c C-x C-e" . skye/org-mark-and-archive)
+          ("C-c C-x <up>" . org-cycle-list-bullet)
+          ("M-<return>" . org-insert-item)
+          :map global-map
+          ("C-c a" . org-agenda)
+          ("C-c c" . org-capture))
 
     :config
     (require 'org-tempo)
 
-    (setq org-directory "~/Dropbox/Org/Daily")
+    (setq org-directory "~/Documents/Org")
 
     (defun skye/org-get-path (stringname)
       "Use concat to generate full path."
@@ -677,7 +872,7 @@ EVERYTHING IN ORG MODE!!
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
 
-    (setq org-todo-keywords '((sequence "TODO(t)" "|" "Doing(i!)" "|" "Waiting(w!)") (sequence "|" "CANCELLED(c)" "|" "DONE(d)")))
+    (setq org-todo-keywords '((sequence "TODO(t)" "|" "DOING(i!)" "|" "WAITING(w!)") (sequence "|" "CANCELLED(c)" "|" "DONE(d)")))
 
     (setq org-enforce-todo-dependencies t)
     (setq org-enforce-todo-checkbox-dependencies t)
@@ -698,6 +893,11 @@ EVERYTHING IN ORG MODE!!
 
     (setq org-fontify-todo-headline t)
     (setq org-fontify-done-headline t)
+
+    (tempo-define-template "default-org-header"
+                           '("#+latex_class: article"n"#+latex_class_options: [a4paper, 10pt]"n"#+latex_header: \\usepackage[margin=1in]{geometry} \\usepackage{setspace}"n"#+latex_header_extra: \\doublespace"n"#+latex_compiler: pdflatex"n"#+options: author:t broken-links:nil c:nil creator:nil"n"#+options: date:t e:nil email:t num:t"n"#+options: timestamp:nil title:t toc:nil todo:nil |:t"n"#+title:"p n"#+date: \\today"n"#+author: Kaushik Srinivasan Harith"n"#+email: kaushik@archeanchemicals.com") "<P")
+
+    (setq org-tags-column 70)
     )
 #+end_src
 **** Org-modern
@@ -705,24 +905,6 @@ EVERYTHING IN ORG MODE!!
   (use-package org-modern
     :config
     (global-org-modern-mode))
-#+end_src
-
-*** EAF
-Emacs application framework basically gives you a way to run javascript in emacs. I like the pdf reader but that is it.
-
-#+begin_src emacs-lisp
-  (use-package eaf
-    :defer t
-    :straight (emacs-application-framework :type git :host github :repo "emacs-eaf/emacs-application-framework")
-    :load-path "~/.emacs.d/straight/repos/emacs-application-framework/"
-    :custom
-    ; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
-    (eaf-browser-continue-where-left-off t)
-    (eaf-browser-enable-adblocker t)
-    (browse-url-browser-function 'eaf-open-browser)
-    :config
-    (require 'eaf-browser)
-    (require 'eaf-pdf-viewer))
 #+end_src
 
 * Lastly
@@ -734,7 +916,7 @@ Things that are to be done at the end. This should only load if everything else 
   (put 'narrow-to-region 'disabled nil)
 
   (setq font-lock-maximum-decoration t)
-    (use-package orderless
+  (use-package orderless
     :custom
     (completion-styles '(orderless))      ; Use orderless
     (completion-category-defaults nil)    ; I want to be in control!
@@ -745,14 +927,3 @@ Things that are to be done at the end. This should only load if everything else 
        orderless-regexp
        )))
 #+end_src  
-
-** COMMENT Matu-gen theme
-#+begin_src emacs-lisp
-  (use-package f)
-  (use-package s)
-  (use-package autothemer)
-
-  (load-file "~/.emacs.d/testing/matu-theme.el")
-  (load-file "~/.emacs.d/testing/matu-gen-theme.el")
-  (load-theme 'matu-gen 1)
-#+end_src
