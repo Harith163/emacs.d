@@ -661,6 +661,7 @@ Note that you will probably want to set your own Agenda file locations, Org Dire
   (use-package tex
     :ensure auctex)
 #+end_src
+
 *** Julia
 #+begin_src emacs-lisp
   (use-package julia-mode
