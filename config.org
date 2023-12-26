@@ -658,7 +658,7 @@ Note that you will probably want to set your own Agenda file locations, Org Dire
 
 *** TeX
 #+begin_src emacs-lisp
-  (use-package tex
+  (use-package latex
     :ensure auctex)
 #+end_src
 
