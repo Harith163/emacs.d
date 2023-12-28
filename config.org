@@ -628,7 +628,7 @@ Note that you will probably want to set your own Agenda file locations, Org Dire
     (setq tempo-user-elements '(skye/return-user-details))
 
     (tempo-define-template "default-org-header"
-                           '("#+latex_class: article"n"#+latex_class_options: [a4paper, 10pt]"n"#+latex_header: \\usepackage[margin=1in]{geometry} \\usepackage{setspace}"n"#+latex_header_extra: \\doublespace"n"#+latex_compiler: pdflatex"n"#+options: author:t broken-links:nil c:nil creator:nil"n"#+options: date:t e:nil email:t num:t"n"#+options: timestamp:nil title:t toc:nil todo:nil |:t"n"#+title:"p n"#+date: \\today"n"#+author: "u n"#+email: "e) "<P")
+                           '("#+latex_class: article"n"#+latex_class_options: [a4paper, 10pt]"n"#+latex_header: \\usepackage[margin=1in]{geometry} \\usepackage{setspace}"n"#+latex_header_extra: \\doublespace"n"#+latex_compiler: pdflatex"n"#+options: author:t broken-links:nil c:nil creator:nil"n"#+options: date:t e:nil email:nil num:t"n"#+options: timestamp:nil title:t toc:nil todo:nil |:t"n"#+title:"p n"#+date: \\today"n"#+author: "u n"#+email: "e) "<P")
 
     )
 #+end_src
